@@ -32,6 +32,7 @@ export class NeighborhoodScene extends Phaser.Scene {
     this.createNPCs();
     this.createPlayer();
     this.setupCamera();
+    this.setupFloatingLabels();
     this.setupHUD();
     this.setupTimeOverlay();
 
@@ -689,6 +690,185 @@ export class NeighborhoodScene extends Phaser.Scene {
     this.cameras.main.setZoom(2);
   }
 
+  setupFloatingLabels() {
+    this.floatingLabels = {};
+
+    const createLabel = (id, x, y, tileX, tileY, text, isFollow = false) => {
+      const container = this.add.container(x, y);
+      container.setDepth(25);
+      container.setAlpha(0); // Subtle: starts hidden, gently fades in on proximity
+
+      const textObj = this.add.text(0, 0, text, {
+        fontFamily: 'monospace',
+        fontSize: '5px',
+        color: '#f0ead6',
+        fontStyle: 'bold',
+        resolution: 3
+      }).setOrigin(0.5);
+
+      const w = Math.max(textObj.width + 5, 14);
+      const h = 8;
+
+      const bg = this.add.rectangle(0, 0, w, h, 0x101a12, 0.65);
+      bg.setStrokeStyle(0.5, 0xe6c86a, 0.45);
+
+      container.add([bg, textObj]);
+
+      let tween = null;
+      if (!isFollow) {
+        tween = this.tweens.add({
+          targets: container,
+          y: y - 2,
+          duration: 1400 + Phaser.Math.Between(0, 400),
+          yoyo: true,
+          repeat: -1,
+          ease: 'Sine.easeInOut'
+        });
+      }
+
+      this.floatingLabels[id] = {
+        id,
+        container,
+        textObj,
+        bg,
+        tileX,
+        tileY,
+        baseY: y,
+        baseText: text,
+        tween,
+        isFollow,
+        forceHidden: false
+      };
+
+      return this.floatingLabels[id];
+    };
+
+    // 1. Interactive Objects (subtle 5px title-case labels)
+    createLabel('trash', 5 * 16 + 8, 30 * 16 - 2, 5, 30, gameState.state.quests.trash ? '✓ Trash' : 'Trash');
+    createLabel('hedges', 12.5 * 16 + 8, 31 * 16 - 3, 12.5, 31, gameState.state.quests.hedge ? '✓ Hedges' : 'Hedges');
+    createLabel('parcel', 10 * 16 + 8, 30 * 16 - 2, 10, 30, 'Parcel');
+    if (gameState.state.quests.parcelCollected) {
+      this.floatingLabels['parcel'].forceHidden = true;
+    }
+
+    createLabel('dog', 10 * 16 + 8, 15 * 16 - 4, 10, 15, gameState.state.quests.dogRescued ? '✓ Buddy' : 'Buddy', true);
+    createLabel('newspaper', 23 * 16 + 8, 20 * 16 - 2, 23, 20, 'Newspaper');
+    if (gameState.state.quests.newspaperFound) {
+      this.floatingLabels['newspaper'].forceHidden = true;
+    }
+
+    createLabel('lemonade', 12 * 16 + 8, 18 * 16 - 4, 12, 18, 'Lemonade');
+    createLabel('radio', 17 * 16 + 8, 15 * 16 - 3, 17, 15, gameState.state.quests.juneDone ? '✓ Radio' : 'Radio');
+    createLabel('record_shop', 39 * 16 + 8, 9 * 16 - 4, 39, 9, 'Record Shop');
+    createLabel('home', 11 * 16 + 8, 29 * 16 - 3, 11, 29, gameState.state.quests.albumBought ? '★ Bedroom' : 'Home');
+
+    // 2. NPCs (subtle 5px title-case labels)
+    createLabel('mom', 10 * 16 + 8, 32 * 16 - 8, 10, 32, 'Mom');
+    createLabel('miller', 21 * 16 + 8, 32 * 16 - 8, 21, 32, 'Mrs. Miller');
+    createLabel('june', 18 * 16 + 8, 15 * 16 - 8, 18, 15, 'June');
+    createLabel('vinyl', 40 * 16 + 8, 10 * 16 - 8, 40, 10, 'Mr. Vinyl');
+    createLabel('timmy', 26 * 16 + 8, 20 * 16 - 8, 26, 20, 'Timmy');
+    createLabel('bob', 37 * 16 + 8, 32 * 16 - 8, 37, 32, 'Neighbor Bob');
+
+    this.updateFloatingLabelsState();
+  }
+
+  updateFloatingLabelsState() {
+    if (!this.floatingLabels) return;
+
+    if (this.floatingLabels['trash']) {
+      const done = gameState.state.quests.trash;
+      this.setLabelText('trash', done ? '✓ Trash' : 'Trash', done ? '#85e085' : '#f0ead6');
+    }
+
+    if (this.floatingLabels['hedges']) {
+      const done = gameState.state.quests.hedge;
+      this.setLabelText('hedges', done ? '✓ Hedges' : 'Hedges', done ? '#85e085' : '#f0ead6');
+    }
+
+    if (this.floatingLabels['parcel']) {
+      this.floatingLabels['parcel'].forceHidden = gameState.state.quests.parcelCollected;
+    }
+
+    if (this.floatingLabels['newspaper']) {
+      this.floatingLabels['newspaper'].forceHidden = gameState.state.quests.newspaperFound;
+    }
+
+    if (this.floatingLabels['dog']) {
+      if (gameState.state.quests.dogRescued) {
+        this.setLabelText('dog', '✓ Buddy', '#85e085');
+      } else if (gameState.state.dogFollowing) {
+        this.setLabelText('dog', 'Buddy 🐾', '#f7cf39');
+      } else {
+        this.setLabelText('dog', 'Buddy', '#f0ead6');
+      }
+    }
+
+    if (this.floatingLabels['radio']) {
+      const done = gameState.state.quests.juneDone;
+      this.setLabelText('radio', done ? '✓ Radio' : 'Radio', done ? '#85e085' : '#f0ead6');
+    }
+
+    if (this.floatingLabels['home']) {
+      if (gameState.state.quests.albumBought) {
+        this.setLabelText('home', '★ Bedroom', '#f7cf39');
+      } else {
+        this.setLabelText('home', 'Home', '#f0ead6');
+      }
+    }
+  }
+
+  setLabelText(id, text, colorHex = '#f0ead6') {
+    const item = this.floatingLabels[id];
+    if (!item) return;
+    item.textObj.setText(text);
+    item.textObj.setColor(colorHex);
+    item.bg.setSize(Math.max(item.textObj.width + 5, 14), 8);
+  }
+
+  highlightActiveLabel(activeId) {
+    if (!this.floatingLabels) return;
+    for (const [id, item] of Object.entries(this.floatingLabels)) {
+      if (id === activeId) {
+        item.bg.setStrokeStyle(1, 0xffe680, 0.9);
+        item.container.setScale(1.05);
+      } else {
+        item.bg.setStrokeStyle(0.5, 0xe6c86a, 0.45);
+        item.container.setScale(1.0);
+      }
+    }
+  }
+
+  updateFloatingLabels(delta) {
+    if (!this.floatingLabels) return;
+    const inDialogue = this.dialogueBox && this.dialogueBox.isOpen;
+
+    for (const [id, item] of Object.entries(this.floatingLabels)) {
+      if (item.forceHidden || inDialogue) {
+        item.container.setAlpha(0);
+        continue;
+      }
+
+      let tx = item.tileX;
+      let ty = item.tileY;
+      if (item.id === 'dog') {
+        tx = this.dogSprite.x / 16;
+        ty = this.dogSprite.y / 16;
+      }
+
+      const dist = Phaser.Math.Distance.Between(this.playerTileX, this.playerTileY, tx, ty);
+      let targetAlpha = 0;
+      if (dist <= 2.2) {
+        targetAlpha = 0.9;
+      } else if (dist <= 3.2) {
+        targetAlpha = (3.2 - dist) * 0.9;
+      }
+
+      item.container.alpha = Phaser.Math.Linear(item.container.alpha, targetAlpha, 0.2);
+      if (item.container.alpha < 0.02) item.container.alpha = 0;
+    }
+  }
+
   setupHUD() {
     // Context Interaction Prompt Banner
     this.promptContainer = this.add.container(0, -40);
@@ -753,12 +933,15 @@ export class NeighborhoodScene extends Phaser.Scene {
   update(time, delta) {
     if (this.dialogueBox && this.dialogueBox.isOpen) {
       this.promptContainer.setVisible(false);
+      this.highlightActiveLabel(null);
+      this.updateFloatingLabels(delta);
       return;
     }
 
     this.checkContextualPrompts();
     this.handlePlayerInput();
     this.updateDogFollow();
+    this.updateFloatingLabels(delta);
 
     // Keep prompt centered on screen
     if (this.cameras.main) {
@@ -854,47 +1037,63 @@ export class NeighborhoodScene extends Phaser.Scene {
 
     let activePrompt = null;
     let actionFn = null;
+    let activeId = null;
 
     if ((targetX === 10 || targetX === 11) && targetY === 32) {
       activePrompt = 'E — TALK TO MOM';
       actionFn = () => this.talkToMom();
+      activeId = 'mom';
     } else if (targetX === 5 && targetY === 30) {
       activePrompt = gameState.state.quests.trash ? 'E — INSPECT TRASH CAN' : 'E — TAKE OUT TRASH';
       actionFn = () => this.interactTrash();
+      activeId = 'trash';
     } else if ((targetX === 13 || targetX === 12) && targetY === 31) {
       activePrompt = gameState.state.quests.hedge ? 'E — INSPECT HEDGE' : 'E — TRIM THE HEDGES';
       actionFn = () => this.interactHedge();
+      activeId = 'hedges';
     } else if (targetX === 10 && targetY === 30 && !gameState.state.quests.parcelCollected) {
       activePrompt = 'E — PICK UP PARCEL';
       actionFn = () => this.interactParcel();
+      activeId = 'parcel';
     } else if ((targetX === 20 || targetX === 21) && targetY === 32) {
       activePrompt = 'E — TALK TO MRS. MILLER';
       actionFn = () => this.talkToMrsMiller();
+      activeId = 'miller';
     } else if ((targetX === 39 || targetX === 40) && (targetY === 10 || targetY === 9)) {
       activePrompt = 'E — ENTER RECORD SHOP';
       actionFn = () => this.enterRecordShop();
+      activeId = 'record_shop';
     } else if (targetX === 18 && targetY === 15) {
       activePrompt = 'E — TALK TO JUNE';
       actionFn = () => this.talkToJune();
+      activeId = 'june';
     } else if (targetX === 26 && targetY === 20) {
       activePrompt = 'E — TALK TO TIMMY';
       actionFn = () => this.talkToTimmy();
+      activeId = 'timmy';
     } else if ((targetX === 36 || targetX === 37) && targetY === 32) {
       activePrompt = 'E — TALK TO NEIGHBOR BOB';
       actionFn = () => this.talkToBob();
+      activeId = 'bob';
     } else if (Math.abs(this.playerTileX - 10) <= 1 && Math.abs(this.playerTileY - 15) <= 1 && !gameState.state.dogFollowing && !gameState.state.quests.dogRescued) {
       activePrompt = 'E — PET BUDDY';
       actionFn = () => this.interactDog();
+      activeId = 'dog';
     } else if (targetX === 23 && targetY === 20 && !gameState.state.quests.newspaperFound) {
       activePrompt = 'E — PICK UP NEWSPAPER';
       actionFn = () => this.interactNewspaper();
+      activeId = 'newspaper';
     } else if (targetX === 12 && targetY === 18) {
       activePrompt = 'E — BUY LEMONADE ($0.50)';
       actionFn = () => this.buyLemonade();
+      activeId = 'lemonade';
     } else if (targetX === 11 && targetY === 29) {
       activePrompt = gameState.state.quests.albumBought ? 'E — ENTER BEDROOM (LISTEN TO ALBUM)' : 'E — HOME DOOR';
       actionFn = () => this.interactHomeDoor();
+      activeId = 'home';
     }
+
+    this.highlightActiveLabel(activeId);
 
     if (activePrompt) {
       this.promptText.setText(activePrompt);
@@ -953,6 +1152,7 @@ export class NeighborhoodScene extends Phaser.Scene {
     gameState.setQuest('trash', true);
     gameState.advanceTime(5);
     this.trashSprite.setTexture('prop_trash_empty');
+    this.updateFloatingLabelsState();
 
     this.dialogueBox.show('You', null, [
       '★ Chore Complete: Emptied the heavy metal trash can! ★',
@@ -977,6 +1177,7 @@ export class NeighborhoodScene extends Phaser.Scene {
     gameState.setQuest('parcelCollected', true);
     gameState.addItem('Mrs. Miller\'s Parcel');
     this.parcelSprite.setVisible(false);
+    this.updateFloatingLabelsState();
 
     this.dialogueBox.show('You', null, [
       '★ Picked up Mrs. Miller\'s Parcel! ★',
@@ -1067,6 +1268,10 @@ export class NeighborhoodScene extends Phaser.Scene {
 
       this.dogSprite.setX(37 * 16 + 8);
       this.dogSprite.setY(33 * 16 + 8);
+      if (this.floatingLabels && this.floatingLabels['dog']) {
+        this.floatingLabels['dog'].container.setPosition(37 * 16 + 8, 33 * 16 - 8);
+      }
+      this.updateFloatingLabelsState();
 
       this.dialogueBox.show('Neighbor Bob', 'portrait_bob', [
         'Buddy! You brought my dog back safe and sound!',
@@ -1089,6 +1294,7 @@ export class NeighborhoodScene extends Phaser.Scene {
 
     audioManager.playTalk('dog');
     gameState.setQuest('dogFollowing', true);
+    this.updateFloatingLabelsState();
 
     this.dialogueBox.show('Buddy', 'portrait_dog', [
       '*Woof! Woof!*',
@@ -1102,6 +1308,9 @@ export class NeighborhoodScene extends Phaser.Scene {
       const targetY = this.player.y;
       this.dogSprite.x = Phaser.Math.Linear(this.dogSprite.x, targetX, 0.08);
       this.dogSprite.y = Phaser.Math.Linear(this.dogSprite.y, targetY, 0.08);
+      if (this.floatingLabels && this.floatingLabels['dog']) {
+        this.floatingLabels['dog'].container.setPosition(this.dogSprite.x, this.dogSprite.y - 12);
+      }
     }
   }
 
@@ -1112,6 +1321,7 @@ export class NeighborhoodScene extends Phaser.Scene {
     gameState.setQuest('newspaperReturned', true);
     gameState.addCash(2);
     this.newspaperSprite.setVisible(false);
+    this.updateFloatingLabelsState();
 
     this.dialogueBox.show('You', null, [
       '★ Found the missing Saturday Gazette on the sidewalk! ★',
@@ -1169,6 +1379,7 @@ export class NeighborhoodScene extends Phaser.Scene {
     if (gameState.state.quests.newspaperFound) {
       this.newspaperSprite.setVisible(false);
     }
+    this.updateFloatingLabelsState();
     this.updateTimeOverlay();
   }
 }
