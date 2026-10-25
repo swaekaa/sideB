@@ -420,20 +420,20 @@ export class NeighborhoodScene extends Phaser.Scene {
     this.add.image(14 * 16 + 8, 16 * 16 + 8, 'prop_park_sign');
     this.collisionGrid[16][14] = true;
 
-    // 2. Trash Can outside Player's Garage (x: 5, y: 30)
-    this.trashSprite = this.add.image(5 * 16 + 8, 30 * 16 + 8, 'prop_trash_full');
-    this.collisionGrid[30][5] = true;
+    // 2. Trash Can outside Player's Garage (x: 3, y: 30) — on west side of garage
+    this.trashSprite = this.add.image(3 * 16 + 8, 30 * 16 + 8, 'prop_trash_full');
+    this.collisionGrid[30][3] = true;
 
-    // 3. Garden Hedge in Front Yard (x: 13, y: 31)
-    this.hedgeSprite = this.add.image(13 * 16 + 8, 31 * 16 + 8, 'prop_hedge_overgrown');
-    this.collisionGrid[31][13] = true;
+    // 3. Garden Hedge in Front Yard (x: 14-15, y: 31) — along east property boundary
+    this.hedgeSprite = this.add.image(14 * 16 + 8, 31 * 16 + 8, 'prop_hedge_overgrown');
+    this.collisionGrid[31][14] = true;
 
     // Extra hedge row for visual richness
-    this.add.image(12 * 16 + 8, 31 * 16 + 8, 'prop_hedge_overgrown');
-    this.collisionGrid[31][12] = true;
+    this.add.image(15 * 16 + 8, 31 * 16 + 8, 'prop_hedge_overgrown');
+    this.collisionGrid[31][15] = true;
 
-    // 4. Mrs. Miller's Parcel on Front Porch (x: 10, y: 30)
-    this.parcelSprite = this.add.image(10 * 16 + 8, 30 * 16 + 8, 'prop_parcel');
+    // 4. Mrs. Miller's Parcel on Front Porch (x: 8, y: 30) — under front window
+    this.parcelSprite = this.add.image(8 * 16 + 8, 30 * 16 + 8, 'prop_parcel');
 
     // 5. Mailboxes
     this.add.image(12 * 16 + 8, 33 * 16 + 8, 'prop_mailbox');
@@ -451,12 +451,12 @@ export class NeighborhoodScene extends Phaser.Scene {
     this.collisionGrid[4][11] = true;
     this.collisionGrid[15][21] = true;
 
-    // 7. June's 1969 Transistor Radio in Park (x: 17, y: 15)
-    this.radioSprite = this.add.image(17 * 16 + 8, 15 * 16 + 8, 'prop_radio');
-    this.collisionGrid[15][17] = true;
+    // 7. June's 1969 Transistor Radio in Park (x: 16, y: 15)
+    this.radioSprite = this.add.image(16 * 16 + 8, 15 * 16 + 8, 'prop_radio');
+    this.collisionGrid[15][16] = true;
 
     // Animated musical note
-    const rNote = this.add.text(17 * 16 + 8, 15 * 16 - 2, '♪', {
+    const rNote = this.add.text(16 * 16 + 8, 15 * 16 - 2, '♪', {
       fontFamily: 'monospace',
       fontSize: '9px',
       color: '#e69a37'
@@ -469,8 +469,8 @@ export class NeighborhoodScene extends Phaser.Scene {
       repeat: -1
     });
 
-    // 8. Vintage Bicycle leaning against fence (x: 15, y: 33)
-    this.add.image(15 * 16 + 8, 33 * 16 + 8, 'prop_bicycle');
+    // 8. Vintage Bicycle leaning against fence (x: 16, y: 33)
+    this.add.image(16 * 16 + 8, 33 * 16 + 8, 'prop_bicycle');
 
     // 9. Streetlights (Vintage 1969 iron poles)
     const lightCoords = [
@@ -530,8 +530,8 @@ export class NeighborhoodScene extends Phaser.Scene {
     this.lemonadeSprite = this.add.image(12 * 16 + 8, 18 * 16 + 8, 'prop_lemonade_stand');
     this.collisionGrid[18][12] = true;
 
-    // 18. Push mower left by garage (x: 8, y: 30)
-    this.add.image(8 * 16 + 8, 30 * 16 + 8, 'prop_mower');
+    // 18. Push mower left by garage (x: 3, y: 32)
+    this.add.image(3 * 16 + 8, 32 * 16 + 8, 'prop_mower');
   }
 
   // --- NPCs Setup ---
@@ -539,13 +539,13 @@ export class NeighborhoodScene extends Phaser.Scene {
   createNPCs() {
     this.npcs = [];
 
-    // 1. Mom standing near Player's front yard (x: 10, y: 32)
-    this.momSprite = this.add.image(10 * 16 + 8, 32 * 16 + 8, 'npc_mom');
+    // 1. Mom standing in sunny front lawn (x: 8, y: 32)
+    this.momSprite = this.add.image(8 * 16 + 8, 32 * 16 + 8, 'npc_mom');
     this.momSprite.setDisplaySize(16, 24);
-    this.collisionGrid[32][10] = true;
+    this.collisionGrid[32][8] = true;
     this.npcs.push({
       id: 'mom', name: 'Mom', portrait: 'portrait_mom',
-      x: 10, y: 32, sprite: this.momSprite,
+      x: 8, y: 32, sprite: this.momSprite,
       interact: () => this.talkToMom()
     });
 
@@ -559,23 +559,23 @@ export class NeighborhoodScene extends Phaser.Scene {
       interact: () => this.talkToMrsMiller()
     });
 
-    // 3. June hanging out in the park by the radio (x: 18, y: 15)
-    this.juneSprite = this.add.image(18 * 16 + 8, 15 * 16 + 8, 'npc_june');
+    // 3. June hanging out in the park (x: 19, y: 15)
+    this.juneSprite = this.add.image(19 * 16 + 8, 15 * 16 + 8, 'npc_june');
     this.juneSprite.setDisplaySize(16, 24);
-    this.collisionGrid[15][18] = true;
+    this.collisionGrid[15][19] = true;
     this.npcs.push({
       id: 'june', name: 'June', portrait: 'portrait_june',
-      x: 18, y: 15, sprite: this.juneSprite,
+      x: 19, y: 15, sprite: this.juneSprite,
       interact: () => this.talkToJune()
     });
 
-    // 4. Mr. Vinyl outside his shop (x: 40, y: 10)
-    this.mrVinylSprite = this.add.image(40 * 16 + 8, 10 * 16 + 8, 'npc_mr_vinyl');
+    // 4. Mr. Vinyl outside his shop (x: 42, y: 10)
+    this.mrVinylSprite = this.add.image(42 * 16 + 8, 10 * 16 + 8, 'npc_mr_vinyl');
     this.mrVinylSprite.setDisplaySize(16, 24);
-    this.collisionGrid[10][40] = true;
+    this.collisionGrid[10][42] = true;
     this.npcs.push({
       id: 'vinyl', name: 'Mr. Vinyl', portrait: 'portrait_vinyl',
-      x: 40, y: 10, sprite: this.mrVinylSprite,
+      x: 42, y: 10, sprite: this.mrVinylSprite,
       interact: () => this.enterRecordShop()
     });
 
@@ -744,9 +744,9 @@ export class NeighborhoodScene extends Phaser.Scene {
     };
 
     // 1. Interactive Objects (subtle 5px title-case labels)
-    createLabel('trash', 5 * 16 + 8, 30 * 16 - 2, 5, 30, gameState.state.quests.trash ? '✓ Trash' : 'Trash');
-    createLabel('hedges', 12.5 * 16 + 8, 31 * 16 - 3, 12.5, 31, gameState.state.quests.hedge ? '✓ Hedges' : 'Hedges');
-    createLabel('parcel', 10 * 16 + 8, 30 * 16 - 2, 10, 30, 'Parcel');
+    createLabel('trash', 3 * 16 + 8, 30 * 16 - 2, 3, 30, gameState.state.quests.trash ? '✓ Trash' : 'Trash');
+    createLabel('hedges', 14.5 * 16 + 8, 31 * 16 - 3, 14.5, 31, gameState.state.quests.hedge ? '✓ Hedges' : 'Hedges');
+    createLabel('parcel', 8 * 16 + 8, 30 * 16 - 2, 8, 30, 'Parcel');
     if (gameState.state.quests.parcelCollected) {
       this.floatingLabels['parcel'].forceHidden = true;
     }
@@ -758,15 +758,15 @@ export class NeighborhoodScene extends Phaser.Scene {
     }
 
     createLabel('lemonade', 12 * 16 + 8, 18 * 16 - 4, 12, 18, 'Lemonade');
-    createLabel('radio', 17 * 16 + 8, 15 * 16 - 3, 17, 15, gameState.state.quests.juneDone ? '✓ Radio' : 'Radio');
+    createLabel('radio', 16 * 16 + 8, 15 * 16 - 3, 16, 15, gameState.state.quests.juneDone ? '✓ Radio' : 'Radio');
     createLabel('record_shop', 39 * 16 + 8, 9 * 16 - 4, 39, 9, 'Record Shop');
     createLabel('home', 11 * 16 + 8, 29 * 16 - 3, 11, 29, gameState.state.quests.albumBought ? '★ Bedroom' : 'Home');
 
     // 2. NPCs (subtle 5px title-case labels)
-    createLabel('mom', 10 * 16 + 8, 32 * 16 - 8, 10, 32, 'Mom');
+    createLabel('mom', 8 * 16 + 8, 32 * 16 - 8, 8, 32, 'Mom');
     createLabel('miller', 21 * 16 + 8, 32 * 16 - 8, 21, 32, 'Mrs. Miller');
-    createLabel('june', 18 * 16 + 8, 15 * 16 - 8, 18, 15, 'June');
-    createLabel('vinyl', 40 * 16 + 8, 10 * 16 - 8, 40, 10, 'Mr. Vinyl');
+    createLabel('june', 19 * 16 + 8, 15 * 16 - 8, 19, 15, 'June');
+    createLabel('vinyl', 42 * 16 + 8, 10 * 16 - 8, 42, 10, 'Mr. Vinyl');
     createLabel('timmy', 26 * 16 + 8, 20 * 16 - 8, 26, 20, 'Timmy');
     createLabel('bob', 37 * 16 + 8, 32 * 16 - 8, 37, 32, 'Neighbor Bob');
 
@@ -1039,19 +1039,19 @@ export class NeighborhoodScene extends Phaser.Scene {
     let actionFn = null;
     let activeId = null;
 
-    if ((targetX === 10 || targetX === 11) && targetY === 32) {
+    if (targetX === 8 && targetY === 32) {
       activePrompt = 'E — TALK TO MOM';
       actionFn = () => this.talkToMom();
       activeId = 'mom';
-    } else if (targetX === 5 && targetY === 30) {
+    } else if (targetX === 3 && targetY === 30) {
       activePrompt = gameState.state.quests.trash ? 'E — INSPECT TRASH CAN' : 'E — TAKE OUT TRASH';
       actionFn = () => this.interactTrash();
       activeId = 'trash';
-    } else if ((targetX === 13 || targetX === 12) && targetY === 31) {
+    } else if ((targetX === 14 || targetX === 15) && targetY === 31) {
       activePrompt = gameState.state.quests.hedge ? 'E — INSPECT HEDGE' : 'E — TRIM THE HEDGES';
       actionFn = () => this.interactHedge();
       activeId = 'hedges';
-    } else if (targetX === 10 && targetY === 30 && !gameState.state.quests.parcelCollected) {
+    } else if (targetX === 8 && targetY === 30 && !gameState.state.quests.parcelCollected) {
       activePrompt = 'E — PICK UP PARCEL';
       actionFn = () => this.interactParcel();
       activeId = 'parcel';
@@ -1059,14 +1059,22 @@ export class NeighborhoodScene extends Phaser.Scene {
       activePrompt = 'E — TALK TO MRS. MILLER';
       actionFn = () => this.talkToMrsMiller();
       activeId = 'miller';
-    } else if ((targetX === 39 || targetX === 40) && (targetY === 10 || targetY === 9)) {
+    } else if (targetX === 39 && (targetY === 10 || targetY === 9)) {
       activePrompt = 'E — ENTER RECORD SHOP';
       actionFn = () => this.enterRecordShop();
       activeId = 'record_shop';
-    } else if (targetX === 18 && targetY === 15) {
+    } else if (targetX === 42 && targetY === 10) {
+      activePrompt = 'E — TALK TO MR. VINYL';
+      actionFn = () => this.enterRecordShop();
+      activeId = 'vinyl';
+    } else if (targetX === 19 && targetY === 15) {
       activePrompt = 'E — TALK TO JUNE';
       actionFn = () => this.talkToJune();
       activeId = 'june';
+    } else if (targetX === 16 && targetY === 15) {
+      activePrompt = 'E — LISTEN TO RADIO';
+      actionFn = () => this.talkToJune();
+      activeId = 'radio';
     } else if (targetX === 26 && targetY === 20) {
       activePrompt = 'E — TALK TO TIMMY';
       actionFn = () => this.talkToTimmy();
