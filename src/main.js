@@ -48,4 +48,47 @@ window.addEventListener('DOMContentLoaded', () => {
       }
     });
   }
+
+  // Fullscreen Toggle
+  const toggleFullscreen = () => {
+    if (!document.fullscreenElement) {
+      if (document.documentElement.requestFullscreen) {
+        document.documentElement.requestFullscreen().catch(() => {});
+      } else if (document.documentElement.webkitRequestFullscreen) {
+        document.documentElement.webkitRequestFullscreen();
+      }
+    } else {
+      if (document.exitFullscreen) {
+        document.exitFullscreen().catch(() => {});
+      } else if (document.webkitExitFullscreen) {
+        document.webkitExitFullscreen();
+      }
+    }
+  };
+
+  const fsBtn = document.getElementById('fullscreen-btn');
+  const fsHeaderBtn = document.getElementById('fullscreen-header-btn');
+
+  const updateFullscreenUI = () => {
+    const isFs = !!document.fullscreenElement;
+    const label = isFs ? '🗕 EXIT [F]' : '⛶ FULLSCREEN';
+    if (fsBtn) fsBtn.textContent = label;
+    if (fsHeaderBtn) fsHeaderBtn.textContent = label;
+  };
+
+  if (fsBtn) fsBtn.addEventListener('click', toggleFullscreen);
+  if (fsHeaderBtn) fsHeaderBtn.addEventListener('click', toggleFullscreen);
+
+  document.addEventListener('fullscreenchange', updateFullscreenUI);
+  document.addEventListener('webkitfullscreenchange', updateFullscreenUI);
+
+  // 'F' key shortcut for fullscreen toggle
+  window.addEventListener('keydown', (e) => {
+    if ((e.key === 'f' || e.key === 'F') && !e.repeat) {
+      // Don't trigger if user is in an input or text area
+      const activeTag = document.activeElement ? document.activeElement.tagName : '';
+      if (activeTag === 'INPUT' || activeTag === 'TEXTAREA') return;
+      toggleFullscreen();
+    }
+  });
 });

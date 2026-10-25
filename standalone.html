@@ -29,6 +29,7 @@
       </div>
     </div>
     <div class="header-right">
+      <button id="fullscreen-header-btn" type="button" class="header-btn" title="Toggle Fullscreen (or press F)">⛶ FULLSCREEN</button>
       <div class="hud-pill hud-time-pill"><span id="hud-time">SAT 3:15 PM</span></div>
       <div class="hud-pill hud-cash-pill"><span id="hud-cash">$4</span></div>
     </div>
@@ -38,6 +39,7 @@
   <aside class="floating-side-panel">
     <div class="hud-toggle-bar">
       <button id="toggle-hud-btn" type="button" class="hud-toggle-btn">HUD [HIDE ▲]</button>
+      <button id="fullscreen-btn" type="button" class="hud-toggle-btn" title="Toggle Fullscreen (or press F)">⛶ FULLSCREEN</button>
     </div>
 
     <div class="hud-cards-container" id="hud-cards-container">
@@ -81,6 +83,7 @@
           <div class="ctrl-row"><span class="key-tag">&uarr;&darr;&larr;&rarr; / WASD</span><span>Move</span></div>
           <div class="ctrl-row"><span class="key-tag">E</span><span>Talk / Interact</span></div>
           <div class="ctrl-row"><span class="key-tag">SPACE</span><span>Confirm Action</span></div>
+          <div class="ctrl-row"><span class="key-tag">F</span><span>Toggle Fullscreen</span></div>
           <div class="ctrl-row"><span class="key-tag">1, 2, 3</span><span>Answer Quiz</span></div>
           <div class="ctrl-row"><span class="key-tag">ESC</span><span>Exit Conversation</span></div>
         </div>
@@ -145,6 +148,47 @@
           }
         });
       }
+
+      // Fullscreen Toggle
+      const toggleFullscreen = () => {
+        if (!document.fullscreenElement) {
+          if (document.documentElement.requestFullscreen) {
+            document.documentElement.requestFullscreen().catch(() => {});
+          } else if (document.documentElement.webkitRequestFullscreen) {
+            document.documentElement.webkitRequestFullscreen();
+          }
+        } else {
+          if (document.exitFullscreen) {
+            document.exitFullscreen().catch(() => {});
+          } else if (document.webkitExitFullscreen) {
+            document.webkitExitFullscreen();
+          }
+        }
+      };
+
+      const fsBtn = document.getElementById('fullscreen-btn');
+      const fsHeaderBtn = document.getElementById('fullscreen-header-btn');
+
+      const updateFullscreenUI = () => {
+        const isFs = !!document.fullscreenElement;
+        const label = isFs ? '🗕 EXIT [F]' : '⛶ FULLSCREEN';
+        if (fsBtn) fsBtn.textContent = label;
+        if (fsHeaderBtn) fsHeaderBtn.textContent = label;
+      };
+
+      if (fsBtn) fsBtn.addEventListener('click', toggleFullscreen);
+      if (fsHeaderBtn) fsHeaderBtn.addEventListener('click', toggleFullscreen);
+
+      document.addEventListener('fullscreenchange', updateFullscreenUI);
+      document.addEventListener('webkitfullscreenchange', updateFullscreenUI);
+
+      window.addEventListener('keydown', (e) => {
+        if ((e.key === 'f' || e.key === 'F') && !e.repeat) {
+          const activeTag = document.activeElement ? document.activeElement.tagName : '';
+          if (activeTag === 'INPUT' || activeTag === 'TEXTAREA') return;
+          toggleFullscreen();
+        }
+      });
     });
   </script>
 </body>

@@ -26,6 +26,9 @@ export class NeighborhoodScene extends Phaser.Scene {
     // Collision Matrix: true = solid/obstacle
     this.collisionGrid = Array(this.mapH).fill(null).map(() => Array(this.mapW).fill(false));
 
+    // Ground Surface Matrix: 'grass' | 'concrete' | 'road' | 'stone' | 'wood'
+    this.groundTypeGrid = Array(this.mapH).fill(null).map(() => Array(this.mapW).fill('grass'));
+
     this.waterTiles = [];
     this.buildWorldMap();
     this.createStaticProps();
@@ -99,8 +102,15 @@ export class NeighborhoodScene extends Phaser.Scene {
     // Start water shimmer
     this.setupWaterAnimation();
 
+    // Start subtle 1969 blues background music
+    audioManager.init();
+    audioManager.playMusic('blues');
+
     this.events.on('resume', () => {
       this.refreshWorldState();
+      if (audioManager.currentMusicType !== 'radio' && audioManager.currentMusicType !== 'ending') {
+        audioManager.playMusic('blues');
+      }
     });
   }
 
@@ -127,6 +137,12 @@ export class NeighborhoodScene extends Phaser.Scene {
       this.add.image(x * 16 + 8, 22 * 16 + 8, (x % 2 === 0) ? 'tile_road_line_h' : 'tile_road');
       this.add.image(x * 16 + 8, 23 * 16 + 8, 'tile_road');
       this.add.image(x * 16 + 8, 24 * 16 + 8, 'tile_sidewalk');
+
+      this.groundTypeGrid[20][x] = 'concrete';
+      this.groundTypeGrid[21][x] = 'road';
+      this.groundTypeGrid[22][x] = 'road';
+      this.groundTypeGrid[23][x] = 'road';
+      this.groundTypeGrid[24][x] = 'concrete';
     }
 
     // North East-West Street: y = 1-3
@@ -134,6 +150,10 @@ export class NeighborhoodScene extends Phaser.Scene {
       this.add.image(x * 16 + 8, 1 * 16 + 8, 'tile_sidewalk');
       this.add.image(x * 16 + 8, 2 * 16 + 8, 'tile_road');
       this.add.image(x * 16 + 8, 3 * 16 + 8, 'tile_road');
+
+      this.groundTypeGrid[1][x] = 'concrete';
+      this.groundTypeGrid[2][x] = 'road';
+      this.groundTypeGrid[3][x] = 'road';
     }
 
     // Main North-South Cross Avenue: x = 27-31
@@ -143,26 +163,40 @@ export class NeighborhoodScene extends Phaser.Scene {
       this.add.image(29 * 16 + 8, y * 16 + 8, (y % 2 === 0) ? 'tile_road_line_v' : 'tile_road');
       this.add.image(30 * 16 + 8, y * 16 + 8, 'tile_road');
       this.add.image(31 * 16 + 8, y * 16 + 8, 'tile_sidewalk');
+
+      this.groundTypeGrid[y][27] = 'concrete';
+      this.groundTypeGrid[y][28] = 'road';
+      this.groundTypeGrid[y][29] = 'road';
+      this.groundTypeGrid[y][30] = 'road';
+      this.groundTypeGrid[y][31] = 'concrete';
     }
 
     // Crosswalks at main intersection
     for (let cx = 28; cx <= 30; cx++) {
       this.add.image(cx * 16 + 8, 20 * 16 + 8, 'tile_crosswalk');
       this.add.image(cx * 16 + 8, 24 * 16 + 8, 'tile_crosswalk');
+      this.groundTypeGrid[20][cx] = 'concrete';
+      this.groundTypeGrid[24][cx] = 'concrete';
     }
     for (let cy = 21; cy <= 23; cy++) {
       this.add.image(27 * 16 + 8, cy * 16 + 8, 'tile_crosswalk');
       this.add.image(31 * 16 + 8, cy * 16 + 8, 'tile_crosswalk');
+      this.groundTypeGrid[cy][27] = 'concrete';
+      this.groundTypeGrid[cy][31] = 'concrete';
     }
 
     // Concrete Driveways
     for (let dy = 30; dy <= 35; dy++) {
       this.add.image(6 * 16 + 8, dy * 16 + 8, 'tile_driveway');
       this.add.image(7 * 16 + 8, dy * 16 + 8, 'tile_driveway');
+      this.groundTypeGrid[dy][6] = 'concrete';
+      this.groundTypeGrid[dy][7] = 'concrete';
     }
     for (let dy = 30; dy <= 35; dy++) {
       this.add.image(39 * 16 + 8, dy * 16 + 8, 'tile_driveway');
       this.add.image(40 * 16 + 8, dy * 16 + 8, 'tile_driveway');
+      this.groundTypeGrid[dy][39] = 'concrete';
+      this.groundTypeGrid[dy][40] = 'concrete';
     }
 
     // 3. Oakwood Park Pond — animated water tiles (Northwest Block)
@@ -199,6 +233,8 @@ export class NeighborhoodScene extends Phaser.Scene {
     this.add.image(18 * 16 + 8, 13 * 16, 'prop_dock');
     this.collisionGrid[13][18] = false;
     this.collisionGrid[14][18] = false;
+    this.groundTypeGrid[13][18] = 'wood';
+    this.groundTypeGrid[14][18] = 'wood';
 
     // 4. Buildings & Houses
 
@@ -229,6 +265,7 @@ export class NeighborhoodScene extends Phaser.Scene {
       if (x >= 0 && x < this.mapW && y >= 0 && y < this.mapH) {
         this.add.image(x * 16 + 8, y * 16 + 8, key);
         this.collisionGrid[y][x] = false;
+        this.groundTypeGrid[y][x] = (key === 'tile_footpath') ? 'stone' : 'concrete';
       }
     };
 
@@ -1014,6 +1051,9 @@ export class NeighborhoodScene extends Phaser.Scene {
 
     if (dir) {
       audioManager.init();
+      if (!audioManager.currentMusicType) {
+        audioManager.playMusic('blues');
+      }
       this.playerFacing = dir;
       const targetX = this.playerTileX + dx;
       const targetY = this.playerTileY + dy;
@@ -1038,7 +1078,8 @@ export class NeighborhoodScene extends Phaser.Scene {
 
   startTileMove(targetX, targetY, dir) {
     this.isMoving = true;
-    audioManager.playStep();
+    const ground = (this.groundTypeGrid[targetY] && this.groundTypeGrid[targetY][targetX]) || 'grass';
+    audioManager.playStep(ground);
 
     this.stepCount++;
     if (this.stepCount % 35 === 0) {
