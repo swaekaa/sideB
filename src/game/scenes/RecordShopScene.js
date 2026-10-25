@@ -37,28 +37,29 @@ export class RecordShopScene extends Phaser.Scene {
     this.add.rectangle(cx, floorY + 3, w, 6, 0x0a0604, 0.65);
 
     // === NEON MARQUEE SIGN (Centered at cx, 44 — Clear of HTML Header!) ===
-    const signW = 270;
-    const signH = 24;
+    const signW = 280;
+    const signH = 26;
     const signY = 44;
     // Sign shadow & backing
-    this.add.rectangle(cx + 2, signY + 2, signW, signH, 0x000000, 0.5);
+    this.add.rectangle(cx + 2, signY + 2, signW, signH, 0x000000, 0.6);
     const signBg = this.add.rectangle(cx, signY, signW, signH, 0x0c2416);
     signBg.setStrokeStyle(2, 0xd4a030);
     this.add.rectangle(cx, signY, signW - 4, signH - 4, 0x000000, 0).setStrokeStyle(1, 0xfad040);
 
-    this.add.text(cx, signY - 3, "★  MR. VINYL'S HI-FI RECORDS  ★", {
+    this.add.text(cx, signY - 4, "★  MR. VINYL'S HI-FI RECORDS  ★", {
       fontFamily: 'monospace',
-      fontSize: '10px',
-      color: '#ffe57f',
+      fontSize: '11px',
+      color: '#ffea75',
       fontStyle: 'bold',
-      resolution: 3
+      resolution: 4
     }).setOrigin(0.5);
 
     this.add.text(cx, signY + 7, "• VINYL LPs • 45s • TURNTABLES • HI-FI STEREO •", {
       fontFamily: 'monospace',
-      fontSize: '6px',
-      color: '#c8e8a0',
-      resolution: 3
+      fontSize: '7px',
+      color: '#ffffff',
+      fontStyle: 'bold',
+      resolution: 4
     }).setOrigin(0.5);
 
     // === VINYL SHELVES (Lowered so they have breathing room) ===
@@ -114,16 +115,16 @@ export class RecordShopScene extends Phaser.Scene {
     this.add.text(ttX - 16, ttY + 16, 'VU', { fontFamily: 'monospace', fontSize: '4px', color: '#4caf50', resolution: 3 }).setOrigin(0.5);
     this.add.text(ttX + 16, ttY + 16, 'VU', { fontFamily: 'monospace', fontSize: '4px', color: '#4caf50', resolution: 3 }).setOrigin(0.5);
 
-    // Booth Plaque (Clear & Readable!)
-    const plaque = this.add.rectangle(ttX, ttY - 32, 78, 15, 0x101a14);
-    plaque.setStrokeStyle(1, 0xd4a030);
-    this.add.text(ttX, ttY - 35, '★ HI-FI LISTENING BOOTH ★', {
-      fontFamily: 'monospace', fontSize: '6px', color: '#f8d24a',
-      fontStyle: 'bold', align: 'center', resolution: 3
+    // Booth Plaque (High contrast, crystal-clear readable)
+    const plaque = this.add.rectangle(ttX, ttY - 34, 88, 20, 0x101a14);
+    plaque.setStrokeStyle(1.5, 0xd4a030);
+    this.add.text(ttX, ttY - 38, '★ HI-FI LISTENING BOOTH ★', {
+      fontFamily: 'monospace', fontSize: '7px', color: '#f8d24a',
+      fontStyle: 'bold', align: 'center', resolution: 4
     }).setOrigin(0.5);
-    this.add.text(ttX, ttY - 28, 'DROP THE NEEDLE & GROOVE', {
-      fontFamily: 'monospace', fontSize: '4.5px', color: '#c8e0b0',
-      align: 'center', resolution: 3
+    this.add.text(ttX, ttY - 29, 'TRY BEFORE YOU BUY • STEREO', {
+      fontFamily: 'monospace', fontSize: '6px', color: '#ffffff',
+      fontStyle: 'bold', align: 'center', resolution: 4
     }).setOrigin(0.5);
 
     // Spinning Vinyl Platter
@@ -252,15 +253,21 @@ export class RecordShopScene extends Phaser.Scene {
     exitBtn.on('pointerover', () => exitBtn.setBackgroundColor('#9c2c1c'));
     exitBtn.on('pointerout', () => exitBtn.setBackgroundColor('#7f2316'));
 
-    // Buy button (pulsing gold & green)
+    // Buy button (high contrast gold, pulsing scale)
     if (!gameState.state.quests.albumBought) {
-      this.buyBtn = this.add.text(showcaseX, showcaseY + 92, '[ PRESS E TO BUY ]', {
-        fontFamily: 'monospace', fontSize: '9px', color: '#fff9c4',
-        backgroundColor: '#1b5e20', padding: { x: 9, y: 5 }, resolution: 3
+      this.buyBtn = this.add.text(showcaseX, showcaseY + 94, '▶ PRESS E TO BUY ($25) ◀', {
+        fontFamily: 'monospace', fontSize: '8.5px', color: '#101808',
+        fontStyle: 'bold',
+        backgroundColor: '#f5c542', padding: { x: 8, y: 5 }, resolution: 4
       }).setOrigin(0.5);
       this.tweens.add({
-        targets: this.buyBtn, alpha: 0.35, duration: 600,
-        yoyo: true, repeat: -1
+        targets: this.buyBtn,
+        scaleX: 1.05,
+        scaleY: 1.05,
+        duration: 750,
+        yoyo: true,
+        repeat: -1,
+        ease: 'Sine.easeInOut'
       });
     }
 

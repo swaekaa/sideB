@@ -413,21 +413,21 @@ export class NeighborhoodScene extends Phaser.Scene {
     const facade = this.add.image((startX + 5) * 16 + 8, (startY + 2) * 16 - 2, 'prop_shop_facade');
     facade.setDepth(3);
 
-    // Crystal-clear shop front signage
-    this.add.text((startX + 5) * 16 + 8, (startY + 2) * 16 - 10, "MR. VINYL'S RECORDS", {
+    // Single, crystal-clear shop front signage (resolution 4)
+    this.add.text((startX + 5) * 16 + 8, (startY + 2) * 16 - 11, "MR. VINYL'S RECORDS", {
       fontFamily: 'monospace',
-      fontSize: '6.5px',
-      color: '#ffea75',
+      fontSize: '7px',
+      color: '#ffe57f',
       fontStyle: 'bold',
-      resolution: 3
+      resolution: 4
     }).setOrigin(0.5).setDepth(4);
 
-    this.add.text((startX + 5) * 16 + 8, (startY + 2) * 16 + 15, "• LPs • 45s • TAPES • HI-FI •", {
+    this.add.text((startX + 5) * 16 + 8, (startY + 2) * 16 + 14, "• LPs • 45s • TAPES • HI-FI •", {
       fontFamily: 'monospace',
-      fontSize: '4.5px',
-      color: '#f6eed6',
+      fontSize: '5px',
+      color: '#ffffff',
       fontStyle: 'bold',
-      resolution: 3
+      resolution: 4
     }).setOrigin(0.5).setDepth(4);
   }
 
@@ -440,21 +440,21 @@ export class NeighborhoodScene extends Phaser.Scene {
     parkSign.setDepth(3);
     this.collisionGrid[16][14] = true;
 
-    // Razor-sharp readable text overlay on park signboard
+    // Single, razor-sharp readable text overlay on park signboard (resolution 4)
     this.add.text(14 * 16 + 8, 16 * 16 + 1, 'OAKWOOD PARK', {
       fontFamily: 'monospace',
-      fontSize: '5.5px',
+      fontSize: '6px',
       color: '#261408',
       fontStyle: 'bold',
-      resolution: 3
+      resolution: 4
     }).setOrigin(0.5).setDepth(4);
 
-    this.add.text(14 * 16 + 8, 16 * 16 + 6, 'LAKE & SANCTUARY', {
+    this.add.text(14 * 16 + 8, 16 * 16 + 7, 'LAKE & NATURE WALK', {
       fontFamily: 'monospace',
-      fontSize: '4px',
-      color: '#204d1a',
+      fontSize: '4.5px',
+      color: '#1b4d18',
       fontStyle: 'bold',
-      resolution: 3
+      resolution: 4
     }).setOrigin(0.5).setDepth(4);
 
     // 2. Trash Can outside Player's Garage (x: 3, y: 30) — on west side of garage
@@ -569,13 +569,13 @@ export class NeighborhoodScene extends Phaser.Scene {
     this.lemonadeSprite.setDepth(3);
     this.collisionGrid[18][12] = true;
 
-    // Razor-sharp readable 50¢ sign on lemonade stand
-    this.add.text(12 * 16 + 7, 18 * 16 + 9.5, 'LEMONADE 50¢', {
+    // Single, razor-sharp readable 50¢ sign on lemonade stand (resolution 4)
+    this.add.text(12 * 16 + 8, 18 * 16 + 10, 'LEMONADE 50¢', {
       fontFamily: 'monospace',
-      fontSize: '4.5px',
+      fontSize: '5px',
       color: '#b71c1c',
       fontStyle: 'bold',
-      resolution: 3
+      resolution: 4
     }).setOrigin(0.5).setDepth(4);
 
     // 18. Push mower left by garage (x: 3, y: 32)

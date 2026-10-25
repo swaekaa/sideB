@@ -477,20 +477,6 @@ export class AssetGenerator {
       ctx.fillStyle = 'rgba(120, 80, 40, 0.12)';
       ctx.fillRect(7, 10, 50, 1);
       ctx.fillRect(7, 15, 50, 1);
-
-      // Crisp high-contrast readable typography
-      ctx.fillStyle = '#241408';
-      ctx.font = 'bold 7px monospace';
-      ctx.textAlign = 'center';
-      ctx.fillText('OAKWOOD PARK', 32, 11);
-
-      ctx.fillStyle = '#2d5c22';
-      ctx.font = 'bold 5px monospace';
-      ctx.fillText('LAKE & GROVE', 32, 16);
-
-      ctx.fillStyle = '#7a4a28';
-      ctx.font = '5px monospace';
-      ctx.fillText('EST. 1924', 32, 20);
     });
 
     // 3. Swimming White Duck in Pond
@@ -738,12 +724,6 @@ export class AssetGenerator {
         ctx.fillRect(rx, ry, 2, 2);
       });
 
-      // Sharp, crystal-clear marquee text
-      ctx.fillStyle = '#f8d24a';
-      ctx.font = 'bold 8px monospace';
-      ctx.textAlign = 'center';
-      ctx.fillText('★ MR. VINYL\'S RECORDS ★', 48, 12);
-
       // Striped Retractable Awning (Crimson & Warm Cream)
       const stripeW = 8;
       for (let i = 0; i < 12; i++) {
@@ -770,17 +750,12 @@ export class AssetGenerator {
       ctx.fillStyle = 'rgba(0, 0, 0, 0.45)';
       ctx.fillRect(4, 31, 88, 3);
 
-      // Transom Window with clean gold lettering
+      // Transom Window frame
       ctx.fillStyle = '#111c16';
       ctx.fillRect(6, 32, 84, 8);
       ctx.strokeStyle = '#5a7860';
       ctx.lineWidth = 1;
       ctx.strokeRect(6, 32, 84, 8);
-
-      ctx.fillStyle = '#e8d49a';
-      ctx.font = 'bold 5.5px monospace';
-      ctx.textAlign = 'center';
-      ctx.fillText('• LPs • 45s • HI-FI STEREO •', 48, 38);
     });
 
     // 16. Basketball Hoop on Garage
@@ -983,15 +958,6 @@ export class AssetGenerator {
       ctx.fillStyle = '#43a047'; // leaf
       ctx.fillRect(13, 23, 2, 2);
 
-      // Sign text
-      ctx.fillStyle = '#b71c1c';
-      ctx.font = 'bold 5px monospace';
-      ctx.textAlign = 'center';
-      ctx.fillText('LEMONADE', 25, 27.5);
-
-      ctx.fillStyle = '#2e7d32';
-      ctx.font = 'bold 4px monospace';
-      ctx.fillText('50¢', 35, 27.5);
 
       // Items on the Counter:
       // 1. Glass Pitcher with Lemonade & Ice
