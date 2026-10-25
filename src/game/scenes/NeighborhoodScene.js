@@ -1365,8 +1365,8 @@ export class NeighborhoodScene extends Phaser.Scene {
     }
 
     this.dialogueBox.show('Timmy', 'portrait_timmy', [
-      'Hey! My older brother bet me $2 that I couldn\'t solve his math riddle!',
-      'Help me solve it and the two bucks is yours!'
+      'Hey! My older brother bet me $2 that I couldn\'t solve 5 math questions!',
+      'Help me answer all 5 questions and the two bucks is yours!'
     ], () => {
       this.scene.pause('NeighborhoodScene');
       this.scene.launch('MathMinigameScene');

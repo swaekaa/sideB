@@ -19,7 +19,7 @@ Your mom has handed you your afternoon chore list:
 Along the way, the neighborhood is alive with friends, neighbors, distractions, and favors:
 - **Help June with the Radio Quiz** (+ $2.00): Hang out in Oakwood Park and groove to the 4:00 PM broadcast.
 - **Find Buddy the Lost Dog** (+ $3.00): Rescue Neighbor Bob's golden hound who wandered into the park flowers.
-- **Timmy's Math Bet** (+ $2.00): Help kid Timmy solve a quick arithmetic riddle.
+- **Timmy's Math Bet** (+ $2.00): Help kid Timmy solve a 5-question arithmetic challenge on the sidewalk.
 - **Return the Missing Newspaper** (+ $2.00): Spot the dropped Gazette on the sidewalk and return it.
 
 Once you have saved $25, head to **Mr. Vinyl's Record Shop**, buy **Led Zeppelin II**, and return to your bedroom to drop the needle as evening falls.
