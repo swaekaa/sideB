@@ -159,9 +159,6 @@ export class NeighborhoodScene extends Phaser.Scene {
       this.add.image(6 * 16 + 8, dy * 16 + 8, 'tile_driveway');
       this.add.image(7 * 16 + 8, dy * 16 + 8, 'tile_driveway');
     }
-    for (let wy = 30; wy <= 35; wy++) {
-      this.add.image(20 * 16 + 8, wy * 16 + 8, 'tile_sidewalk');
-    }
     for (let dy = 30; dy <= 35; dy++) {
       this.add.image(39 * 16 + 8, dy * 16 + 8, 'tile_driveway');
       this.add.image(40 * 16 + 8, dy * 16 + 8, 'tile_driveway');
@@ -178,14 +175,6 @@ export class NeighborhoodScene extends Phaser.Scene {
         this.collisionGrid[py][px] = true;
       }
     }
-
-    // Park pond shoreline decoration tiles
-    const shorePoints = [
-      [6, 7], [6, 8], [6, 9], [6, 10], [6, 11], [6, 12], [6, 13],
-      [22, 7], [22, 8], [22, 9], [22, 10], [22, 11], [22, 12], [22, 13],
-      [7, 5], [8, 5], [9, 5], [10, 5], [11, 5], [12, 5],
-      [7, 15], [8, 15], [9, 15], [10, 15], [11, 15], [12, 15],
-    ];
 
     // Swimming Ducks on Pond
     this.duckSprites = [];
@@ -234,7 +223,90 @@ export class NeighborhoodScene extends Phaser.Scene {
     // Building 5: The Record Shop (x = 34..44, y = 5..9)
     this.buildRecordShop(34, 5, 11, 5, 39, 9);
 
-    // 5. Surrounding Picket Fences & Trees
+    // 5. Footpaths Connecting All Houses to Main Roads
+    const addPath = (x, y, key = 'tile_sidewalk') => {
+      if (x >= 0 && x < this.mapW && y >= 0 && y < this.mapH) {
+        this.add.image(x * 16 + 8, y * 16 + 8, key);
+        this.collisionGrid[y][x] = false;
+      }
+    };
+
+    // A. House 1 (Player's House): Door at (11, 29)
+    // Front walk down from door through front yard and gate
+    for (let y = 29; y <= 34; y++) addPath(11, y, 'tile_sidewalk');
+    addPath(10, 29, 'tile_sidewalk');
+
+    // West walkway connecting Player's house/driveway to Oakwood Blvd
+    for (let x = 4; x <= 11; x++) addPath(x, 34, 'tile_sidewalk');
+    for (let y = 24; y <= 34; y++) addPath(4, y, 'tile_sidewalk');
+
+    // Side walkway between Player's House and Mrs. Miller's House to Oakwood Blvd
+    for (let y = 24; y <= 34; y++) addPath(16, y, 'tile_sidewalk');
+
+    // B. House 2 (Mrs. Miller's House): Door at (20, 29)
+    // Front walk down from door to southern residential sidewalk
+    for (let y = 29; y <= 34; y++) addPath(20, y, 'tile_sidewalk');
+
+    // Southern Residential Sidewalk (West of Cross Avenue)
+    // Seamlessly connects House 1, House 2, driveways, and side walkways to Main Cross Avenue
+    for (let x = 4; x <= 27; x++) addPath(x, 34, 'tile_sidewalk');
+
+    // C. House 3 (Neighbor Bob's House): Door at (36, 29)
+    // Front walk down from door to southern residential sidewalk
+    for (let y = 29; y <= 34; y++) addPath(36, y, 'tile_sidewalk');
+
+    // Side walkway between Cross Avenue and Bob's House to Oakwood Blvd
+    for (let y = 24; y <= 34; y++) addPath(33, y, 'tile_sidewalk');
+
+    // Side walkway between Bob's House and House 5 to Oakwood Blvd
+    for (let y = 24; y <= 34; y++) addPath(45, y, 'tile_sidewalk');
+
+    // D. House 5 (East Suburban House): Door at (50, 29)
+    // Front walk down from door to southern residential sidewalk
+    for (let y = 29; y <= 34; y++) addPath(50, y, 'tile_sidewalk');
+
+    // Side walkway east of House 5 to Oakwood Blvd
+    for (let y = 24; y <= 34; y++) addPath(57, y, 'tile_sidewalk');
+
+    // Southern Residential Sidewalk (East of Cross Avenue)
+    // Seamlessly connects Cross Avenue, Bob's house, Bob's driveway, House 5, and side walkways
+    for (let x = 31; x <= 57; x++) addPath(x, 34, 'tile_sidewalk');
+
+    // E. House 4 (North Suburban House): Door at (10, 4)
+    // Front walk from door down past front lawn
+    for (let y = 4; y <= 6; y++) addPath(10, y, 'tile_sidewalk');
+    addPath(7, 5, 'tile_sidewalk');
+    addPath(8, 5, 'tile_sidewalk');
+    addPath(9, 5, 'tile_sidewalk');
+
+    // North Park Promenade connecting House 4 to Main Cross Avenue
+    for (let x = 10; x <= 27; x++) addPath(x, 5, 'tile_footpath');
+
+    // Lakeside Promenade (East side of pond) connecting House 4 area to Oakwood Blvd
+    for (let y = 5; y <= 20; y++) addPath(24, y, 'tile_footpath');
+
+    // West Park Path connecting House 4 area to Oakwood Blvd
+    for (let y = 5; y <= 20; y++) addPath(4, y, 'tile_footpath');
+    for (let x = 4; x <= 10; x++) addPath(x, 6, 'tile_footpath');
+
+    // Dock connector path
+    for (let x = 18; x <= 24; x++) addPath(x, 13, 'tile_footpath');
+
+    // F. Building 5 (The Record Shop): Door at (39, 9)
+    // Wide front plaza walkway heading South directly to Oakwood Blvd
+    for (let y = 9; y <= 20; y++) {
+      addPath(38, y, 'tile_sidewalk');
+      addPath(39, y, 'tile_sidewalk');
+    }
+
+    // Plaza walkway heading West to Main Cross Avenue
+    for (let x = 31; x <= 39; x++) addPath(x, 11, 'tile_sidewalk');
+
+    // Walkway heading North to North Street
+    for (let y = 3; y <= 11; y++) addPath(45, y, 'tile_sidewalk');
+    for (let x = 39; x <= 45; x++) addPath(x, 11, 'tile_sidewalk');
+
+    // 6. Surrounding Picket Fences & Trees
     for (let x = 0; x < this.mapW; x++) {
       this.collisionGrid[0][x] = true;
       this.collisionGrid[this.mapH - 1][x] = true;
@@ -262,7 +334,13 @@ export class NeighborhoodScene extends Phaser.Scene {
       }
     }
     for (let fx = 33; fx <= 43; fx++) {
-      if (fx !== 36 && fx !== 39 && fx !== 40) {
+      if (fx !== 33 && fx !== 36 && fx !== 39 && fx !== 40) {
+        this.add.image(fx * 16 + 8, 33 * 16 + 8, 'tile_fence');
+        this.collisionGrid[33][fx] = true;
+      }
+    }
+    for (let fx = 48; fx <= 56; fx++) {
+      if (fx !== 50) {
         this.add.image(fx * 16 + 8, 33 * 16 + 8, 'tile_fence');
         this.collisionGrid[33][fx] = true;
       }
@@ -270,10 +348,10 @@ export class NeighborhoodScene extends Phaser.Scene {
 
     // Neighborhood Trees
     const treeCoords = [
-      [2, 3], [16, 2], [24, 3], [24, 8], [3, 12], [24, 14],
-      [2, 26], [15, 26], [16, 31], [2, 36], [15, 38],
+      [2, 3], [16, 2], [24, 3], [25, 8], [2, 12], [25, 14],
+      [2, 26], [14, 38], [17, 36], [2, 36], [15, 38],
       [32, 2], [46, 3], [52, 6], [58, 10], [54, 14],
-      [32, 26], [45, 26], [52, 30], [33, 38], [44, 38], [55, 38],
+      [32, 38], [46, 38], [52, 30], [33, 38], [44, 38], [55, 38],
       [25, 30], [25, 36], [5, 40], [60, 26], [60, 34]
     ];
 
@@ -289,7 +367,7 @@ export class NeighborhoodScene extends Phaser.Scene {
     const flowerCoords = [
       [5, 27], [5, 28], [14, 27], [14, 28],
       [17, 27], [17, 28], [18, 27],
-      [33, 27], [44, 27], [44, 28]
+      [34, 27], [44, 27], [44, 28]
     ];
     flowerCoords.forEach(([fx, fy]) => {
       this.add.image(fx * 16 + 8, fy * 16 + 8, 'tile_flower_bed');
@@ -360,9 +438,11 @@ export class NeighborhoodScene extends Phaser.Scene {
     this.add.image(12 * 16 + 8, 33 * 16 + 8, 'prop_mailbox');
     this.add.image(19 * 16 + 8, 33 * 16 + 8, 'prop_mailbox');
     this.add.image(35 * 16 + 8, 33 * 16 + 8, 'prop_mailbox');
+    this.add.image(51 * 16 + 8, 33 * 16 + 8, 'prop_mailbox');
     this.collisionGrid[33][12] = true;
     this.collisionGrid[33][19] = true;
     this.collisionGrid[33][35] = true;
+    this.collisionGrid[33][51] = true;
 
     // 6. Park Benches
     this.add.image(11 * 16 + 8, 4 * 16 + 8, 'prop_bench');
@@ -388,8 +468,8 @@ export class NeighborhoodScene extends Phaser.Scene {
       repeat: -1
     });
 
-    // 8. Vintage Bicycle leaning against fence (x: 16, y: 33)
-    this.add.image(16 * 16 + 8, 33 * 16 + 8, 'prop_bicycle');
+    // 8. Vintage Bicycle leaning against fence (x: 15, y: 33)
+    this.add.image(15 * 16 + 8, 33 * 16 + 8, 'prop_bicycle');
 
     // 9. Streetlights (Vintage 1969 iron poles)
     const lightCoords = [
@@ -458,23 +538,23 @@ export class NeighborhoodScene extends Phaser.Scene {
   createNPCs() {
     this.npcs = [];
 
-    // 1. Mom standing near Player's front yard (x: 11, y: 32)
-    this.momSprite = this.add.image(11 * 16 + 8, 32 * 16 + 8, 'npc_mom');
+    // 1. Mom standing near Player's front yard (x: 10, y: 32)
+    this.momSprite = this.add.image(10 * 16 + 8, 32 * 16 + 8, 'npc_mom');
     this.momSprite.setDisplaySize(16, 24);
-    this.collisionGrid[32][11] = true;
+    this.collisionGrid[32][10] = true;
     this.npcs.push({
       id: 'mom', name: 'Mom', portrait: 'portrait_mom',
-      x: 11, y: 32, sprite: this.momSprite,
+      x: 10, y: 32, sprite: this.momSprite,
       interact: () => this.talkToMom()
     });
 
-    // 2. Mrs. Miller standing in her flower yard (x: 20, y: 32)
-    this.millerSprite = this.add.image(20 * 16 + 8, 32 * 16 + 8, 'npc_mrs_miller');
+    // 2. Mrs. Miller standing in her flower yard (x: 21, y: 32)
+    this.millerSprite = this.add.image(21 * 16 + 8, 32 * 16 + 8, 'npc_mrs_miller');
     this.millerSprite.setDisplaySize(16, 24);
-    this.collisionGrid[32][20] = true;
+    this.collisionGrid[32][21] = true;
     this.npcs.push({
       id: 'miller', name: 'Mrs. Miller', portrait: 'portrait_miller',
-      x: 20, y: 32, sprite: this.millerSprite,
+      x: 21, y: 32, sprite: this.millerSprite,
       interact: () => this.talkToMrsMiller()
     });
 
@@ -488,13 +568,13 @@ export class NeighborhoodScene extends Phaser.Scene {
       interact: () => this.talkToJune()
     });
 
-    // 4. Mr. Vinyl outside his shop (x: 39, y: 10)
-    this.mrVinylSprite = this.add.image(39 * 16 + 8, 10 * 16 + 8, 'npc_mr_vinyl');
+    // 4. Mr. Vinyl outside his shop (x: 40, y: 10)
+    this.mrVinylSprite = this.add.image(40 * 16 + 8, 10 * 16 + 8, 'npc_mr_vinyl');
     this.mrVinylSprite.setDisplaySize(16, 24);
-    this.collisionGrid[10][39] = true;
+    this.collisionGrid[10][40] = true;
     this.npcs.push({
       id: 'vinyl', name: 'Mr. Vinyl', portrait: 'portrait_vinyl',
-      x: 39, y: 10, sprite: this.mrVinylSprite,
+      x: 40, y: 10, sprite: this.mrVinylSprite,
       interact: () => this.enterRecordShop()
     });
 
@@ -508,13 +588,13 @@ export class NeighborhoodScene extends Phaser.Scene {
       interact: () => this.talkToTimmy()
     });
 
-    // 6. Neighbor Bob in his driveway (x: 36, y: 32)
-    this.bobSprite = this.add.image(36 * 16 + 8, 32 * 16 + 8, 'npc_neighbor_bob');
+    // 6. Neighbor Bob in his driveway (x: 37, y: 32)
+    this.bobSprite = this.add.image(37 * 16 + 8, 32 * 16 + 8, 'npc_neighbor_bob');
     this.bobSprite.setDisplaySize(16, 24);
-    this.collisionGrid[32][36] = true;
+    this.collisionGrid[32][37] = true;
     this.npcs.push({
       id: 'bob', name: 'Neighbor Bob', portrait: 'portrait_bob',
-      x: 36, y: 32, sprite: this.bobSprite,
+      x: 37, y: 32, sprite: this.bobSprite,
       interact: () => this.talkToBob()
     });
 
@@ -592,8 +672,8 @@ export class NeighborhoodScene extends Phaser.Scene {
   // --- Player Setup & Camera ---
 
   createPlayer() {
-    this.playerTileX = 9;
-    this.playerTileY = 32;
+    this.playerTileX = 11;
+    this.playerTileY = 30;
 
     this.player = this.add.sprite(
       this.playerTileX * 16 + 8,
@@ -775,7 +855,7 @@ export class NeighborhoodScene extends Phaser.Scene {
     let activePrompt = null;
     let actionFn = null;
 
-    if (targetX === 11 && targetY === 32) {
+    if ((targetX === 10 || targetX === 11) && targetY === 32) {
       activePrompt = 'E — TALK TO MOM';
       actionFn = () => this.talkToMom();
     } else if (targetX === 5 && targetY === 30) {
@@ -787,10 +867,10 @@ export class NeighborhoodScene extends Phaser.Scene {
     } else if (targetX === 10 && targetY === 30 && !gameState.state.quests.parcelCollected) {
       activePrompt = 'E — PICK UP PARCEL';
       actionFn = () => this.interactParcel();
-    } else if (targetX === 20 && targetY === 32) {
+    } else if ((targetX === 20 || targetX === 21) && targetY === 32) {
       activePrompt = 'E — TALK TO MRS. MILLER';
       actionFn = () => this.talkToMrsMiller();
-    } else if (targetX === 39 && (targetY === 10 || targetY === 9)) {
+    } else if ((targetX === 39 || targetX === 40) && (targetY === 10 || targetY === 9)) {
       activePrompt = 'E — ENTER RECORD SHOP';
       actionFn = () => this.enterRecordShop();
     } else if (targetX === 18 && targetY === 15) {
@@ -799,7 +879,7 @@ export class NeighborhoodScene extends Phaser.Scene {
     } else if (targetX === 26 && targetY === 20) {
       activePrompt = 'E — TALK TO TIMMY';
       actionFn = () => this.talkToTimmy();
-    } else if (targetX === 36 && targetY === 32) {
+    } else if ((targetX === 36 || targetX === 37) && targetY === 32) {
       activePrompt = 'E — TALK TO NEIGHBOR BOB';
       actionFn = () => this.talkToBob();
     } else if (Math.abs(this.playerTileX - 10) <= 1 && Math.abs(this.playerTileY - 15) <= 1 && !gameState.state.dogFollowing && !gameState.state.quests.dogRescued) {

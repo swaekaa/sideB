@@ -116,6 +116,25 @@ export class AssetGenerator {
       ctx.fillRect(10, 10, 1, 3);
     });
 
+    // 5b. Garden & Park Footpath (Flagstone Pavers)
+    this.createCanvasTexture('tile_footpath', 16, 16, (ctx) => {
+      ctx.fillStyle = '#5f8038';
+      ctx.fillRect(0, 0, 16, 16);
+      ctx.fillStyle = '#b8aa92';
+      ctx.fillRect(1, 1, 6, 6);
+      ctx.fillRect(8, 1, 7, 5);
+      ctx.fillRect(1, 8, 7, 7);
+      ctx.fillRect(9, 7, 6, 8);
+      ctx.fillStyle = '#cfc2a9';
+      ctx.fillRect(2, 2, 4, 4);
+      ctx.fillRect(9, 2, 5, 3);
+      ctx.fillRect(2, 9, 5, 5);
+      ctx.fillRect(10, 8, 4, 6);
+      ctx.fillStyle = '#786852';
+      ctx.fillRect(0, 7, 16, 1);
+      ctx.fillRect(7, 0, 1, 16);
+    });
+
     // 6. Road Asphalt Base
     this.createCanvasTexture('tile_road', 16, 16, (ctx) => {
       ctx.fillStyle = '#464c52';
