@@ -123,7 +123,6 @@ export class JuneMinigameScene extends Phaser.Scene {
 
   finishActivity() {
     this.isActive = false;
-    audioManager.stopMusic();
 
     let reward = 2;
     let comment = 'June: "You\'ve got great rhythm! Here\'s $2.00 for your record fund!"';
@@ -142,7 +141,8 @@ export class JuneMinigameScene extends Phaser.Scene {
     this.statusText.setColor('#216327');
     this.feedbackText.setText(`Earned: +$${reward}.00! Tip: "Check Mr. Vinyl's shop before 6:00!"`);
 
-    this.time.delayedCall(2000, () => {
+    this.time.delayedCall(1600, () => {
+      audioManager.resumeAmbientBGM();
       this.scene.stop('JuneMinigameScene');
       this.scene.resume('NeighborhoodScene');
     });

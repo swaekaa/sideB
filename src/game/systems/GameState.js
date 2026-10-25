@@ -120,8 +120,19 @@ class GameState {
 
   setQuest(questName, value = true) {
     this.state.quests[questName] = value;
+    if (questName === 'dogFollowing') {
+      this.state.dogFollowing = value;
+    }
+    if (questName === 'dogRescued' && value) {
+      this.state.quests.dogFollowing = false;
+      this.state.dogFollowing = false;
+    }
     this.save();
     this.notify();
+  }
+
+  isDogFollowing() {
+    return !!((this.state.quests && this.state.quests.dogFollowing) || this.state.dogFollowing);
   }
 
   getCompletedChoreCount() {

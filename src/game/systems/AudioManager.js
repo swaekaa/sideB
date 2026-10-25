@@ -11,6 +11,7 @@ class AudioManager {
     this.musicTimer = null;
     this.currentMusicType = null;
     this.crackleNode = null;
+    this.mp3Audio = null;
   }
 
   init() {
@@ -28,9 +29,19 @@ class AudioManager {
   toggleMute() {
     this.isMuted = !this.isMuted;
     if (this.isMuted) {
-      this.stopMusic();
-    } else if (this.currentMusicType) {
-      this.playMusic(this.currentMusicType);
+      if (this.mp3Audio) {
+        try { this.mp3Audio.pause(); } catch (e) {}
+      }
+      if (this.musicTimer) {
+        clearInterval(this.musicTimer);
+        this.musicTimer = null;
+      }
+    } else {
+      if (this.mp3Audio && (this.currentMusicType === 'ending' || this.currentMusicType === 'zeppelin')) {
+        this.mp3Audio.play().catch(() => {});
+      } else if (this.currentMusicType) {
+        this.playMusic(this.currentMusicType);
+      }
     }
     return this.isMuted;
   }
@@ -321,20 +332,27 @@ class AudioManager {
 
   // --- Music Synthesizer ---
 
-  playMusic(type = 'blues') {
+  playMusic(type = 'ambient') {
     this.currentMusicType = type;
-    if (this.isMuted || !this.ctx) return;
+    if (this.isMuted) return;
+    this.init();
     this.stopMusic();
 
-    if (type === 'blues') {
-      this.startBluesGuitarLoop();
+    if (type === 'ambient' || type === 'blues' || type === 'bgm') {
+      this.startAmbientNostalgiaLoop();
     } else if (type === 'radio') {
       this.startRadioLoop();
-    } else if (type === 'ending') {
+    } else if (type === 'ending' || type === 'zeppelin') {
       this.playNeedleDrop();
       setTimeout(() => {
-        if (!this.isMuted) this.startEndingLoop();
-      }, 500);
+        if (!this.isMuted) this.playWholeLottaLoveAudio();
+      }, 520);
+    }
+  }
+
+  resumeAmbientBGM() {
+    if (this.currentMusicType !== 'ending' && this.currentMusicType !== 'zeppelin') {
+      this.playMusic('ambient');
     }
   }
 
@@ -343,6 +361,92 @@ class AudioManager {
       clearInterval(this.musicTimer);
       this.musicTimer = null;
     }
+    if (this.mp3Audio) {
+      try {
+        this.mp3Audio.pause();
+        this.mp3Audio.currentTime = 0;
+      } catch (e) {}
+      this.mp3Audio = null;
+    }
+  }
+
+  playWholeLottaLoveAudio() {
+    this.stopMusic();
+    this.currentMusicType = 'ending';
+    if (this.isMuted) return;
+
+    // Try HTML5 Audio with user's MP3 file in public folder
+    const mp3Sources = [
+      '/Led_Zeppelin_-_Whole_Lotta_Love_Official_Music_Video_(mp3.pm).mp3',
+      './src/public/Led_Zeppelin_-_Whole_Lotta_Love_Official_Music_Video_(mp3.pm).mp3',
+      '/src/public/Led_Zeppelin_-_Whole_Lotta_Love_Official_Music_Video_(mp3.pm).mp3'
+    ];
+
+    let triedIdx = 0;
+    const tryNext = () => {
+      if (triedIdx >= mp3Sources.length) {
+        // Fallback to our high-energy synthesized Jimmy Page & John Bonham loop
+        this.startWholeLottaLoveLoop();
+        return;
+      }
+      const src = mp3Sources[triedIdx++];
+      try {
+        const audio = new Audio();
+        audio.src = src;
+        audio.volume = 0.65;
+        audio.loop = true;
+        let played = false;
+
+        audio.oncanplay = () => {
+          if (!played && (this.currentMusicType === 'ending' || this.currentMusicType === 'zeppelin') && !this.isMuted) {
+            played = true;
+            audio.play().then(() => {
+              this.mp3Audio = audio;
+            }).catch(() => {
+              tryNext();
+            });
+          }
+        };
+
+        audio.onerror = () => {
+          if (!played) tryNext();
+        };
+
+        audio.load();
+
+        // Safety timeout if audio loading hangs
+        setTimeout(() => {
+          if (!played && !this.mp3Audio && (this.currentMusicType === 'ending' || this.currentMusicType === 'zeppelin')) {
+            tryNext();
+          }
+        }, 1200);
+      } catch (e) {
+        tryNext();
+      }
+    };
+
+    tryNext();
+  }
+
+  playRadioJingle() {
+    if (this.isMuted || !this.ctx) return;
+    try {
+      const t = this.ctx.currentTime;
+      // Retro transistor radio chime
+      const notes = [440, 554.37, 659.25, 880];
+      notes.forEach((freq, i) => {
+        const osc = this.ctx.createOscillator();
+        const gain = this.ctx.createGain();
+        osc.type = 'sine';
+        osc.frequency.setValueAtTime(freq, t + i * 0.08);
+        gain.gain.setValueAtTime(0.045, t + i * 0.08);
+        gain.gain.exponentialRampToValueAtTime(0.001, t + i * 0.08 + 0.16);
+        osc.connect(gain);
+        gain.connect(this.ctx.destination);
+        osc.start(t + i * 0.08);
+        osc.stop(t + i * 0.08 + 0.18);
+      });
+    } catch (e) {}
   }
 
   startRadioLoop() {
@@ -398,8 +502,9 @@ class AudioManager {
     this.musicTimer = setInterval(playStepBeat, 260);
   }
 
-  startEndingLoop() {
-    // Nostalgic warm 70s progression: D - F#m - Bm - G - A - D
+  // --- Continuous 1969 Ambient Background Music ---
+  // Nostalgic warm 70s electric piano progression: D - F#m - Bm - G - A - D
+  startAmbientNostalgiaLoop() {
     const progression = [
       { chord: [293.66, 369.99, 440], bass: 73.42 }, // D
       { chord: [277.18, 369.99, 440], bass: 92.50 }, // F#m
@@ -422,8 +527,8 @@ class AudioManager {
           const gain = this.ctx.createGain();
           osc.type = 'sine';
           osc.frequency.setValueAtTime(freq, t + idx * 0.05);
-          gain.gain.setValueAtTime(0.07, t + idx * 0.05);
-          gain.gain.exponentialRampToValueAtTime(0.005, t + 1.8);
+          gain.gain.setValueAtTime(0.065, t + idx * 0.05);
+          gain.gain.exponentialRampToValueAtTime(0.004, t + 1.8);
           osc.connect(gain);
           gain.connect(this.ctx.destination);
           osc.start(t + idx * 0.05);
@@ -435,8 +540,8 @@ class AudioManager {
         const bGain = this.ctx.createGain();
         bOsc.type = 'triangle';
         bOsc.frequency.setValueAtTime(item.bass * 2, t);
-        bGain.gain.setValueAtTime(0.08, t);
-        bGain.gain.exponentialRampToValueAtTime(0.005, t + 1.6);
+        bGain.gain.setValueAtTime(0.075, t);
+        bGain.gain.exponentialRampToValueAtTime(0.004, t + 1.6);
         bOsc.connect(bGain);
         bGain.connect(this.ctx.destination);
         bOsc.start(t);
@@ -448,6 +553,342 @@ class AudioManager {
 
     playChordBar();
     this.musicTimer = setInterval(playChordBar, 1900);
+  }
+
+  // --- Led Zeppelin: "Whole Lotta Love" (Led Zeppelin II, 1969) Synthesizer ---
+
+  getDistortionCurve(amount = 22) {
+    if (this.distortionCurve) return this.distortionCurve;
+    const n_samples = 2048;
+    const curve = new Float32Array(n_samples);
+    for (let i = 0; i < n_samples; ++i) {
+      const x = (i * 2) / n_samples - 1;
+      curve[i] = ((Math.PI + amount) * x) / (Math.PI + amount * Math.abs(x));
+    }
+    this.distortionCurve = curve;
+    return curve;
+  }
+
+  playDistortedRiffChord(notes, time, dur = 0.3, vol = 0.075, isMuted = false) {
+    if (this.isMuted || !this.ctx) return;
+    try {
+      const t = time || this.ctx.currentTime;
+      notes.forEach(freq => {
+        const osc = this.ctx.createOscillator();
+        const oscSub = this.ctx.createOscillator();
+        const gain = this.ctx.createGain();
+        const filter = this.ctx.createBiquadFilter();
+        const shaper = this.ctx.createWaveShaper();
+
+        osc.type = 'sawtooth';
+        oscSub.type = 'square';
+        osc.frequency.setValueAtTime(freq, t);
+        oscSub.frequency.setValueAtTime(freq * 1.003, t);
+
+        shaper.curve = this.getDistortionCurve(25);
+        shaper.oversample = '2x';
+
+        filter.type = 'lowpass';
+        if (isMuted) {
+          filter.frequency.setValueAtTime(700, t);
+          filter.Q.value = 1.2;
+        } else {
+          filter.frequency.setValueAtTime(2200, t);
+          filter.frequency.exponentialRampToValueAtTime(1400, t + dur);
+          filter.Q.value = 2.4;
+        }
+
+        gain.gain.setValueAtTime(0.001, t);
+        gain.gain.linearRampToValueAtTime(vol, t + 0.004);
+        gain.gain.exponentialRampToValueAtTime(0.001, t + dur);
+
+        osc.connect(shaper);
+        oscSub.connect(shaper);
+        shaper.connect(filter);
+        filter.connect(gain);
+        gain.connect(this.ctx.destination);
+
+        osc.start(t);
+        oscSub.start(t);
+        osc.stop(t + dur + 0.02);
+        oscSub.stop(t + dur + 0.02);
+      });
+    } catch (e) {}
+  }
+
+  playRockBass(freq, time, dur = 0.35, vol = 0.08) {
+    if (this.isMuted || !this.ctx) return;
+    try {
+      const t = time || this.ctx.currentTime;
+      const osc = this.ctx.createOscillator();
+      const sub = this.ctx.createOscillator();
+      const gain = this.ctx.createGain();
+      const filter = this.ctx.createBiquadFilter();
+
+      osc.type = 'triangle';
+      sub.type = 'sine';
+      osc.frequency.setValueAtTime(freq, t);
+      sub.frequency.setValueAtTime(freq / 2, t);
+
+      filter.type = 'lowpass';
+      filter.frequency.setValueAtTime(260, t);
+
+      gain.gain.setValueAtTime(0.001, t);
+      gain.gain.linearRampToValueAtTime(vol, t + 0.008);
+      gain.gain.exponentialRampToValueAtTime(0.002, t + dur);
+
+      osc.connect(filter);
+      sub.connect(filter);
+      filter.connect(gain);
+      gain.connect(this.ctx.destination);
+
+      osc.start(t);
+      sub.start(t);
+      osc.stop(t + dur + 0.02);
+      sub.stop(t + dur + 0.02);
+    } catch (e) {}
+  }
+
+  playBonhamKick(time) {
+    if (this.isMuted || !this.ctx) return;
+    try {
+      const t = time || this.ctx.currentTime;
+      const osc = this.ctx.createOscillator();
+      const gain = this.ctx.createGain();
+      osc.type = 'sine';
+      osc.frequency.setValueAtTime(95, t);
+      osc.frequency.exponentialRampToValueAtTime(32, t + 0.12);
+
+      gain.gain.setValueAtTime(0.14, t);
+      gain.gain.exponentialRampToValueAtTime(0.001, t + 0.18);
+
+      osc.connect(gain);
+      gain.connect(this.ctx.destination);
+      osc.start(t);
+      osc.stop(t + 0.2);
+    } catch (e) {}
+  }
+
+  playBonhamSnare(time) {
+    if (this.isMuted || !this.ctx) return;
+    try {
+      const t = time || this.ctx.currentTime;
+      // Body
+      const osc = this.ctx.createOscillator();
+      const gainO = this.ctx.createGain();
+      osc.type = 'triangle';
+      osc.frequency.setValueAtTime(185, t);
+      osc.frequency.exponentialRampToValueAtTime(80, t + 0.06);
+      gainO.gain.setValueAtTime(0.10, t);
+      gainO.gain.exponentialRampToValueAtTime(0.001, t + 0.07);
+      osc.connect(gainO);
+      gainO.connect(this.ctx.destination);
+      osc.start(t);
+      osc.stop(t + 0.08);
+
+      // Noise snap & wire rattle
+      const bSize = Math.floor(this.ctx.sampleRate * 0.18);
+      const buf = this.ctx.createBuffer(1, bSize, this.ctx.sampleRate);
+      const d = buf.getChannelData(0);
+      for (let i = 0; i < bSize; i++) d[i] = Math.random() * 2 - 1;
+      const n = this.ctx.createBufferSource();
+      n.buffer = buf;
+      const f = this.ctx.createBiquadFilter();
+      f.type = 'highpass';
+      f.frequency.value = 1600;
+      const gN = this.ctx.createGain();
+      gN.gain.setValueAtTime(0.09, t);
+      gN.gain.exponentialRampToValueAtTime(0.001, t + 0.18);
+      n.connect(f);
+      f.connect(gN);
+      gN.connect(this.ctx.destination);
+      n.start(t);
+    } catch (e) {}
+  }
+
+  playBonhamHiHat(time, isOpen = false) {
+    if (this.isMuted || !this.ctx) return;
+    try {
+      const t = time || this.ctx.currentTime;
+      const dur = isOpen ? 0.22 : 0.045;
+      const bSize = Math.floor(this.ctx.sampleRate * dur);
+      const buf = this.ctx.createBuffer(1, bSize, this.ctx.sampleRate);
+      const d = buf.getChannelData(0);
+      for (let i = 0; i < bSize; i++) d[i] = Math.random() * 2 - 1;
+      const n = this.ctx.createBufferSource();
+      n.buffer = buf;
+      const f = this.ctx.createBiquadFilter();
+      f.type = 'bandpass';
+      f.frequency.value = 8500;
+      f.Q.value = 4;
+      const g = this.ctx.createGain();
+      g.gain.setValueAtTime(isOpen ? 0.05 : 0.035, t);
+      g.gain.exponentialRampToValueAtTime(0.001, t + dur);
+      n.connect(f);
+      f.connect(g);
+      g.connect(this.ctx.destination);
+      n.start(t);
+    } catch (e) {}
+  }
+
+  playJimmyPageLead(freq, time, dur = 0.35, vol = 0.075, bend = 0) {
+    if (this.isMuted || !this.ctx) return;
+    try {
+      const t = time || this.ctx.currentTime;
+      const osc = this.ctx.createOscillator();
+      const osc2 = this.ctx.createOscillator();
+      const shaper = this.ctx.createWaveShaper();
+      const filter = this.ctx.createBiquadFilter();
+      const gain = this.ctx.createGain();
+
+      osc.type = 'sawtooth';
+      osc2.type = 'triangle';
+      osc.frequency.setValueAtTime(freq, t);
+      osc2.frequency.setValueAtTime(freq * 1.002, t);
+
+      if (bend !== 0) {
+        const targetFreq = freq * Math.pow(2, bend / 12);
+        osc.frequency.exponentialRampToValueAtTime(targetFreq, t + 0.16);
+        osc2.frequency.exponentialRampToValueAtTime(targetFreq * 1.002, t + 0.16);
+      }
+
+      shaper.curve = this.getDistortionCurve(30);
+      shaper.oversample = '2x';
+
+      filter.type = 'lowpass';
+      filter.frequency.setValueAtTime(2600, t);
+      filter.frequency.exponentialRampToValueAtTime(1500, t + dur);
+      filter.Q.value = 3;
+
+      gain.gain.setValueAtTime(0.001, t);
+      gain.gain.linearRampToValueAtTime(vol, t + 0.006);
+      gain.gain.exponentialRampToValueAtTime(0.002, t + dur);
+
+      osc.connect(shaper);
+      osc2.connect(shaper);
+      shaper.connect(filter);
+      filter.connect(gain);
+      gain.connect(this.ctx.destination);
+
+      osc.start(t);
+      osc2.start(t);
+      osc.stop(t + dur + 0.02);
+      osc2.stop(t + dur + 0.02);
+    } catch (e) {}
+  }
+
+  startWholeLottaLoveLoop() {
+    // Led Zeppelin — "Whole Lotta Love" (1969, Led Zeppelin II)
+    // 88 BPM heavy rock groove in E
+    const beatSec = 0.6818;
+    const sixSec = beatSec / 4; // 0.1705s (16th note)
+    const loopBeats = 8;        // 2 bars
+    let currentBeat = 0;
+    let nextBeatTime = this.ctx.currentTime + 0.05;
+
+    const E_POWER = [164.81, 246.94, 329.63]; // E3, B3, E4
+    const D_POWER = [146.83, 220.00];         // D3, A3
+    const E_CHUG  = [82.41, 164.81];          // E2, E3
+
+    const scheduleBar = (beatInLoop, time) => {
+      if (this.isMuted || !this.ctx) return;
+
+      // === MEASURE 1 (beats 0..3) ===
+      if (beatInLoop === 0) {
+        // Massive E Power Chord + Bass + Kick + Open Hat
+        this.playDistortedRiffChord(E_POWER, time, 0.34, 0.08, false);
+        this.playRockBass(82.41, time, 0.45, 0.085);
+        this.playBonhamKick(time);
+        this.playBonhamHiHat(time, true);
+
+        // 16th note chugs on E
+        this.playBonhamHiHat(time + sixSec, false);
+        this.playDistortedRiffChord(E_CHUG, time + sixSec * 2, 0.08, 0.045, true);
+        this.playBonhamHiHat(time + sixSec * 2, false);
+        this.playDistortedRiffChord(E_CHUG, time + sixSec * 3, 0.08, 0.045, true);
+        this.playBonhamHiHat(time + sixSec * 3, false);
+      } else if (beatInLoop === 1) {
+        // Snare crack on beat 2 + chugs
+        this.playBonhamSnare(time);
+        this.playDistortedRiffChord(E_CHUG, time, 0.08, 0.045, true);
+        this.playBonhamHiHat(time + sixSec, false);
+        this.playDistortedRiffChord(E_CHUG, time + sixSec, 0.08, 0.045, true);
+        this.playDistortedRiffChord(E_CHUG, time + sixSec * 2, 0.08, 0.045, true);
+        this.playBonhamHiHat(time + sixSec * 2, false);
+        this.playDistortedRiffChord(E_CHUG, time + sixSec * 3, 0.08, 0.045, true);
+        this.playBonhamHiHat(time + sixSec * 3, false);
+      } else if (beatInLoop === 2) {
+        // Kick on beat 3 + The Legendary D-D Pickup!
+        this.playBonhamKick(time);
+        this.playDistortedRiffChord(E_CHUG, time, 0.08, 0.045, true);
+        this.playBonhamHiHat(time + sixSec, false);
+
+        // Pickup Hit 1 (D)
+        this.playDistortedRiffChord(D_POWER, time + sixSec * 2, 0.12, 0.075, false);
+        this.playRockBass(73.42, time + sixSec * 2, 0.15, 0.08);
+        this.playBonhamHiHat(time + sixSec * 2, false);
+
+        // Pickup Hit 2 (D)
+        this.playDistortedRiffChord(D_POWER, time + sixSec * 3, 0.12, 0.075, false);
+        this.playRockBass(73.42, time + sixSec * 3, 0.15, 0.08);
+      } else if (beatInLoop === 3) {
+        // Snare on beat 4, driving into measure 2!
+        this.playBonhamSnare(time);
+        this.playBonhamHiHat(time + sixSec, false);
+        this.playBonhamHiHat(time + sixSec * 2, false);
+        this.playBonhamHiHat(time + sixSec * 3, false);
+      }
+
+      // === MEASURE 2 (beats 4..7) ===
+      else if (beatInLoop === 4) {
+        // Downbeat E power chord + Kick + Open Hat
+        this.playDistortedRiffChord(E_POWER, time, 0.34, 0.08, false);
+        this.playRockBass(82.41, time, 0.45, 0.085);
+        this.playBonhamKick(time);
+        this.playBonhamHiHat(time, true);
+
+        this.playBonhamHiHat(time + sixSec, false);
+        this.playDistortedRiffChord(E_CHUG, time + sixSec * 2, 0.08, 0.045, true);
+        this.playDistortedRiffChord(E_CHUG, time + sixSec * 3, 0.08, 0.045, true);
+      } else if (beatInLoop === 5) {
+        // Snare on beat 2 + Jimmy Page blues lick begins!
+        this.playBonhamSnare(time);
+        // G4 with expressive blues bend towards G#4
+        this.playJimmyPageLead(392.00, time + sixSec, 0.32, 0.075, 0.6);
+        this.playBonhamHiHat(time + sixSec * 2, false);
+      } else if (beatInLoop === 6) {
+        // Kick on beat 3 + Lead lick resolves to E4 + D-D Pickup!
+        this.playBonhamKick(time);
+        this.playJimmyPageLead(329.63, time, 0.28, 0.075, 0);
+
+        // Pickup Hit 1 (D)
+        this.playDistortedRiffChord(D_POWER, time + sixSec * 2, 0.12, 0.075, false);
+        this.playRockBass(73.42, time + sixSec * 2, 0.15, 0.08);
+
+        // Pickup Hit 2 (D)
+        this.playDistortedRiffChord(D_POWER, time + sixSec * 3, 0.12, 0.075, false);
+        this.playRockBass(73.42, time + sixSec * 3, 0.15, 0.08);
+      } else if (beatInLoop === 7) {
+        // Snare on beat 4, looping back to the massive E chord!
+        this.playBonhamSnare(time);
+        this.playBonhamHiHat(time + sixSec, false);
+        this.playBonhamHiHat(time + sixSec * 2, false);
+        this.playBonhamHiHat(time + sixSec * 3, false);
+      }
+    };
+
+    const runner = () => {
+      if (this.isMuted || !this.ctx) return;
+      const lookahead = 0.25;
+      while (nextBeatTime < this.ctx.currentTime + lookahead) {
+        scheduleBar(currentBeat, nextBeatTime);
+        nextBeatTime += beatSec;
+        currentBeat = (currentBeat + 1) % loopBeats;
+      }
+    };
+
+    runner();
+    this.musicTimer = setInterval(runner, 100);
   }
 
   // --- 1969 Subtle Blues Guitar Synthesizer ---

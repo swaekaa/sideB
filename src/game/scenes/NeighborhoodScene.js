@@ -46,6 +46,11 @@ export class NeighborhoodScene extends Phaser.Scene {
     this.isMoving = false;
     this.playerFacing = 'down';
 
+    // Companion Dog (Buddy) following state
+    this.dogTileX = 10;
+    this.dogTileY = 15;
+    this.playerTileHistory = [];
+
     // Controls
     this.cursors = this.input.keyboard.createCursorKeys();
     this.wasd = {
@@ -102,15 +107,13 @@ export class NeighborhoodScene extends Phaser.Scene {
     // Start water shimmer
     this.setupWaterAnimation();
 
-    // Start subtle 1969 blues background music
+    // Start subtle 1969 nostalgic background music
     audioManager.init();
-    audioManager.playMusic('blues');
+    audioManager.playMusic('ambient');
 
     this.events.on('resume', () => {
       this.refreshWorldState();
-      if (audioManager.currentMusicType !== 'radio' && audioManager.currentMusicType !== 'ending') {
-        audioManager.playMusic('blues');
-      }
+      audioManager.resumeAmbientBGM();
     });
   }
 
@@ -685,11 +688,14 @@ export class NeighborhoodScene extends Phaser.Scene {
     });
 
     // 7. Buddy the Dog in park flowers (x: 10, y: 15)
-    this.dogSprite = this.add.image(10 * 16 + 8, 15 * 16 + 8, 'npc_dog_buddy');
+    this.dogTileX = gameState.state.quests.dogRescued ? 36 : 10;
+    this.dogTileY = gameState.state.quests.dogRescued ? 32 : 15;
+    this.dogSprite = this.add.image(this.dogTileX * 16 + 8, this.dogTileY * 16 + 8, 'npc_dog_buddy');
     this.dogSprite.setDisplaySize(16, 16);
+    this.dogSprite.setDepth(2);
     this.npcs.push({
       id: 'buddy', name: 'Buddy', portrait: 'portrait_dog',
-      x: 10, y: 15, sprite: this.dogSprite,
+      x: this.dogTileX, y: this.dogTileY, sprite: this.dogSprite,
       interact: () => this.interactDog()
     });
 
@@ -1052,7 +1058,7 @@ export class NeighborhoodScene extends Phaser.Scene {
     if (dir) {
       audioManager.init();
       if (!audioManager.currentMusicType) {
-        audioManager.playMusic('blues');
+        audioManager.playMusic('ambient');
       }
       this.playerFacing = dir;
       const targetX = this.playerTileX + dx;
@@ -1062,6 +1068,9 @@ export class NeighborhoodScene extends Phaser.Scene {
 
       if (this.isTileWalkable(targetX, targetY)) {
         this.startTileMove(targetX, targetY, dir);
+      } else if (targetX === 11 && targetY === 29 && dir === 'up') {
+        // Player walks directly into home door
+        this.interactHomeDoor();
       }
     }
   }
@@ -1080,6 +1089,19 @@ export class NeighborhoodScene extends Phaser.Scene {
     this.isMoving = true;
     const ground = (this.groundTypeGrid[targetY] && this.groundTypeGrid[targetY][targetX]) || 'grass';
     audioManager.playStep(ground);
+
+    // Breadcrumb trail for companion dog following
+    this.playerTileHistory.push({ x: this.playerTileX, y: this.playerTileY, dir: dir });
+    if (this.playerTileHistory.length > 25) {
+      this.playerTileHistory.shift();
+    }
+
+    if (gameState.isDogFollowing()) {
+      const followStep = this.playerTileHistory[this.playerTileHistory.length - 1];
+      if (followStep) {
+        this.moveDogToTile(followStep.x, followStep.y, dir);
+      }
+    }
 
     this.stepCount++;
     if (this.stepCount % 35 === 0) {
@@ -1154,18 +1176,18 @@ export class NeighborhoodScene extends Phaser.Scene {
       activeId = 'june';
     } else if (targetX === 16 && targetY === 15) {
       activePrompt = 'E — LISTEN TO RADIO';
-      actionFn = () => this.talkToJune();
+      actionFn = () => this.interactRadio();
       activeId = 'radio';
     } else if (targetX === 26 && targetY === 20) {
       activePrompt = 'E — TALK TO TIMMY';
       actionFn = () => this.talkToTimmy();
       activeId = 'timmy';
-    } else if ((targetX === 36 || targetX === 37) && targetY === 32) {
+    } else if ((targetX === 36 || targetX === 37) && (targetY === 32 || targetY === 31 || targetY === 33)) {
       activePrompt = 'E — TALK TO NEIGHBOR BOB';
       actionFn = () => this.talkToBob();
       activeId = 'bob';
-    } else if (Math.abs(this.playerTileX - 10) <= 1 && Math.abs(this.playerTileY - 15) <= 1 && !gameState.state.dogFollowing && !gameState.state.quests.dogRescued) {
-      activePrompt = 'E — PET BUDDY';
+    } else if (Math.abs(this.playerTileX - this.dogTileX) <= 1 && Math.abs(this.playerTileY - this.dogTileY) <= 1 && !gameState.state.quests.dogRescued) {
+      activePrompt = gameState.isDogFollowing() ? 'E — PET BUDDY [FOLLOWING]' : 'E — CALL BUDDY';
       actionFn = () => this.interactDog();
       activeId = 'dog';
     } else if (targetX === 23 && targetY === 20 && !gameState.state.quests.newspaperFound) {
@@ -1176,8 +1198,8 @@ export class NeighborhoodScene extends Phaser.Scene {
       activePrompt = 'E — BUY LEMONADE ($0.50)';
       actionFn = () => this.buyLemonade();
       activeId = 'lemonade';
-    } else if (targetX === 11 && targetY === 29) {
-      activePrompt = gameState.state.quests.albumBought ? 'E — ENTER BEDROOM (LISTEN TO ALBUM)' : 'E — HOME DOOR';
+    } else if ((targetX === 11 && targetY === 29) || (this.playerTileX === 11 && (this.playerTileY === 30 || this.playerTileY === 29))) {
+      activePrompt = gameState.state.quests.albumBought ? 'E / SPACE — ENTER BEDROOM (LISTEN TO ALBUM)' : 'E / SPACE — ENTER BEDROOM';
       actionFn = () => this.interactHomeDoor();
       activeId = 'home';
     }
@@ -1189,7 +1211,7 @@ export class NeighborhoodScene extends Phaser.Scene {
       this.promptBg.setSize(activePrompt.length * 7.5 + 28, 22);
       this.promptContainer.setVisible(true);
 
-      if (Phaser.Input.Keyboard.JustDown(this.wasd.interact)) {
+      if (Phaser.Input.Keyboard.JustDown(this.wasd.interact) || Phaser.Input.Keyboard.JustDown(this.wasd.space)) {
         if (Date.now() > this.dialogueCooldownUntil) {
           actionFn();
         }
@@ -1342,23 +1364,98 @@ export class NeighborhoodScene extends Phaser.Scene {
     });
   }
 
+  moveDogToTile(targetX, targetY, playerDir) {
+    if (this.dogTileX === targetX && this.dogTileY === targetY) return;
+
+    if (targetX < this.dogTileX) {
+      this.dogSprite.setFlipX(true);
+    } else if (targetX > this.dogTileX) {
+      this.dogSprite.setFlipX(false);
+    }
+
+    this.dogTileX = targetX;
+    this.dogTileY = targetY;
+
+    this.tweens.add({
+      targets: this.dogSprite,
+      x: targetX * 16 + 8,
+      y: targetY * 16 + 8,
+      duration: 155,
+      ease: 'Linear',
+      onUpdate: () => {
+        if (this.floatingLabels && this.floatingLabels['dog']) {
+          this.floatingLabels['dog'].container.setPosition(this.dogSprite.x, this.dogSprite.y - 12);
+        }
+      }
+    });
+
+    // Subtle happy walking trot bounce
+    this.tweens.add({
+      targets: this.dogSprite,
+      scaleY: 0.88,
+      duration: 75,
+      yoyo: true,
+      ease: 'Quad.easeInOut'
+    });
+  }
+
+  interactRadio() {
+    audioManager.playRadioJingle();
+    if (!audioManager.currentMusicType) {
+      audioManager.playMusic('ambient');
+    }
+
+    if (!gameState.state.quests.juneDone) {
+      this.dialogueBox.show('Transistor Radio', 'portrait_june', [
+        '📻 WGLD 98.7 FM — Playing late-afternoon psychedelic rock & soul!',
+        'June smiles from her picnic blanket: "Pretty sweet grooves, right? Talk to me if you want to jam along!"'
+      ]);
+    } else {
+      this.dialogueBox.show('Transistor Radio', 'portrait_june', [
+        '📻 WGLD 98.7 FM — The DJ announces: "Stay tuned for the 5 o\'clock album countdown!"',
+        'Warm static crackles from the speaker as the music drifts through the park trees.'
+      ]);
+    }
+  }
+
   talkToBob() {
     if (gameState.state.quests.dogRescued) {
       this.dialogueBox.show('Neighbor Bob', 'portrait_bob', [
         'Buddy has had enough adventures for one afternoon. Thanks again, kid!'
       ]);
-    } else if (gameState.state.dogFollowing) {
+    } else if (gameState.isDogFollowing()) {
+      audioManager.playTalk('dog');
       audioManager.playSuccess();
       audioManager.playCoin();
+
       gameState.setQuest('dogRescued', true);
       gameState.setQuest('dogFollowing', false);
       gameState.addCash(3);
       gameState.advanceTime(10);
 
-      this.dogSprite.setX(37 * 16 + 8);
-      this.dogSprite.setY(33 * 16 + 8);
+      // Move Buddy into Bob's driveway right beside Bob
+      this.dogTileX = 36;
+      this.dogTileY = 32;
+      this.dogSprite.setFlipX(false);
+      this.tweens.add({
+        targets: this.dogSprite,
+        x: 36 * 16 + 8,
+        y: 32 * 16 + 8,
+        duration: 300,
+        ease: 'Back.easeOut',
+        onComplete: () => {
+          this.tweens.add({
+            targets: this.dogSprite,
+            y: this.dogSprite.y - 4,
+            duration: 250,
+            yoyo: true,
+            repeat: 3
+          });
+        }
+      });
+
       if (this.floatingLabels && this.floatingLabels['dog']) {
-        this.floatingLabels['dog'].container.setPosition(37 * 16 + 8, 33 * 16 - 8);
+        this.floatingLabels['dog'].container.setPosition(36 * 16 + 8, 32 * 16 - 12);
       }
       this.updateFloatingLabelsState();
 
@@ -1377,29 +1474,40 @@ export class NeighborhoodScene extends Phaser.Scene {
   interactDog() {
     if (gameState.state.quests.dogRescued) {
       audioManager.playTalk('dog');
-      this.dialogueBox.show('Buddy', 'portrait_dog', ['*Woof!* Buddy wags his tail contentedly.']);
+      this.dialogueBox.show('Buddy', 'portrait_dog', ['*Woof!* Buddy contentedly wags his tail beside Neighbor Bob.']);
+      return;
+    }
+
+    if (gameState.isDogFollowing()) {
+      audioManager.playTalk('dog');
+      this.dialogueBox.show('Buddy', 'portrait_dog', [
+        '*Pant pant!* Buddy trots happily right behind you!',
+        'Lead him back to Neighbor Bob\'s driveway on the east side of town.'
+      ]);
       return;
     }
 
     audioManager.playTalk('dog');
+    gameState.setQuest('dogFound', true);
     gameState.setQuest('dogFollowing', true);
+
+    this.dogSprite.setFlipX(this.playerTileX < this.dogTileX);
+    this.playerTileHistory = [
+      { x: this.dogTileX, y: this.dogTileY, dir: 'up' },
+      { x: this.playerTileX, y: this.playerTileY, dir: this.playerFacing }
+    ];
+
     this.updateFloatingLabelsState();
 
     this.dialogueBox.show('Buddy', 'portrait_dog', [
       '*Woof! Woof!*',
-      'Buddy happily licks your hand and decides to follow you! Lead him back to Neighbor Bob\'s driveway.'
+      'Buddy trusts you now. Let\'s get him home to Neighbor Bob!'
     ]);
   }
 
   updateDogFollow() {
-    if (gameState.state.dogFollowing && !gameState.state.quests.dogRescued) {
-      const targetX = this.player.x - 14;
-      const targetY = this.player.y;
-      this.dogSprite.x = Phaser.Math.Linear(this.dogSprite.x, targetX, 0.08);
-      this.dogSprite.y = Phaser.Math.Linear(this.dogSprite.y, targetY, 0.08);
-      if (this.floatingLabels && this.floatingLabels['dog']) {
-        this.floatingLabels['dog'].container.setPosition(this.dogSprite.x, this.dogSprite.y - 12);
-      }
+    if (this.floatingLabels && this.floatingLabels['dog']) {
+      this.floatingLabels['dog'].container.setPosition(this.dogSprite.x, this.dogSprite.y - 12);
     }
   }
 
@@ -1445,14 +1553,10 @@ export class NeighborhoodScene extends Phaser.Scene {
   }
 
   interactHomeDoor() {
-    if (gameState.state.quests.albumBought) {
-      this.scene.stop('NeighborhoodScene');
-      this.scene.start('EndingScene');
-    } else {
-      this.dialogueBox.show('You', null, [
-        'You shouldn\'t head inside yet — you still want to earn enough money and buy Led Zeppelin II from the record shop!'
-      ]);
-    }
+    if (this.promptContainer) this.promptContainer.setVisible(false);
+    audioManager.stopMusic();
+    this.scene.stop('NeighborhoodScene');
+    this.scene.start('EndingScene');
   }
 
   refreshWorldState() {

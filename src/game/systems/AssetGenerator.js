@@ -1469,6 +1469,117 @@ export class AssetGenerator {
       [[1,1],[29,1],[1,29],[29,29]].forEach(([x,y]) => ctx.fillRect(x, y, 2, 2));
     };
 
+    // 0. Player / Protagonist ("You") Avatar Portrait
+    this.createCanvasTexture('portrait_player', 32, 32, (ctx) => {
+      // Warm retro parchment / sunset background
+      ctx.fillStyle = '#f4ebd0';
+      ctx.fillRect(0, 0, 32, 32);
+
+      // Subtle vignette background tone
+      ctx.fillStyle = '#ebd8b6';
+      ctx.fillRect(2, 2, 28, 28);
+      ctx.fillStyle = '#faf2dc';
+      ctx.fillRect(4, 4, 24, 24);
+
+      // Floppy Shaggy Brown 1969 Hair (Back volume & silhouette)
+      ctx.fillStyle = '#3a1e0c';
+      ctx.fillRect(7, 3, 18, 12);
+      ctx.fillRect(5, 6, 22, 12);
+      ctx.fillRect(4, 9, 6, 9);
+      ctx.fillRect(22, 9, 6, 9);
+
+      // Midtone Hair
+      ctx.fillStyle = '#542c12';
+      ctx.fillRect(8, 4, 16, 8);
+      ctx.fillRect(6, 7, 20, 8);
+      ctx.fillRect(5, 10, 4, 7);
+      ctx.fillRect(23, 10, 4, 7);
+
+      // 1969 Bangs & Feathered Highlights
+      ctx.fillStyle = '#78421c';
+      ctx.fillRect(9, 5, 14, 3);
+      ctx.fillRect(8, 8, 5, 2);
+      ctx.fillRect(19, 8, 5, 2);
+      ctx.fillRect(12, 7, 4, 2);
+
+      // Ears
+      ctx.fillStyle = '#dfb08c';
+      ctx.fillRect(7, 13, 2, 4);
+      ctx.fillRect(23, 13, 2, 4);
+      ctx.fillStyle = '#c48e6c';
+      ctx.fillRect(8, 14, 1, 2);
+      ctx.fillRect(23, 14, 1, 2);
+
+      // Face (Warm teen complexion)
+      ctx.fillStyle = '#eecbb0';
+      ctx.fillRect(9, 9, 14, 13);
+      ctx.fillRect(10, 22, 12, 2);
+      ctx.fillRect(11, 24, 10, 1);
+
+      // Rosy Cheeks
+      ctx.fillStyle = '#e2a890';
+      ctx.fillRect(9, 17, 3, 2);
+      ctx.fillRect(20, 17, 3, 2);
+
+      // Eyebrows
+      ctx.fillStyle = '#3a1e0c';
+      ctx.fillRect(10, 12, 4, 1);
+      ctx.fillRect(18, 12, 4, 1);
+
+      // Eyes (Expressive & sharp)
+      ctx.fillStyle = '#1c1208';
+      ctx.fillRect(11, 14, 3, 3);
+      ctx.fillRect(18, 14, 3, 3);
+      // White glint highlights
+      ctx.fillStyle = '#ffffff';
+      ctx.fillRect(11, 14, 1, 1);
+      ctx.fillRect(18, 14, 1, 1);
+      // Eye whites
+      ctx.fillStyle = '#f8f4ec';
+      ctx.fillRect(13, 15, 1, 2);
+      ctx.fillRect(17, 15, 1, 2);
+
+      // Nose
+      ctx.fillStyle = '#cb9876';
+      ctx.fillRect(15, 16, 2, 2);
+      ctx.fillRect(16, 17, 1, 1);
+
+      // Warm Cheerful Smile
+      ctx.fillStyle = '#a63428';
+      ctx.fillRect(13, 20, 6, 2);
+      ctx.fillStyle = '#ffffff'; // Tooth gleam
+      ctx.fillRect(14, 20, 4, 1);
+      ctx.fillStyle = '#8a241a'; // Smile corners
+      ctx.fillRect(12, 19, 1, 1);
+      ctx.fillRect(19, 19, 1, 1);
+
+      // Neck
+      ctx.fillStyle = '#dfb08c';
+      ctx.fillRect(13, 23, 6, 3);
+
+      // Mustard Yellow / Gold Retro 1969 Shirt
+      ctx.fillStyle = '#d09820';
+      ctx.fillRect(5, 26, 22, 6);
+      ctx.fillStyle = '#e8b02c'; // Shirt highlight
+      ctx.fillRect(8, 27, 16, 5);
+
+      // Dark Brown Ringer T-shirt Collar
+      ctx.fillStyle = '#261408';
+      ctx.fillRect(11, 25, 10, 2);
+      ctx.fillStyle = '#3d2010';
+      ctx.fillRect(12, 26, 8, 1);
+
+      // Denim Jacket Shoulders (matching 1969 teen look)
+      ctx.fillStyle = '#344e6c';
+      ctx.fillRect(3, 27, 4, 5);
+      ctx.fillRect(25, 27, 4, 5);
+      ctx.fillStyle = '#456588';
+      ctx.fillRect(4, 28, 2, 4);
+      ctx.fillRect(26, 28, 2, 4);
+
+      drawBorder(ctx);
+    });
+
     // June Portrait
     this.createCanvasTexture('portrait_june', 32, 32, (ctx) => {
       ctx.fillStyle = '#e8f0d8';

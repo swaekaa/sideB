@@ -71,7 +71,7 @@ window.addEventListener('DOMContentLoaded', () => {
 
   const updateFullscreenUI = () => {
     const isFs = !!document.fullscreenElement;
-    const label = isFs ? '🗕 EXIT [F]' : '⛶ FULLSCREEN';
+    const label = isFs ? '🗕 EXIT FULLSCREEN' : '⛶ FULLSCREEN';
     if (fsBtn) fsBtn.textContent = label;
     if (fsHeaderBtn) fsHeaderBtn.textContent = label;
   };
@@ -81,14 +81,4 @@ window.addEventListener('DOMContentLoaded', () => {
 
   document.addEventListener('fullscreenchange', updateFullscreenUI);
   document.addEventListener('webkitfullscreenchange', updateFullscreenUI);
-
-  // 'F' key shortcut for fullscreen toggle
-  window.addEventListener('keydown', (e) => {
-    if ((e.key === 'f' || e.key === 'F') && !e.repeat) {
-      // Don't trigger if user is in an input or text area
-      const activeTag = document.activeElement ? document.activeElement.tagName : '';
-      if (activeTag === 'INPUT' || activeTag === 'TEXTAREA') return;
-      toggleFullscreen();
-    }
-  });
 });

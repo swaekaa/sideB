@@ -244,7 +244,7 @@ export class RecordShopScene extends Phaser.Scene {
     }).setOrigin(0.5);
 
     // Exit Button
-    const exitBtn = this.add.text(16, h - 26, '[ ESC / E — STEP OUTSIDE ]', {
+    const exitBtn = this.add.text(16, h - 26, '[ F / E — STEP OUTSIDE ]', {
       fontFamily: 'monospace', fontSize: '9px', color: '#f5ecd6',
       backgroundColor: '#7f2316', padding: { x: 8, y: 5 }, resolution: 3
     });
@@ -271,6 +271,7 @@ export class RecordShopScene extends Phaser.Scene {
       });
     }
 
+    this.input.keyboard.on('keydown-F', () => this.exitShop());
     this.input.keyboard.on('keydown-ESC', () => this.exitShop());
     this.input.keyboard.on('keydown-E', () => {
       if (!this.dialogueBox.isOpen) this.talkToMrVinyl();

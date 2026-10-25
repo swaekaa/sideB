@@ -5,6 +5,7 @@
  */
 
 import { audioManager } from '../systems/AudioManager.js';
+import { AssetGenerator } from '../systems/AssetGenerator.js';
 
 export class DialogueBox {
   constructor(scene) {
@@ -29,6 +30,7 @@ export class DialogueBox {
 
   initDOM() {
     this.el = document.getElementById('dialogue-overlay');
+    this.portraitFrameEl = this.el ? this.el.querySelector('.dialogue-portrait-frame') : null;
     this.speakerEl = document.getElementById('diag-speaker');
     this.textEl = document.getElementById('diag-text');
     this.portraitEl = document.getElementById('diag-portrait');
@@ -41,7 +43,7 @@ export class DialogueBox {
     window.addEventListener('keydown', (e) => {
       if (!this.isOpen) return;
 
-      if (e.key === 'Escape') {
+      if (e.key === 'Escape' || e.key === 'f' || e.key === 'F') {
         e.preventDefault();
         this.close();
         return;
@@ -83,9 +85,19 @@ export class DialogueBox {
     if (this.speakerEl) this.speakerEl.textContent = speakerName;
 
     // Update Portrait
+    const key = portraitKey || (speakerName === 'You' ? 'portrait_player' : null);
     if (this.portraitEl) {
-      if (portraitKey && this.scene.textures.exists(portraitKey)) {
-        const texture = this.scene.textures.get(portraitKey);
+      if (key && !this.scene.textures.exists(key)) {
+        try {
+          const gen = new AssetGenerator(this.scene);
+          gen.createPortraits();
+        } catch (e) {
+          console.warn('Could not generate portrait on the fly:', e);
+        }
+      }
+
+      if (key && this.scene.textures.exists(key)) {
+        const texture = this.scene.textures.get(key);
         const sourceCanvas = texture.getSourceImage();
         this.portraitEl.width = 48;
         this.portraitEl.height = 48;
@@ -94,8 +106,10 @@ export class DialogueBox {
         pctx.clearRect(0, 0, 48, 48);
         pctx.drawImage(sourceCanvas, 0, 0, 48, 48);
         this.portraitEl.style.display = 'block';
+        if (this.portraitFrameEl) this.portraitFrameEl.style.display = 'flex';
       } else {
         this.portraitEl.style.display = 'none';
+        if (this.portraitFrameEl) this.portraitFrameEl.style.display = 'none';
       }
     }
 
@@ -130,9 +144,9 @@ export class DialogueBox {
 
     if (this.promptEl) {
       if (this.currentPageIndex === this.pages.length - 1 && this.choices) {
-        this.promptEl.textContent = 'Press 1, 2, or 3  [ESC to Cancel]';
+        this.promptEl.textContent = 'Press 1, 2, or 3  [F to Cancel]';
       } else {
-        this.promptEl.textContent = '[SPACE / E to Continue ▼]  [ESC to Exit]';
+        this.promptEl.textContent = '[SPACE / E to Continue ▼]  [F to Exit]';
       }
     }
 

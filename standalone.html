@@ -19,27 +19,18 @@
   <!-- Full-Screen Game Canvas -->
   <div id="game-container"></div>
 
-  <!-- Floating Header Bar -->
-  <header class="floating-header">
-    <div class="header-left">
-      <div id="header-vinyl" class="vinyl-icon" title="Side B Vinyl - 1969"></div>
-      <div class="header-titles">
-        <span class="main-title">SIDE B</span>
-        <span class="sub-title">ONE PERFECT AFTERNOON &bull; 1969</span>
-      </div>
-    </div>
-    <div class="header-right">
-      <button id="fullscreen-header-btn" type="button" class="header-btn" title="Toggle Fullscreen (or press F)">⛶ FULLSCREEN</button>
-      <div class="hud-pill hud-time-pill"><span id="hud-time">SAT 3:15 PM</span></div>
-      <div class="hud-pill hud-cash-pill"><span id="hud-cash">$4</span></div>
-    </div>
-  </header>
+  <!-- Simplified Top-Left Retro HUD (Time & Cash Only) -->
+  <div class="top-left-hud" id="top-left-hud">
+    <span class="hud-time" id="hud-time">SAT 3:15 PM</span>
+    <span class="hud-divider">|</span>
+    <span class="hud-cash-label">CASH: <span id="hud-cash">$4</span></span>
+  </div>
 
   <!-- Floating Right Side Panel -->
   <aside class="floating-side-panel">
     <div class="hud-toggle-bar">
       <button id="toggle-hud-btn" type="button" class="hud-toggle-btn">HUD [HIDE ▲]</button>
-      <button id="fullscreen-btn" type="button" class="hud-toggle-btn" title="Toggle Fullscreen (or press F)">⛶ FULLSCREEN</button>
+      <button id="fullscreen-btn" type="button" class="hud-toggle-btn" title="Toggle Fullscreen">⛶ FULLSCREEN</button>
     </div>
 
     <div class="hud-cards-container" id="hud-cards-container">
@@ -83,9 +74,8 @@
           <div class="ctrl-row"><span class="key-tag">&uarr;&darr;&larr;&rarr; / WASD</span><span>Move</span></div>
           <div class="ctrl-row"><span class="key-tag">E</span><span>Talk / Interact</span></div>
           <div class="ctrl-row"><span class="key-tag">SPACE</span><span>Confirm Action</span></div>
-          <div class="ctrl-row"><span class="key-tag">F</span><span>Toggle Fullscreen</span></div>
+          <div class="ctrl-row"><span class="key-tag">F</span><span>Exit Conversation / Shop</span></div>
           <div class="ctrl-row"><span class="key-tag">1, 2, 3</span><span>Answer Quiz</span></div>
-          <div class="ctrl-row"><span class="key-tag">ESC</span><span>Exit Conversation</span></div>
         </div>
       </section>
     </div>
@@ -103,9 +93,158 @@
       <div class="dialogue-text" id="diag-text"></div>
       <div class="dialogue-choices" id="diag-choices"></div>
       <div class="dialogue-footer">
-        <span class="diag-prompt" id="diag-prompt">[SPACE / E to Continue ▼]  [ESC to Exit]</span>
+        <span class="diag-prompt" id="diag-prompt">[SPACE / E to Continue ▼]  [F to Exit]</span>
       </div>
     </div>
+  </div>
+  <!-- Ending Scene: Authentic Cinematic Movie Credits Overlay -->
+  <div class="ending-credits-overlay" id="ending-credits-overlay" style="display: none;">
+    <div class="movie-credits-container">
+      
+      <!-- Film Title & Logline -->
+      <div class="movie-credits-title-group">
+        <h1 class="movie-title">SIDE B</h1>
+        <h2 class="movie-subtitle">ONE PERFECT AFTERNOON</h2>
+        <p class="movie-logline">&ldquo;Some afternoons stay with you forever.&rdquo;</p>
+      </div>
+
+      <!-- Narrative Wrap-up -->
+      <p class="movie-narrative">
+        You earned your dollars doing chores, returned Neighbor Bob's lost hound, helped Mrs. Miller and Timmy, jammed in the park with June, and bought your dream vinyl before sundown.
+      </p>
+
+      <!-- Credits Section: CAST -->
+      <div class="movie-credits-section">
+        <h3 class="movie-section-title">CAST</h3>
+        <table class="movie-credits-table">
+          <tbody>
+            <tr>
+              <td class="credit-role">The Protagonist</td>
+              <td class="credit-name">YOU</td>
+            </tr>
+            <tr>
+              <td class="credit-role">Guitarist &amp; Crush</td>
+              <td class="credit-name">JUNE</td>
+            </tr>
+            <tr>
+              <td class="credit-role">Lost Golden Hound</td>
+              <td class="credit-name">BUDDY</td>
+            </tr>
+            <tr>
+              <td class="credit-role">Friendly Neighbor</td>
+              <td class="credit-name">BOB</td>
+            </tr>
+            <tr>
+              <td class="credit-role">Garden Enthusiast</td>
+              <td class="credit-name">MRS. MILLER</td>
+            </tr>
+            <tr>
+              <td class="credit-role">Math Bet &amp; Paperboy</td>
+              <td class="credit-name">TIMMY</td>
+            </tr>
+            <tr>
+              <td class="credit-role">The Record Merchant</td>
+              <td class="credit-name">MR. VINYL</td>
+            </tr>
+          </tbody>
+        </table>
+      </div>
+
+      <!-- Credits Section: SOUNDTRACK -->
+      <div class="movie-credits-section">
+        <h3 class="movie-section-title">SOUNDTRACK</h3>
+        <table class="movie-credits-table">
+          <tbody>
+            <tr>
+              <td class="credit-role">Featured Track</td>
+              <td class="credit-name">&ldquo;WHOLE LOTTA LOVE&rdquo;</td>
+            </tr>
+            <tr>
+              <td class="credit-role">Performed by</td>
+              <td class="credit-name">LED ZEPPELIN</td>
+            </tr>
+            <tr>
+              <td class="credit-role">Album</td>
+              <td class="credit-name">LED ZEPPELIN II</td>
+            </tr>
+            <tr>
+              <td class="credit-role">Release Date</td>
+              <td class="credit-name">OCTOBER 22, 1969</td>
+            </tr>
+            <tr>
+              <td class="credit-role">Original Label</td>
+              <td class="credit-name">ATLANTIC RECORDS</td>
+            </tr>
+            <tr>
+              <td class="credit-role">Hi-Fi Turntable</td>
+              <td class="credit-name">GARRARD MODEL 301</td>
+            </tr>
+          </tbody>
+        </table>
+      </div>
+
+      <!-- Credits Section: PRODUCTION -->
+      <div class="movie-credits-section">
+        <h3 class="movie-section-title">PRODUCTION</h3>
+        <table class="movie-credits-table">
+          <tbody>
+            <tr>
+              <td class="credit-role">Created &amp; Directed by</td>
+              <td class="credit-name">EKAANSH SAWARIA</td>
+            </tr>
+            <tr>
+              <td class="credit-role">Development Time</td>
+              <td class="credit-name">BUILT IN A COUPLE OF HOURS</td>
+            </tr>
+            <tr>
+              <td class="credit-role">Story Behind It</td>
+              <td class="credit-name">&ldquo;MY ROOMMATE KICKED ME OUT TO WATCH A 3-HOUR MOVIE, SO I HAD NOTHING BETTER TO DO.&rdquo;</td>
+            </tr>
+            <tr>
+              <td class="credit-role">Game Engine</td>
+              <td class="credit-name">PHASER 3</td>
+            </tr>
+            <tr>
+              <td class="credit-role">Programming Language</td>
+              <td class="credit-name">JAVASCRIPT</td>
+            </tr>
+            <tr>
+              <td class="credit-role">Build Tool</td>
+              <td class="credit-name">VITE</td>
+            </tr>
+            <tr>
+              <td class="credit-role">Source Code</td>
+              <td class="credit-name"><a href="https://github.com/swaekaa" target="_blank" rel="noopener noreferrer" class="movie-credit-link">GITHUB.COM/SWAEKAA</a></td>
+            </tr>
+            <tr>
+              <td class="credit-role">Special Thanks</td>
+              <td class="credit-name">MY ROOMMATE</td>
+            </tr>
+          </tbody>
+        </table>
+      </div>
+
+      <div class="movie-the-end">
+        <span>THE END</span>
+      </div>
+
+      <!-- Interactive Action Buttons -->
+      <div class="movie-action-buttons">
+        <button id="end-btn-listen" type="button" class="movie-end-btn">[ KEEP LISTENING ]</button>
+        <button id="end-btn-explore" type="button" class="movie-end-btn">[ EXPLORE TOWN ]</button>
+        <button id="end-btn-restart" type="button" class="movie-end-btn">[ PLAY AGAIN ]</button>
+      </div>
+
+      <div class="movie-esc-hint">
+        <span>Press <strong>F</strong> to close and explore room</span>
+      </div>
+
+    </div>
+
+    <!-- Floating button to restore credits when player chose [ KEEP LISTENING ] -->
+    <button id="end-show-credits-btn" type="button" class="end-show-credits-btn" style="display: none;">
+      [ SHOW CREDITS ]
+    </button>
   </div>
 
   <script type="module">
@@ -171,7 +310,7 @@
 
       const updateFullscreenUI = () => {
         const isFs = !!document.fullscreenElement;
-        const label = isFs ? '🗕 EXIT [F]' : '⛶ FULLSCREEN';
+        const label = isFs ? '🗕 EXIT FULLSCREEN' : '⛶ FULLSCREEN';
         if (fsBtn) fsBtn.textContent = label;
         if (fsHeaderBtn) fsHeaderBtn.textContent = label;
       };
@@ -181,14 +320,6 @@
 
       document.addEventListener('fullscreenchange', updateFullscreenUI);
       document.addEventListener('webkitfullscreenchange', updateFullscreenUI);
-
-      window.addEventListener('keydown', (e) => {
-        if ((e.key === 'f' || e.key === 'F') && !e.repeat) {
-          const activeTag = document.activeElement ? document.activeElement.tagName : '';
-          if (activeTag === 'INPUT' || activeTag === 'TEXTAREA') return;
-          toggleFullscreen();
-        }
-      });
     });
   </script>
 </body>

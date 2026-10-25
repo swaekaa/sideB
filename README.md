@@ -42,7 +42,7 @@ Once you have saved $25, head to **Mr. Vinyl's Record Shop**, buy **Led Zeppelin
 | **E** | Talk to NPCs / Inspect objects / Interact |
 | **SPACE** | Confirm dialogue / Cut hedges / Rhythm tap |
 | **1, 2, 3** | Dialogue decisions & Quiz answers |
-| **ESC** | Close dialogue / Step outside record shop |
+| **F** (or **ESC**) | Close dialogue / Step outside record shop |
 
 ---
 
