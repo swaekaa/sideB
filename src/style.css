@@ -510,14 +510,14 @@ html, body {
 .ending-credits-overlay {
   position: fixed;
   inset: 0;
-  z-index: 95;
+  z-index: 500;
   display: flex;
   flex-direction: column;
   justify-content: flex-start;
   align-items: center;
   background: #000000;
   color: #ffffff;
-  padding: 60px 20px 80px 20px;
+  padding: 60px 20px 120px 20px;
   overflow-y: auto;
   pointer-events: none;
   opacity: 0;
@@ -657,7 +657,8 @@ html, body {
 
 /* THE END */
 .movie-the-end {
-  margin-top: 24px;
+  margin-top: 28px;
+  margin-bottom: 16px;
   font-size: 1.8rem;
   font-weight: 900;
   letter-spacing: 10px;
@@ -669,9 +670,12 @@ html, body {
 .movie-action-buttons {
   display: flex;
   gap: 16px;
-  margin-top: 12px;
+  margin-top: 14px;
+  margin-bottom: 16px;
   flex-wrap: wrap;
   justify-content: center;
+  position: relative;
+  z-index: 10;
 }
 
 .movie-end-btn {
@@ -759,3 +763,297 @@ html, body {
     letter-spacing: 3px;
   }
 }
+
+/* --- Themed Game Intro & Story Prologue Overlay (1969 Parchment & Vinyl Style) --- */
+.intro-story-overlay {
+  position: fixed;
+  inset: 0;
+  z-index: 400;
+  background: rgba(16, 22, 14, 0.88);
+  backdrop-filter: blur(5px);
+  -webkit-backdrop-filter: blur(5px);
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  padding: 20px;
+  box-sizing: border-box;
+  opacity: 1;
+  transition: opacity 0.5s ease;
+  pointer-events: auto;
+}
+
+.intro-story-overlay.fade-out {
+  opacity: 0;
+  pointer-events: none;
+}
+
+/* Themed Retro Parchment Card */
+.theme-intro-card {
+  position: relative;
+  background: var(--bg-parchment);
+  border: 3px solid var(--border-dark);
+  border-radius: 6px;
+  box-shadow: 6px 6px 0px rgba(10, 16, 10, 0.75);
+  max-width: 640px;
+  width: 100%;
+  padding: 24px 28px;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  text-align: center;
+  gap: 12px;
+  box-sizing: border-box;
+  animation: cardPopIn 0.35s cubic-bezier(0.18, 0.89, 0.32, 1.28) forwards;
+}
+
+/* 4 Corner Brass Dots */
+.corner-dot {
+  position: absolute;
+  width: 8px;
+  height: 8px;
+  background: #e8c030;
+  border: 1.5px solid var(--border-dark);
+  pointer-events: none;
+}
+.corner-dot.top-left { top: 4px; left: 4px; }
+.corner-dot.top-right { top: 4px; right: 4px; }
+.corner-dot.bottom-left { bottom: 4px; left: 4px; }
+.corner-dot.bottom-right { bottom: 4px; right: 4px; }
+
+/* Spinning Vinyl Icon */
+.theme-vinyl-icon-wrapper {
+  margin: 4px 0 2px 0;
+}
+
+.spinning-vinyl-icon {
+  width: 52px;
+  height: 52px;
+  background: #181414;
+  border-radius: 50%;
+  position: relative;
+  box-shadow: 0 3px 8px rgba(0,0,0,0.4);
+  animation: spinRecord 3s linear infinite;
+}
+
+.vinyl-groove-inner {
+  position: absolute;
+  inset: 6px;
+  border-radius: 50%;
+  border: 1px dashed #333333;
+}
+
+.vinyl-center-label {
+  position: absolute;
+  inset: 15px;
+  border-radius: 50%;
+  background: #c74a38; /* Atlantic red/plum label */
+  border: 1px solid #181414;
+}
+
+.vinyl-spindle-hole {
+  position: absolute;
+  top: 50%;
+  left: 50%;
+  transform: translate(-50%, -50%);
+  width: 5px;
+  height: 5px;
+  border-radius: 50%;
+  background: #f0e8d2;
+}
+
+@keyframes spinRecord {
+  from { transform: rotate(0deg); }
+  to { transform: rotate(360deg); }
+}
+
+/* Screen 1 Typography */
+.theme-kicker-badge {
+  font-family: var(--font-pixel);
+  font-size: 1.15rem;
+  letter-spacing: 2px;
+  color: var(--accent-rust);
+  font-weight: bold;
+}
+
+.theme-main-title {
+  margin: 0;
+  font-family: var(--font-pixel);
+  font-size: 3.6rem;
+  line-height: 1;
+  color: #9a2c1c;
+  letter-spacing: 4px;
+  text-shadow: 2px 2px 0px rgba(0,0,0,0.15);
+}
+
+.theme-sub-title {
+  margin: 0;
+  font-family: var(--font-pixel);
+  font-size: 1.4rem;
+  color: var(--border-dark);
+  letter-spacing: 2px;
+  font-weight: bold;
+}
+
+.theme-quote {
+  margin: 4px 0 0 0;
+  font-family: var(--font-retro);
+  font-size: 1.05rem;
+  font-style: italic;
+  color: var(--text-muted);
+}
+
+.theme-card-divider {
+  width: 100%;
+  height: 2px;
+  border-bottom: 2px dashed #c0b497;
+  margin: 4px 0;
+}
+
+.theme-prompt-blinker {
+  font-family: var(--font-pixel);
+  font-size: 1.25rem;
+  color: var(--border-dark);
+  letter-spacing: 1.5px;
+  animation: retroBlink 0.9s infinite alternate;
+}
+
+/* Screen 2 Story Card */
+.theme-story-topbar {
+  width: 100%;
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  font-family: var(--font-pixel);
+  font-size: 1.1rem;
+  padding-bottom: 2px;
+}
+
+.theme-date-pill {
+  background: var(--border-dark);
+  color: #f8f4e6;
+  padding: 1px 8px;
+  border-radius: 3px;
+  letter-spacing: 1px;
+}
+
+.theme-story-category {
+  color: var(--accent-rust);
+  font-weight: bold;
+  letter-spacing: 1px;
+}
+
+.theme-story-heading {
+  margin: 2px 0 0 0;
+  font-family: var(--font-pixel);
+  font-size: 1.6rem;
+  color: var(--border-dark);
+  letter-spacing: 1px;
+}
+
+.theme-story-content {
+  display: flex;
+  flex-direction: column;
+  gap: 10px;
+  font-family: var(--font-retro);
+  font-size: 14.5px;
+  line-height: 1.6;
+  color: var(--text-main);
+  text-align: left;
+}
+
+.theme-story-content p {
+  margin: 0;
+}
+
+.highlight-album {
+  color: #9a2c1c;
+  font-weight: bold;
+}
+
+.theme-callout-box {
+  background: #ebd9b7;
+  border: 1.5px solid var(--border-dark);
+  border-left: 4px solid var(--accent-rust);
+  padding: 8px 12px;
+  border-radius: 2px;
+  font-family: var(--font-retro);
+  font-size: 15px;
+  font-weight: bold;
+  color: var(--border-dark);
+  font-style: italic;
+  text-align: center;
+  margin: 4px 0;
+}
+
+.theme-mission-note {
+  font-style: italic;
+  color: var(--text-muted);
+  border-top: 1px dashed #c0b497;
+  padding-top: 8px;
+}
+
+/* Dive Button */
+.theme-btn-wrapper {
+  margin-top: 6px;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 6px;
+  width: 100%;
+}
+
+.theme-dive-button {
+  width: 100%;
+  background: #efe7cf;
+  border: 2px solid var(--border-dark);
+  border-radius: 4px;
+  padding: 10px 18px;
+  font-family: var(--font-pixel);
+  font-size: 1.35rem;
+  font-weight: bold;
+  color: var(--border-dark);
+  cursor: pointer;
+  box-shadow: 3px 3px 0px var(--border-dark);
+  transition: all 0.1s ease;
+  letter-spacing: 1px;
+}
+
+.theme-dive-button:hover {
+  background: var(--accent-rust);
+  color: #ffffff;
+  transform: translate(-1px, -1px);
+  box-shadow: 4px 4px 0px var(--border-dark);
+}
+
+.theme-dive-button:active {
+  transform: translate(1px, 1px);
+  box-shadow: 1px 1px 0px var(--border-dark);
+}
+
+.theme-skip-text {
+  font-family: var(--font-pixel);
+  font-size: 1.1rem;
+  color: var(--text-muted);
+  letter-spacing: 1px;
+}
+
+.theme-skip-text strong {
+  color: var(--border-dark);
+}
+
+@keyframes cardPopIn {
+  from {
+    opacity: 0;
+    transform: scale(0.96) translateY(8px);
+  }
+  to {
+    opacity: 1;
+    transform: scale(1) translateY(0);
+  }
+}
+
+@keyframes retroBlink {
+  from { opacity: 1; }
+  to { opacity: 0.35; }
+}
+

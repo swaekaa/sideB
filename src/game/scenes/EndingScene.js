@@ -820,14 +820,30 @@ export class EndingScene extends Phaser.Scene {
     }
   }
 
+  onDialogueClosed() {
+    this.dialogueCooldownUntil = Date.now() + 500;
+  }
+
   // --- Main Update Loop ---
 
   update(time, delta) {
+    const overlay = document.getElementById('ending-credits-overlay');
+    if (overlay && (overlay.classList.contains('active') || overlay.style.display === 'flex')) {
+      if (this.promptContainer) this.promptContainer.setVisible(false);
+      return;
+    }
+
     this.handlePlayerInput(delta);
     this.checkInteractions();
   }
 
   handlePlayerInput(delta) {
+    const overlay = document.getElementById('ending-credits-overlay');
+    if (overlay && (overlay.classList.contains('active') || overlay.style.display === 'flex')) {
+      if (this.promptContainer) this.promptContainer.setVisible(false);
+      return;
+    }
+
     if (this.dialogueBox && this.dialogueBox.isOpen) {
       this.promptContainer.setVisible(false);
       return;
@@ -917,8 +933,19 @@ export class EndingScene extends Phaser.Scene {
   }
 
   checkInteractions() {
+    const overlay = document.getElementById('ending-credits-overlay');
+    if (overlay && (overlay.classList.contains('active') || overlay.style.display === 'flex')) {
+      if (this.promptContainer) this.promptContainer.setVisible(false);
+      return;
+    }
+
+    if (this.dialogueCooldownUntil && Date.now() < this.dialogueCooldownUntil) {
+      if (this.promptContainer) this.promptContainer.setVisible(false);
+      return;
+    }
+
     if (this.dialogueBox && this.dialogueBox.isOpen) {
-      this.promptContainer.setVisible(false);
+      if (this.promptContainer) this.promptContainer.setVisible(false);
       return;
     }
 
@@ -1047,6 +1074,17 @@ export class EndingScene extends Phaser.Scene {
   // ==========================================
 
   showMovieCredits() {
+    this.dialogueCooldownUntil = Date.now() + 1000;
+    if (this.dialogueBox && this.dialogueBox.isOpen) {
+      this.dialogueBox.close();
+    }
+    const diagOverlay = document.getElementById('dialogue-overlay');
+    if (diagOverlay) {
+      diagOverlay.classList.remove('visible');
+    }
+    if (this.promptContainer) {
+      this.promptContainer.setVisible(false);
+    }
     const overlay = document.getElementById('ending-credits-overlay');
     if (overlay) {
       overlay.scrollTop = 0;
@@ -1068,6 +1106,7 @@ export class EndingScene extends Phaser.Scene {
     // [ KEEP LISTENING ]: Fades out overlay so player can freely explore their bedroom!
     if (btnListen) {
       btnListen.onclick = () => {
+        this.dialogueCooldownUntil = Date.now() + 600;
         overlay.classList.remove('active');
         overlay.style.opacity = '0';
         setTimeout(() => {

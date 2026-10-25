@@ -1040,6 +1040,9 @@ export class NeighborhoodScene extends Phaser.Scene {
 
   handlePlayerInput() {
     if (this.isMoving) return;
+    const introEl = document.getElementById('intro-story-overlay');
+    if (introEl && introEl.style.display !== 'none' && !introEl.classList.contains('fade-out')) return;
+    if (this.dialogueBox && this.dialogueBox.isOpen) return;
 
     let dx = 0;
     let dy = 0;
@@ -1130,6 +1133,12 @@ export class NeighborhoodScene extends Phaser.Scene {
   // --- Contextual Interactions ---
 
   checkContextualPrompts() {
+    const introEl = document.getElementById('intro-story-overlay');
+    if (introEl && introEl.style.display !== 'none' && !introEl.classList.contains('fade-out')) {
+      if (this.promptContainer) this.promptContainer.setVisible(false);
+      return;
+    }
+
     let targetX = this.playerTileX;
     let targetY = this.playerTileY;
 

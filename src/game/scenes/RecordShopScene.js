@@ -280,7 +280,12 @@ export class RecordShopScene extends Phaser.Scene {
     this.time.delayedCall(350, () => this.talkToMrVinyl());
   }
 
+  onDialogueClosed() {
+    this.dialogueCooldownUntil = Date.now() + 450;
+  }
+
   talkToMrVinyl() {
+    if (this.dialogueCooldownUntil && Date.now() < this.dialogueCooldownUntil) return;
     const cash = gameState.state.cash;
     const bought = gameState.state.quests.albumBought;
 

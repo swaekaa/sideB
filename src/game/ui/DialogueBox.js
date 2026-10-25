@@ -72,6 +72,11 @@ export class DialogueBox {
   }
 
   show(speakerName, portraitKey, pages, onComplete = null, choices = null, onChoice = null) {
+    const endOverlay = document.getElementById('ending-credits-overlay');
+    if (endOverlay && (endOverlay.classList.contains('active') || endOverlay.style.display === 'flex')) {
+      return;
+    }
+
     this.isOpen = true;
     this.currentSpeaker = speakerName;
     this.currentPortrait = portraitKey;

@@ -34,10 +34,12 @@ class GameState {
 
     this.state = JSON.parse(JSON.stringify(this.initialState));
     this.listeners = [];
+    this.introActive = false;
   }
 
   reset() {
     this.state = JSON.parse(JSON.stringify(this.initialState));
+    this.introActive = false;
     this.save();
     this.notify();
   }
