@@ -43,10 +43,11 @@ html, body {
 #game-container canvas {
   width: 100% !important;
   height: 100% !important;
-  object-fit: cover;
+  object-fit: contain;
   display: block;
   image-rendering: pixelated;
   image-rendering: crisp-edges;
+  -ms-interpolation-mode: nearest-neighbor;
 }
 
 /* --- Floating Top Header Bar --- */

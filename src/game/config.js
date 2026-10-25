@@ -20,7 +20,8 @@ export const gameConfig = {
   pixelArt: true,
   roundPixels: true,
   antialias: false,
-  backgroundColor: '#1b2319',
+  antialiasGL: false,
+  backgroundColor: '#1a2018',
   physics: {
     default: 'arcade',
     arcade: {
@@ -31,6 +32,10 @@ export const gameConfig = {
   scale: {
     mode: Phaser.Scale.FIT,
     autoCenter: Phaser.Scale.CENTER_BOTH
+  },
+  render: {
+    pixelArt: true,
+    roundPixels: true
   },
   scene: [
     BootScene,

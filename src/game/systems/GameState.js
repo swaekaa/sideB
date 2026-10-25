@@ -7,6 +7,7 @@ class GameState {
   constructor() {
     this.initialState = {
       cash: 4,
+      cashEarned: 0,
       timeMinutes: 15 * 60 + 15, // 3:15 PM
       quests: {
         introGiven: false,
@@ -18,10 +19,12 @@ class GameState {
         juneDone: false,
         dogFound: false,
         dogRescued: false,
+        dogFollowing: false,
         mathDone: false,
         newspaperFound: false,
         newspaperReturned: false,
         albumBought: false,
+        lemonadeBought: false,
         returnedHome: false
       },
       inventory: [],
@@ -58,6 +61,7 @@ class GameState {
 
   addCash(amount) {
     this.state.cash += amount;
+    if (amount > 0) this.state.cashEarned = (this.state.cashEarned || 0) + amount;
     this.save();
     this.notify();
   }
