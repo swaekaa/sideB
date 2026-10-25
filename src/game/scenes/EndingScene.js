@@ -1,7 +1,7 @@
 /**
  * EndingScene.js
- * The Grand Finale for SIDE B: One Perfect Afternoon
- * Listening to Midnight Radio in your bedroom as twilight falls.
+ * The Grand Finale for SIDE B: One Perfect Afternoon (1969 Edition)
+ * Listening to Led Zeppelin II in your bedroom as twilight falls.
  */
 
 import { gameState } from '../systems/GameState.js';
@@ -15,78 +15,73 @@ export class EndingScene extends Phaser.Scene {
   create() {
     this.cameras.main.setBackgroundColor('#17151e');
 
-    const cx = 384 / 2;
-    const cy = 216 / 2;
+    const w = this.cameras.main.width;
+    const h = this.cameras.main.height;
+    const cx = w / 2;
+    const cy = h / 2;
 
-    // --- Bedroom Environment ---
-
-    // Bedroom Wall (Cozy warm 70s mustard/olive paper)
-    const wall = this.add.rectangle(cx, 75, 384, 150, 0x5a5743);
-    // Carpet Floor (Rusty orange shag carpet)
-    const carpet = this.add.rectangle(cx, 185, 384, 70, 0xa65038);
+    // Bedroom Wall
+    this.add.rectangle(cx, h * 0.35, w, h * 0.7, 0x5a5743);
+    // Carpet Floor
+    this.add.rectangle(cx, h * 0.85, w, h * 0.3, 0xa65038);
 
     // Bed on the left
-    this.add.rectangle(60, 140, 90, 48, 0x3d4d59); // mattress
-    this.add.rectangle(60, 148, 90, 32, 0x486952); // plaid quilt
-    this.add.rectangle(30, 126, 26, 16, 0xf0edd6); // pillow
-    this.add.rectangle(15, 120, 6, 68, 0x473220); // wooden headboard
+    this.add.rectangle(90, 190, 120, 60, 0x3d4d59); // mattress
+    this.add.rectangle(90, 200, 120, 42, 0x486952); // quilt
+    this.add.rectangle(50, 172, 34, 20, 0xf0edd6); // pillow
+    this.add.rectangle(30, 164, 8, 86, 0x473220); // wooden headboard
 
     // Evening Window over bed
-    const winX = 130;
-    const winY = 60;
-    this.add.rectangle(winX, winY, 68, 54, 0x3b2a1e); // frame
-    // Twilight sky gradient in window
-    const sky = this.add.rectangle(winX, winY, 62, 48, 0x3d2047);
-    // Golden sunset horizon & stars
-    this.add.rectangle(winX, winY + 16, 62, 16, 0xba533e);
-    this.add.rectangle(winX, winY + 22, 62, 6, 0xdf8d48);
+    const winX = 180;
+    const winY = 85;
+    this.add.rectangle(winX, winY, 88, 70, 0x3b2a1e); // frame
+    this.add.rectangle(winX, winY, 80, 62, 0x3d2047); // twilight sky
+    this.add.rectangle(winX, winY + 20, 80, 22, 0xba533e); // sunset glow
+    this.add.rectangle(winX, winY + 27, 80, 8, 0xdf8d48);
     // Tiny stars
-    this.add.circle(winX - 18, winY - 12, 1, 0xffffff);
-    this.add.circle(winX + 12, winY - 16, 1, 0xffffff);
-    this.add.circle(winX + 22, winY - 4, 1, 0xffffff);
+    this.add.circle(winX - 24, winY - 16, 1.5, 0xffffff);
+    this.add.circle(winX + 16, winY - 20, 1.5, 0xffffff);
+    this.add.circle(winX + 30, winY - 6, 1.5, 0xffffff);
     // Window panes
-    this.add.rectangle(winX, winY, 62, 2, 0x3b2a1e);
-    this.add.rectangle(winX, winY, 2, 48, 0x3b2a1e);
+    this.add.rectangle(winX, winY, 80, 2, 0x3b2a1e);
+    this.add.rectangle(winX, winY, 2, 62, 0x3b2a1e);
 
     // Nightstand with warm glowing lamp
-    const standX = 225;
-    const standY = 145;
-    this.add.rectangle(standX, standY, 34, 42, 0x6e4324);
-    // Lamp
-    this.add.rectangle(standX, standY - 26, 6, 12, 0x3b2a1e);
-    this.add.polygon(standX, standY - 38, [[-12, 10], [12, 10], [8, -6], [-8, -6]], 0xf2d97e);
-    // Warm lamp light glow
-    const lampGlow = this.add.circle(standX, standY - 30, 48, 0xffebb0, 0.15);
+    const standX = 300;
+    const standY = 195;
+    this.add.rectangle(standX, standY, 44, 54, 0x6e4324);
+    this.add.rectangle(standX, standY - 34, 8, 16, 0x3b2a1e);
+    this.add.polygon(standX, standY - 50, [[-16, 14], [16, 14], [10, -8], [-10, -8]], 0xf2d97e);
+    this.add.circle(standX, standY - 40, 64, 0xffebb0, 0.15); // lamp light
 
     // Turntable / Record Player
-    const ttX = 285;
-    const ttY = 148;
-    this.add.rectangle(ttX, ttY, 52, 34, 0x422a1a); // wood casing
-    this.add.rectangle(ttX, ttY - 4, 46, 26, 0x222222); // deck
+    const ttX = 380;
+    const ttY = 198;
+    this.add.rectangle(ttX, ttY, 68, 44, 0x422a1a);
+    this.add.rectangle(ttX, ttY - 5, 60, 34, 0x222222);
 
     // Spinning Vinyl Record
-    this.vinylDisk = this.add.circle(ttX - 6, ttY - 4, 11, 0x111111);
-    this.vinylDisk.setStrokeStyle(1, 0x444444);
-    this.vinylLabel = this.add.circle(ttX - 6, ttY - 4, 4, 0xd44733);
-    // Tonearm
-    this.add.line(0, 0, ttX + 14, ttY + 4, ttX - 4, ttY - 4, 0xdddddd).setLineWidth(2);
+    this.vinylDisk = this.add.circle(ttX - 8, ttY - 5, 14, 0x111111);
+    this.vinylDisk.setStrokeStyle(1.5, 0x444444);
+    this.vinylLabel = this.add.circle(ttX - 8, ttY - 5, 5, 0xc74a38);
+    this.add.line(0, 0, ttX + 18, ttY + 5, ttX - 5, ttY - 5, 0xdddddd).setLineWidth(2.5);
 
-    // The Album Sleeve Displayed proudly
-    const albumThumb = this.add.image(352, 138, 'album_midnight_radio');
-    albumThumb.setDisplaySize(38, 38);
-    this.add.rectangle(352, 158, 42, 4, 0x3b2619); // stand
+    // The Album Sleeve (Led Zeppelin II) Displayed proudly
+    const albumThumb = this.add.image(460, 186, 'album_led_zeppelin_ii');
+    albumThumb.setDisplaySize(50, 50);
+    this.add.rectangle(460, 212, 54, 5, 0x3b2619);
 
     // Player sitting cross-legged on carpet
-    this.playerFigure = this.add.image(210, 158, 'player_down_0');
-    this.playerFigure.setDisplaySize(20, 30);
+    this.playerFigure = this.add.image(280, 212, 'player_down_0');
+    this.playerFigure.setDisplaySize(24, 36);
 
     // Floating musical notes
     this.notes = [];
     const noteChars = ['♪', '♫', '♩', '♬'];
-    for (let i = 0; i < 6; i++) {
-      const note = this.add.text(ttX - 6, ttY - 14, noteChars[i % noteChars.length], {
+    for (let i = 0; i < 7; i++) {
+      const note = this.add.text(ttX - 8, ttY - 18, noteChars[i % noteChars.length], {
         fontFamily: 'monospace',
-        fontSize: '11px',
+        fontSize: '13px',
         color: '#f0c74a',
         fontStyle: 'bold'
       });
@@ -94,10 +89,9 @@ export class EndingScene extends Phaser.Scene {
       this.notes.push(note);
     }
 
-    // Play nostalgic ending music with vinyl crackle
     audioManager.playMusic('ending');
 
-    // Animate spinning vinyl
+    // Spin vinyl
     this.tweens.add({
       targets: [this.vinylDisk, this.vinylLabel],
       angle: 360,
@@ -105,13 +99,13 @@ export class EndingScene extends Phaser.Scene {
       repeat: -1
     });
 
-    // Animate floating musical notes
+    // Floating notes tween
     this.notes.forEach((note, idx) => {
-      this.time.delayedCall(idx * 700, () => {
+      this.time.delayedCall(idx * 650, () => {
         this.tweens.add({
           targets: note,
-          x: { from: ttX - 6, to: ttX - 25 - (idx * 6) },
-          y: { from: ttY - 14, to: ttY - 60 - (idx * 4) },
+          x: { from: ttX - 8, to: ttX - 35 - (idx * 8) },
+          y: { from: ttY - 18, to: ttY - 80 - (idx * 5) },
           alpha: { from: 1, to: 0 },
           duration: 2600,
           repeat: -1,
@@ -120,58 +114,53 @@ export class EndingScene extends Phaser.Scene {
       });
     });
 
-    // --- End Card Overlay ---
     this.time.delayedCall(1200, () => this.showEndCard(cx, cy));
   }
 
   showEndCard(cx, cy) {
-    const cardW = 340;
-    const cardH = 92;
-    const cardY = 56;
+    const cardW = 440;
+    const cardH = 105;
+    const cardY = 72;
 
-    // Card shadow
-    this.add.rectangle(cx + 3, cardY + 3, cardW, cardH, 0x0a0c0a, 0.7);
-    // Warm card
+    this.add.rectangle(cx + 3, cardY + 3, cardW, cardH, 0x0a0c0a, 0.75);
     const card = this.add.rectangle(cx, cardY, cardW, cardH, 0xf6eedb);
     card.setStrokeStyle(3, 0x273824);
 
-    this.add.text(cx, cardY - 30, '“Some afternoons stay with you forever.”', {
+    this.add.text(cx, cardY - 34, '“Some afternoons stay with you forever.”', {
       fontFamily: 'monospace',
-      fontSize: '9.5px',
+      fontSize: '11px',
       color: '#4f3a2b',
       fontStyle: 'italic'
     }).setOrigin(0.5);
 
-    this.add.text(cx, cardY - 12, 'SIDE B', {
+    this.add.text(cx, cardY - 14, 'SIDE B', {
       fontFamily: 'monospace',
-      fontSize: '15px',
+      fontSize: '18px',
       color: '#a63a2a',
       fontStyle: 'bold'
     }).setOrigin(0.5);
 
-    this.add.text(cx, cardY + 4, '★ YOU GOT YOUR DREAM ALBUM: MIDNIGHT RADIO ★', {
+    this.add.text(cx, cardY + 6, '★ YOU GOT YOUR DREAM ALBUM: LED ZEPPELIN II (1969) ★', {
       fontFamily: 'monospace',
-      fontSize: '8.5px',
+      fontSize: '10px',
       color: '#24592a',
       fontStyle: 'bold'
     }).setOrigin(0.5);
 
-    this.add.text(cx, cardY + 20, '1977 • Neighborhood Adventure Complete', {
+    this.add.text(cx, cardY + 24, 'October 1969 • Neighborhood Adventure Complete', {
       fontFamily: 'monospace',
-      fontSize: '7.5px',
+      fontSize: '8.5px',
       color: '#6e5e49'
     }).setOrigin(0.5);
 
-    // Action buttons at bottom of screen
-    const btnY = 202;
-
+    const btnY = 270;
     const createBtn = (x, text, onClick) => {
       const btn = this.add.text(x, btnY, text, {
         fontFamily: 'monospace',
-        fontSize: '7.5px',
+        fontSize: '9px',
         color: '#ffffff',
         backgroundColor: '#283c27',
-        padding: { x: 6, y: 3 }
+        padding: { x: 8, y: 4 }
       }).setOrigin(0.5);
       btn.setInteractive({ useHandCursor: true });
       btn.on('pointerover', () => btn.setBackgroundColor('#3d593b'));
@@ -180,8 +169,7 @@ export class EndingScene extends Phaser.Scene {
       return btn;
     };
 
-    createBtn(cx - 100, '[ KEEP LISTENING ]', () => {
-      // close end card, let music play
+    createBtn(cx - 130, '[ KEEP LISTENING ]', () => {
       card.setVisible(false);
     });
 
@@ -191,7 +179,7 @@ export class EndingScene extends Phaser.Scene {
       this.scene.start('NeighborhoodScene');
     });
 
-    createBtn(cx + 105, '[ PLAY AGAIN ]', () => {
+    createBtn(cx + 130, '[ PLAY AGAIN ]', () => {
       audioManager.stopMusic();
       gameState.reset();
       this.scene.stop('EndingScene');

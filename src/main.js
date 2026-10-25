@@ -1,6 +1,6 @@
 /**
  * main.js
- * Application entry point for SIDE B: One Perfect Afternoon
+ * Application entry point for SIDE B: One Perfect Afternoon (1969)
  */
 
 import Phaser from 'phaser';
@@ -20,7 +20,7 @@ window.addEventListener('DOMContentLoaded', () => {
   window.addEventListener('pointerdown', unlockAudio, { once: true });
   window.addEventListener('keydown', unlockAudio, { once: true });
 
-  // Hook up vinyl spinning animation in header when sound plays
+  // Hook up vinyl spinning animation in header when music is playing
   const vinylIcon = document.getElementById('header-vinyl');
   if (vinylIcon) {
     setInterval(() => {
@@ -30,5 +30,22 @@ window.addEventListener('DOMContentLoaded', () => {
         vinylIcon.classList.remove('playing');
       }
     }, 400);
+  }
+
+  // HUD Collapse / Expand Toggle
+  const toggleBtn = document.getElementById('toggle-hud-btn');
+  const hudCards = document.getElementById('hud-cards-container');
+  if (toggleBtn && hudCards) {
+    let isHidden = false;
+    toggleBtn.addEventListener('click', () => {
+      isHidden = !isHidden;
+      if (isHidden) {
+        hudCards.classList.add('collapsed');
+        toggleBtn.textContent = 'HUD [SHOW ▼]';
+      } else {
+        hudCards.classList.remove('collapsed');
+        toggleBtn.textContent = 'HUD [HIDE ▲]';
+      }
+    });
   }
 });

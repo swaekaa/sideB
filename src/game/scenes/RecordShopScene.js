@@ -1,6 +1,6 @@
 /**
  * RecordShopScene.js
- * Mr. Vinyl's Record Shop Interior & Midnight Radio Purchase for SIDE B
+ * Mr. Vinyl's Record Shop Interior & Led Zeppelin II Purchase (1969 Edition)
  */
 
 import { gameState } from '../systems/GameState.js';
@@ -15,30 +15,30 @@ export class RecordShopScene extends Phaser.Scene {
   create() {
     this.cameras.main.setBackgroundColor('#231a26');
 
-    const cx = 384 / 2;
-    const cy = 216 / 2;
+    const w = this.cameras.main.width;
+    const h = this.cameras.main.height;
+    const cx = w / 2;
+    const cy = h / 2;
 
-    // Interior Shop Wall (Warm brick & wood paneling)
-    const wall = this.add.rectangle(cx, 80, 384, 160, 0x824734);
-    // Dark floor
-    const floor = this.add.rectangle(cx, 185, 384, 70, 0x3d281a);
+    // Brick & Wood Wall
+    this.add.rectangle(cx, h * 0.35, w, h * 0.7, 0x824734);
+    // Dark Wood Floor
+    this.add.rectangle(cx, h * 0.85, w, h * 0.3, 0x3d281a);
 
     // Shelves of Vinyl Records on back wall
     for (let row = 0; row < 2; row++) {
-      const sy = 32 + row * 38;
-      // Wooden shelf plank
-      this.add.rectangle(cx - 70, sy + 18, 160, 6, 0x4d311d);
-      // Record sleeves in shelf
-      for (let i = 0; i < 9; i++) {
+      const sy = 40 + row * 46;
+      this.add.rectangle(cx - 90, sy + 22, 220, 7, 0x4d311d);
+      for (let i = 0; i < 12; i++) {
         const col = (i % 3 === 0) ? 0xd6533c : (i % 3 === 1) ? 0x487994 : 0xdeb84b;
-        this.add.rectangle(cx - 138 + i * 17, sy + 8, 14, 16, col);
+        this.add.rectangle(cx - 185 + i * 17, sy + 10, 14, 18, col);
       }
     }
 
     // Vintage Neon "RECORDS" Sign on Wall
-    const signBg = this.add.rectangle(cx - 70, 16, 90, 18, 0x1f3624);
+    const signBg = this.add.rectangle(cx - 90, 20, 110, 20, 0x1f3624);
     signBg.setStrokeStyle(2, 0xd4a037);
-    this.add.text(cx - 70, 16, 'RECORDS', {
+    this.add.text(cx - 90, 20, 'RECORDS • 1969', {
       fontFamily: 'monospace',
       fontSize: '11px',
       color: '#f3c74c',
@@ -46,77 +46,76 @@ export class RecordShopScene extends Phaser.Scene {
     }).setOrigin(0.5);
 
     // Turntable on shelf
-    this.add.circle(cx + 8, 90, 10, 0x222222);
-    this.add.circle(cx + 8, 90, 4, 0xc74a38);
+    this.add.circle(cx + 12, 110, 12, 0x222222);
+    this.add.circle(cx + 12, 110, 5, 0xc74a38);
 
-    // Featured Showcase: Midnight Radio Display Case
-    const showcaseX = cx + 115;
-    const showcaseY = 68;
-    this.add.rectangle(showcaseX + 2, showcaseY + 2, 88, 108, 0x111612, 0.6);
-    const caseBg = this.add.rectangle(showcaseX, showcaseY, 88, 108, 0xf6eedb);
-    caseBg.setStrokeStyle(2, 0x273824);
+    // Featured Showcase: Led Zeppelin II Display Case
+    const showcaseX = cx + 155;
+    const showcaseY = 90;
+    this.add.rectangle(showcaseX + 3, showcaseY + 3, 110, 136, 0x111612, 0.6);
+    const caseBg = this.add.rectangle(showcaseX, showcaseY, 110, 136, 0xf6eedb);
+    caseBg.setStrokeStyle(2.5, 0x273824);
 
-    this.add.text(showcaseX, showcaseY - 44, 'FEATURED LP', {
+    this.add.text(showcaseX, showcaseY - 54, 'FEATURED LP', {
       fontFamily: 'monospace',
-      fontSize: '8px',
+      fontSize: '9px',
       color: '#9c3629',
       fontStyle: 'bold'
     }).setOrigin(0.5);
 
-    // Album cover image
-    const albumImg = this.add.image(showcaseX, showcaseY - 8, 'album_midnight_radio');
-    albumImg.setDisplaySize(54, 54);
+    // Album cover image (Led Zeppelin II)
+    const albumImg = this.add.image(showcaseX, showcaseY - 12, 'album_led_zeppelin_ii');
+    albumImg.setDisplaySize(68, 68);
 
-    this.add.text(showcaseX, showcaseY + 26, 'MIDNIGHT RADIO', {
+    this.add.text(showcaseX, showcaseY + 30, 'LED ZEPPELIN II', {
       fontFamily: 'monospace',
-      fontSize: '7px',
+      fontSize: '8.5px',
       color: '#1a2618',
       fontStyle: 'bold'
     }).setOrigin(0.5);
 
-    this.priceBadge = this.add.rectangle(showcaseX, showcaseY + 41, 46, 14, 0x315436);
-    this.priceText = this.add.text(showcaseX, showcaseY + 41, '$25.00', {
+    this.priceBadge = this.add.rectangle(showcaseX, showcaseY + 48, 54, 16, 0x315436);
+    this.priceText = this.add.text(showcaseX, showcaseY + 48, '$25.00', {
       fontFamily: 'monospace',
-      fontSize: '8px',
+      fontSize: '9px',
       color: '#ffffff',
       fontStyle: 'bold'
     }).setOrigin(0.5);
 
     // Mr. Vinyl's Wooden Store Counter
-    const counterY = 142;
-    this.add.rectangle(cx - 30, counterY + 10, 230, 42, 0x5e3a20);
-    this.add.rectangle(cx - 30, counterY - 9, 234, 6, 0x8a552e); // counter top
+    const counterY = 186;
+    this.add.rectangle(cx - 40, counterY + 12, 290, 48, 0x5e3a20);
+    this.add.rectangle(cx - 40, counterY - 11, 296, 7, 0x8a552e);
 
     // Mr. Vinyl behind the counter
-    const clerk = this.add.image(cx - 30, counterY - 26, 'npc_mr_vinyl');
+    const clerk = this.add.image(cx - 40, counterY - 30, 'npc_mr_vinyl');
     clerk.setDisplaySize(32, 48);
 
     // Dialogue Box
     this.dialogueBox = new DialogueBox(this);
 
-    // In-game HUD in shop: Cash display & Exit prompt
-    this.cashDisplay = this.add.text(12, 10, `YOUR CASH: $${gameState.state.cash}`, {
+    // Top status indicator in shop
+    this.cashDisplay = this.add.text(16, 12, `YOUR SAVINGS: $${gameState.state.cash}`, {
       fontFamily: 'monospace',
-      fontSize: '9px',
+      fontSize: '10px',
       color: '#f6eedb',
       backgroundColor: '#233822',
-      padding: { x: 6, y: 4 }
+      padding: { x: 8, y: 5 }
     });
 
     // Exit Button
-    const exitBtn = this.add.text(12, 192, '[ ESC / E - STEP OUTSIDE ]', {
+    const exitBtn = this.add.text(16, 256, '[ ESC / E - STEP OUTSIDE ]', {
       fontFamily: 'monospace',
-      fontSize: '8px',
+      fontSize: '9px',
       color: '#f6eedb',
       backgroundColor: '#7d382d',
-      padding: { x: 6, y: 4 }
+      padding: { x: 8, y: 5 }
     });
     exitBtn.setInteractive({ useHandCursor: true });
     exitBtn.on('pointerdown', () => this.exitShop());
 
     this.input.keyboard.on('keydown-ESC', () => this.exitShop());
 
-    // Trigger dialogue with Mr. Vinyl
     this.time.delayedCall(300, () => this.talkToMrVinyl());
   }
 
@@ -129,8 +128,8 @@ export class RecordShopScene extends Phaser.Scene {
         'Mr. Vinyl',
         'portrait_vinyl',
         [
-          'Hey kid! You already got Midnight Radio safe in your bag!',
-          'Head on home to your bedroom before dinnertime and spin that record on your turntable!'
+          'Hey kid! You already got Led Zeppelin II safe in your bag!',
+          'Head on home to your bedroom before dinnertime and drop that needle!'
         ],
         () => {}
       );
@@ -142,11 +141,11 @@ export class RecordShopScene extends Phaser.Scene {
         'Mr. Vinyl',
         'portrait_vinyl',
         [
-          'Well look at that! You scraped together twenty-five dollars on a Saturday afternoon!',
-          'Midnight Radio is right here. Ready to make it yours?'
+          'Well look at that! You scraped together twenty-five dollars on a Saturday afternoon in 1969!',
+          'Led Zeppelin II is right here in mint condition. Ready to make it yours?'
         ],
         null,
-        ['Buy Midnight Radio for $25!', 'Maybe later'],
+        ['Buy Led Zeppelin II for $25!', 'Maybe later'],
         (choice) => {
           if (choice === 1) {
             this.buyAlbum();
@@ -154,7 +153,7 @@ export class RecordShopScene extends Phaser.Scene {
             this.dialogueBox.show(
               'Mr. Vinyl',
               'portrait_vinyl',
-              ['No rush kid. It\'s not going anywhere.'],
+              ['No rush kid. It\'s waiting right here for you.'],
               () => {}
             );
           }
@@ -166,9 +165,9 @@ export class RecordShopScene extends Phaser.Scene {
         'Mr. Vinyl',
         'portrait_vinyl',
         [
-          'Midnight Radio. Twenty-five dollars. Good taste, kid.',
+          'Led Zeppelin II. Twenty-five dollars. Pure rock and roll gold, kid.',
           `You've got $${cash} right now. You need $${needed} more to buy it.`,
-          'Check around the neighborhood! Your mom, Mrs. Miller, or friends at the park might have chores or favors.'
+          'Check around town! Your mom has chores, Mrs. Miller needs help, and June is jamming at the park.'
         ],
         () => {}
       );
@@ -180,10 +179,10 @@ export class RecordShopScene extends Phaser.Scene {
       audioManager.playCoin();
       audioManager.playSuccess();
       gameState.setQuest('albumBought', true);
-      gameState.addItem('Midnight Radio LP');
+      gameState.addItem('Led Zeppelin II LP');
       gameState.advanceTime(10);
 
-      this.cashDisplay.setText(`YOUR CASH: $${gameState.state.cash}`);
+      this.cashDisplay.setText(`YOUR SAVINGS: $${gameState.state.cash}`);
       this.priceBadge.setFillStyle(0x752e25);
       this.priceText.setText('SOLD!');
 
@@ -191,8 +190,8 @@ export class RecordShopScene extends Phaser.Scene {
         'Mr. Vinyl',
         'portrait_vinyl',
         [
-          '★ CONGRATULATIONS! Midnight Radio is yours! ★',
-          'Slip it into the sleeve carefully. Now head home to your room and drop the needle!'
+          '★ CONGRATULATIONS! Led Zeppelin II is all yours! ★',
+          'Slip it into the sleeve carefully. Now head home to your room and drop the needle on Whole Lotta Love!'
         ],
         () => {}
       );

@@ -1,6 +1,6 @@
 /**
  * config.js
- * Phaser 3 configuration for SIDE B: One Perfect Afternoon
+ * Phaser 3 configuration for SIDE B: One Perfect Afternoon (1969)
  */
 
 import Phaser from 'phaser';
@@ -15,8 +15,8 @@ import { EndingScene } from './scenes/EndingScene.js';
 export const gameConfig = {
   type: Phaser.AUTO,
   parent: 'game-container',
-  width: 384,
-  height: 216,
+  width: 640,
+  height: 360,
   pixelArt: true,
   roundPixels: true,
   antialias: false,

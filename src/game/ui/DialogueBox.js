@@ -1,6 +1,7 @@
 /**
  * DialogueBox.js
- * Retro 1970s Printed Dialogue Interface for SIDE B
+ * Ultra-Crisp Floating Dialogue Interface for SIDE B (1969)
+ * High-definition typography, ESC to quit, automatic completion, zero blur.
  */
 
 import { audioManager } from '../systems/AudioManager.js';
@@ -8,7 +9,6 @@ import { audioManager } from '../systems/AudioManager.js';
 export class DialogueBox {
   constructor(scene) {
     this.scene = scene;
-    this.container = null;
     this.isOpen = false;
     this.pages = [];
     this.currentPageIndex = 0;
@@ -23,120 +23,50 @@ export class DialogueBox {
     this.isTyping = false;
     this.justOpened = false;
 
-    this.create();
-  }
-
-  create() {
-    // Coordinate layout inside 384 x 216 viewport
-    // Box dimensions: 352 wide, 68 high, positioned at bottom (x: 16, y: 136)
-    const x = 16;
-    const y = 138;
-    const width = 352;
-    const height = 66;
-
-    this.container = this.scene.add.container(x, y);
-    this.container.setScrollFactor(0);
-    this.container.setDepth(1000);
-    this.container.setVisible(false);
-
-    // Box Background Shadow
-    const shadow = this.scene.add.rectangle(3, 3, width, height, 0x182417, 0.7);
-    shadow.setOrigin(0, 0);
-
-    // Box Background (Warm Parchment)
-    const bg = this.scene.add.rectangle(0, 0, width, height, 0xf6f1de);
-    bg.setOrigin(0, 0);
-    bg.setStrokeStyle(2, 0x243322);
-
-    // Inner subtle border
-    const innerBorder = this.scene.add.rectangle(2, 2, width - 4, height - 4);
-    innerBorder.setOrigin(0, 0);
-    innerBorder.setStrokeStyle(1, 0xded2b0);
-
-    // Portrait Frame (34x34)
-    this.portraitBg = this.scene.add.rectangle(6, 6, 36, 54, 0xebd9b7);
-    this.portraitBg.setOrigin(0, 0);
-    this.portraitBg.setStrokeStyle(1, 0x243322);
-
-    // Portrait Sprite
-    this.portraitSprite = this.scene.add.image(24, 33, 'portrait_mom');
-    this.portraitSprite.setDisplaySize(32, 32);
-
-    // Speaker Name Tag Box
-    this.speakerBg = this.scene.add.rectangle(48, 6, 120, 16, 0x2b3d2a);
-    this.speakerBg.setOrigin(0, 0);
-
-    this.speakerText = this.scene.add.text(52, 8, 'Mom', {
-      fontFamily: 'monospace',
-      fontSize: '10px',
-      color: '#f6f1de',
-      fontStyle: 'bold'
-    });
-
-    // Dialogue Body Text
-    this.bodyText = this.scene.add.text(48, 26, '', {
-      fontFamily: 'monospace',
-      fontSize: '9px',
-      color: '#1a2318',
-      wordWrap: { width: 290, useAdvancedWrap: true },
-      lineSpacing: 3
-    });
-
-    // Prompt Indicator (Arrow / instruction)
-    this.indicator = this.scene.add.text(width - 44, height - 12, '[SPACE ▼]', {
-      fontFamily: 'monospace',
-      fontSize: '8px',
-      color: '#a64232',
-      fontStyle: 'bold'
-    });
-
-    // Choice container
-    this.choiceTexts = [];
-    for (let i = 0; i < 3; i++) {
-      const cText = this.scene.add.text(48, 28 + i * 12, '', {
-        fontFamily: 'monospace',
-        fontSize: '9px',
-        color: '#263b25',
-        fontStyle: 'bold'
-      });
-      cText.setVisible(false);
-      cText.setInteractive({ useHandCursor: true });
-      const choiceIdx = i + 1;
-      cText.on('pointerdown', () => {
-        if (this.isOpen && this.choices) {
-          this.selectChoice(choiceIdx);
-        }
-      });
-      this.choiceTexts.push(cText);
-    }
-
-    this.container.add([
-      shadow, bg, innerBorder,
-      this.portraitBg, this.portraitSprite,
-      this.speakerBg, this.speakerText,
-      this.bodyText, this.indicator,
-      ...this.choiceTexts
-    ]);
-
-    // Blinking cursor tween
-    this.scene.tweens.add({
-      targets: this.indicator,
-      alpha: 0.2,
-      duration: 400,
-      yoyo: true,
-      repeat: -1
-    });
-
-    // Keyboard controls
+    this.initDOM();
     this.setupInputs();
   }
 
+  initDOM() {
+    this.el = document.getElementById('dialogue-overlay');
+    this.speakerEl = document.getElementById('diag-speaker');
+    this.textEl = document.getElementById('diag-text');
+    this.portraitEl = document.getElementById('diag-portrait');
+    this.promptEl = document.getElementById('diag-prompt');
+    this.choicesEl = document.getElementById('diag-choices');
+  }
+
   setupInputs() {
-    this.scene.input.keyboard.on('keydown-SPACE', (e) => this.handleAdvance(e));
-    this.scene.input.keyboard.on('keydown-E', (e) => this.handleAdvance(e));
-    this.scene.input.keyboard.on('keydown-ONE', () => this.selectChoice(1));
-    this.scene.input.keyboard.on('keydown-TWO', () => this.selectChoice(2));
-    this.scene.input.keyboard.on('keydown-THREE', () => this.selectChoice(3));
+    // Window-level keyboard listeners for dialogue
+    window.addEventListener('keydown', (e) => {
+      if (!this.isOpen) return;
+
+      if (e.key === 'Escape') {
+        e.preventDefault();
+        this.close();
+        return;
+      }
+
+      if (e.key === ' ' || e.key === 'e' || e.key === 'E' || e.key === 'Enter') {
+        e.preventDefault();
+        this.handleAdvance();
+        return;
+      }
+
+      if (this.choices && this.choices.length > 0) {
+        if (e.key === '1') this.selectChoice(1);
+        if (e.key === '2') this.selectChoice(2);
+        if (e.key === '3') this.selectChoice(3);
+      }
+    });
+
+    if (this.el) {
+      this.el.addEventListener('click', (e) => {
+        if (!this.isOpen || this.justOpened) return;
+        if (this.choices && this.choices.length > 0) return;
+        this.handleAdvance();
+      });
+    }
   }
 
   show(speakerName, portraitKey, pages, onComplete = null, choices = null, onChoice = null) {
@@ -150,34 +80,37 @@ export class DialogueBox {
     this.onChoice = onChoice;
     this.justOpened = true;
 
-    // Reset choices display
-    this.choiceTexts.forEach(ct => ct.setVisible(false));
-    this.bodyText.setVisible(true);
+    if (this.speakerEl) this.speakerEl.textContent = speakerName;
 
-    // Setup visual components
-    this.speakerText.setText(speakerName);
-    this.speakerBg.setSize(Math.max(60, speakerName.length * 8 + 12), 16);
-
-    if (portraitKey && this.scene.textures.exists(portraitKey)) {
-      this.portraitSprite.setTexture(portraitKey);
-      this.portraitBg.setVisible(true);
-      this.portraitSprite.setVisible(true);
-      this.bodyText.setX(48);
-      this.bodyText.style.wordWrapWidth = 290;
-    } else {
-      this.portraitBg.setVisible(false);
-      this.portraitSprite.setVisible(false);
-      this.bodyText.setX(14);
-      this.bodyText.style.wordWrapWidth = 324;
+    // Update Portrait
+    if (this.portraitEl) {
+      if (portraitKey && this.scene.textures.exists(portraitKey)) {
+        const texture = this.scene.textures.get(portraitKey);
+        const sourceCanvas = texture.getSourceImage();
+        this.portraitEl.width = 48;
+        this.portraitEl.height = 48;
+        const pctx = this.portraitEl.getContext('2d');
+        pctx.imageSmoothingEnabled = false;
+        pctx.clearRect(0, 0, 48, 48);
+        pctx.drawImage(sourceCanvas, 0, 0, 48, 48);
+        this.portraitEl.style.display = 'block';
+      } else {
+        this.portraitEl.style.display = 'none';
+      }
     }
 
-    this.container.setVisible(true);
+    if (this.choicesEl) {
+      this.choicesEl.style.display = 'none';
+      this.choicesEl.innerHTML = '';
+    }
+
+    if (this.el) this.el.classList.add('visible');
+
     this.displayCurrentPage();
 
-    // Prevent immediate advance on same frame
     setTimeout(() => {
       this.justOpened = false;
-    }, 200);
+    }, 250);
   }
 
   displayCurrentPage() {
@@ -193,14 +126,14 @@ export class DialogueBox {
     this.fullText = this.pages[this.currentPageIndex];
     this.displayedText = '';
     this.isTyping = true;
-    this.bodyText.setText('');
-    this.choiceTexts.forEach(c => c.setVisible(false));
-    this.bodyText.setVisible(true);
+    if (this.textEl) this.textEl.textContent = '';
 
-    if (this.currentPageIndex === this.pages.length - 1 && this.choices) {
-      this.indicator.setText('[CHOICE]');
-    } else {
-      this.indicator.setText('[SPACE ▼]');
+    if (this.promptEl) {
+      if (this.currentPageIndex === this.pages.length - 1 && this.choices) {
+        this.promptEl.textContent = 'Press 1, 2, or 3  [ESC to Cancel]';
+      } else {
+        this.promptEl.textContent = '[SPACE / E to Continue ▼]  [ESC to Exit]';
+      }
     }
 
     if (this.typewriterTimer) {
@@ -212,7 +145,7 @@ export class DialogueBox {
     this.typewriterTimer = setInterval(() => {
       if (charIdx < this.fullText.length) {
         this.displayedText += this.fullText[charIdx];
-        this.bodyText.setText(this.displayedText);
+        if (this.textEl) this.textEl.textContent = this.displayedText;
         if (charIdx % 3 === 0 && this.fullText[charIdx] !== ' ') {
           audioManager.playTalk(speakerId);
         }
@@ -220,7 +153,7 @@ export class DialogueBox {
       } else {
         this.finishTyping();
       }
-    }, 22);
+    }, 18);
   }
 
   finishTyping() {
@@ -229,7 +162,7 @@ export class DialogueBox {
       this.typewriterTimer = null;
     }
     this.displayedText = this.fullText;
-    this.bodyText.setText(this.fullText);
+    if (this.textEl) this.textEl.textContent = this.fullText;
     this.isTyping = false;
 
     if (this.currentPageIndex === this.pages.length - 1 && this.choices) {
@@ -238,14 +171,18 @@ export class DialogueBox {
   }
 
   displayChoices() {
-    this.bodyText.setVisible(false);
+    if (!this.choicesEl) return;
+    this.choicesEl.innerHTML = '';
     this.choices.forEach((choice, idx) => {
-      if (idx < this.choiceTexts.length) {
-        this.choiceTexts[idx].setText(`[${idx + 1}] ${choice}`);
-        this.choiceTexts[idx].setVisible(true);
-      }
+      const btn = document.createElement('button');
+      btn.className = 'choice-btn';
+      btn.type = 'button';
+      btn.textContent = `[${idx + 1}]  ${choice}`;
+      const choiceIdx = idx + 1;
+      btn.onclick = () => this.selectChoice(choiceIdx);
+      this.choicesEl.appendChild(btn);
     });
-    this.indicator.setText('Press 1, 2, or 3');
+    this.choicesEl.style.display = 'flex';
   }
 
   selectChoice(index) {
@@ -260,17 +197,15 @@ export class DialogueBox {
     }
   }
 
-  handleAdvance(e) {
+  handleAdvance() {
     if (!this.isOpen || this.justOpened) return;
 
     if (this.isTyping) {
-      // Instant reveal
       this.finishTyping();
       return;
     }
 
     if (this.choices && this.currentPageIndex >= this.pages.length - 1) {
-      // Choice is active, require number key or click
       return;
     }
 
@@ -288,7 +223,9 @@ export class DialogueBox {
       this.typewriterTimer = null;
     }
     this.isOpen = false;
-    this.container.setVisible(false);
+    if (this.el) this.el.classList.remove('visible');
+
+    // Trigger completion callback
     const cb = this.onComplete;
     this.onComplete = null;
     this.choices = null;
@@ -296,6 +233,11 @@ export class DialogueBox {
 
     if (cb) {
       cb();
+    }
+
+    // Inform scene of cooldown so pressing SPACE never loops
+    if (this.scene && this.scene.onDialogueClosed) {
+      this.scene.onDialogueClosed();
     }
   }
 }

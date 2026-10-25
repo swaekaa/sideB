@@ -3,7 +3,7 @@
 <head>
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  <title>SIDE B: One Perfect Afternoon (1977) - Standalone Edition</title>
+  <title>SIDE B: One Perfect Afternoon (1969) - Standalone Edition</title>
   <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Courier+Prime:ital,wght@0,400;0,700;1,400&family=VT323&display=swap" />
   <script type="importmap">
   {
@@ -12,215 +12,100 @@
     }
   }
   </script>
-  <style>
-    :root {
-      --bg-parchment: #ece5cf;
-      --bg-card: #f7f3e6;
-      --border-dark: #2b3a29;
-      --text-main: #232b21;
-      --text-muted: #5e6b5a;
-      --accent-rust: #b24534;
-      --accent-olive: #5f7a3a;
-      --font-pixel: 'VT323', monospace;
-      --font-retro: 'Courier Prime', Courier, monospace;
-    }
-    * { box-sizing: border-box; margin: 0; padding: 0; image-rendering: pixelated; }
-    body {
-      background-color: var(--bg-parchment);
-      color: var(--text-main);
-      font-family: var(--font-retro);
-      min-height: 100vh;
-      display: flex;
-      flex-direction: column;
-      align-items: center;
-      background-image: radial-gradient(#d3c9ad 1px, transparent 1px), linear-gradient(to bottom, #eae2c8, #dfd6ba);
-      background-size: 24px 24px, 100% 100%;
-    }
-    .game-header {
-      width: 100%;
-      max-width: 1100px;
-      padding: 14px 20px 8px 20px;
-      display: flex;
-      align-items: center;
-      justify-content: space-between;
-      border-bottom: 2px solid var(--border-dark);
-    }
-    .logo-container { display: flex; align-items: center; gap: 12px; }
-    .vinyl-icon {
-      width: 38px; height: 38px;
-      background: radial-gradient(circle, #333 15%, #111 16%, #111 40%, #ff5233 41%, #ff5233 60%, #111 61%, #222 100%);
-      border-radius: 50%;
-      box-shadow: 0 2px 4px rgba(0,0,0,0.3);
-      animation: spinSlow 8s linear infinite paused;
-    }
-    .vinyl-icon.playing { animation-play-state: running; }
-    @keyframes spinSlow { from { transform: rotate(0deg); } to { transform: rotate(360deg); } }
-    .title-group h1 { font-family: var(--font-pixel); font-size: 2.4rem; letter-spacing: 2px; color: var(--border-dark); line-height: 0.9; }
-    .title-group .subtitle { font-size: 0.85rem; font-weight: 700; color: var(--accent-rust); letter-spacing: 1px; }
-    .quick-status-bar { display: flex; gap: 16px; font-weight: bold; }
-    .badge {
-      background: var(--bg-card);
-      border: 2px solid var(--border-dark);
-      padding: 4px 10px;
-      border-radius: 3px;
-      box-shadow: 2px 2px 0px var(--border-dark);
-      display: flex;
-      align-items: center;
-      gap: 6px;
-      font-family: var(--font-pixel);
-      font-size: 1.1rem;
-    }
-    .badge-cash { color: #216327; }
-    .badge-time { color: var(--accent-rust); }
-    .main-layout {
-      display: flex;
-      justify-content: center;
-      align-items: flex-start;
-      gap: 20px;
-      max-width: 1100px;
-      width: 100%;
-      padding: 16px 20px 24px 20px;
-    }
-    .canvas-wrapper {
-      position: relative;
-      background: #1a1a1a;
-      border: 4px solid var(--border-dark);
-      border-radius: 4px;
-      box-shadow: 6px 6px 0px rgba(43, 58, 41, 0.4);
-      display: flex;
-      align-items: center;
-      justify-content: center;
-    }
-    #game-container { width: 768px; height: 432px; background: #000; overflow: hidden; }
-    #game-container canvas { width: 100% !important; height: 100% !important; display: block; image-rendering: pixelated; }
-    .side-panel { width: 280px; display: flex; flex-direction: column; gap: 14px; }
-    .panel-card {
-      background: var(--bg-card);
-      border: 2px solid var(--border-dark);
-      border-radius: 4px;
-      padding: 12px;
-      box-shadow: 3px 3px 0px var(--border-dark);
-    }
-    .panel-title {
-      font-family: var(--font-pixel);
-      font-size: 1.35rem;
-      letter-spacing: 1px;
-      color: var(--border-dark);
-      border-bottom: 2px dashed #b5a98a;
-      padding-bottom: 4px;
-      margin-bottom: 10px;
-      display: flex;
-      align-items: center;
-      justify-content: space-between;
-    }
-    .record-showcase { display: flex; flex-direction: column; align-items: center; text-align: center; gap: 8px; }
-    .album-cover-thumb {
-      width: 120px; height: 120px;
-      border: 2px solid #222;
-      box-shadow: 2px 2px 5px rgba(0,0,0,0.25);
-      background: #111;
-      border-radius: 2px;
-    }
-    .album-cover-thumb canvas { width: 100%; height: 100%; display: block; }
-    .album-title { font-family: var(--font-pixel); font-size: 1.25rem; color: var(--accent-rust); font-weight: bold; }
-    .album-price { font-size: 0.85rem; font-weight: bold; background: #eee5cb; border: 1px solid #7c6f50; padding: 2px 8px; border-radius: 2px; }
-    .quest-list { list-style: none; display: flex; flex-direction: column; gap: 8px; font-size: 0.82rem; }
-    .quest-item { display: flex; align-items: flex-start; gap: 6px; line-height: 1.25; }
-    .quest-checkbox {
-      width: 14px; height: 14px;
-      border: 2px solid var(--border-dark);
-      display: inline-flex; align-items: center; justify-content: center;
-      font-size: 11px; font-weight: bold; margin-top: 1px; background: #fff;
-    }
-    .quest-item.completed { color: #72806e; text-decoration: line-through; }
-    .quest-item.completed .quest-checkbox { background: var(--accent-olive); color: #fff; }
-    .quest-reward { font-weight: bold; color: #2e6633; margin-left: auto; font-size: 0.78rem; }
-    .controls-grid { display: grid; grid-template-columns: auto 1fr; gap: 6px 12px; font-size: 0.8rem; }
-    .key-tag {
-      background: #e3d9be; border: 1px solid var(--border-dark); padding: 1px 6px;
-      font-size: 0.75rem; font-weight: bold; border-radius: 2px; font-family: var(--font-pixel);
-    }
-    .audio-btn {
-      background: #dfd4b7; border: 2px solid var(--border-dark);
-      font-family: var(--font-retro); font-size: 0.78rem; font-weight: bold;
-      padding: 5px 8px; cursor: pointer; border-radius: 3px;
-      box-shadow: 2px 2px 0px var(--border-dark);
-    }
-    .game-footer { text-align: center; font-size: 0.75rem; color: var(--text-muted); padding: 6px 0 16px 0; }
-  </style>
+  <link rel="stylesheet" href="./src/style.css" />
 </head>
 <body>
 
-  <header class="game-header">
-    <div class="logo-container">
-      <div id="header-vinyl" class="vinyl-icon" title="Side B Vinyl"></div>
-      <div class="title-group">
-        <h1>SIDE B</h1>
-        <div class="subtitle">ONE PERFECT AFTERNOON &bull; 1977</div>
+  <!-- Full-Screen Game Canvas -->
+  <div id="game-container"></div>
+
+  <!-- Floating Header Bar -->
+  <header class="floating-header">
+    <div class="header-left">
+      <div id="header-vinyl" class="vinyl-icon" title="Side B Vinyl - 1969"></div>
+      <div class="header-titles">
+        <span class="main-title">SIDE B</span>
+        <span class="sub-title">ONE PERFECT AFTERNOON &bull; 1969</span>
       </div>
     </div>
-    <div class="quick-status-bar">
-      <div class="badge">TIME: <span id="hud-time" class="badge-time">Sat 3:15 PM</span></div>
-      <div class="badge">CASH: <span id="hud-cash" class="badge-cash">$4</span></div>
+    <div class="header-right">
+      <div class="hud-pill hud-time-pill"><span id="hud-time">SAT 3:15 PM</span></div>
+      <div class="hud-pill hud-cash-pill"><span id="hud-cash">$4</span></div>
     </div>
   </header>
 
-  <main class="main-layout">
-    <div class="canvas-wrapper">
-      <div id="game-container"></div>
+  <!-- Floating Right Side Panel -->
+  <aside class="floating-side-panel">
+    <div class="hud-toggle-bar">
+      <button id="toggle-hud-btn" type="button" class="hud-toggle-btn">HUD [HIDE ▲]</button>
     </div>
 
-    <aside class="side-panel">
+    <div class="hud-cards-container" id="hud-cards-container">
       <section class="panel-card record-showcase">
-        <div class="panel-title" style="width: 100%;">
+        <div class="panel-title">
           <span>DREAM RECORD</span>
-          <span style="font-size: 0.9rem; color: var(--accent-rust);">&starf; PRIORITY</span>
+          <span class="priority-tag">&starf; PRIORITY</span>
         </div>
         <div class="album-cover-thumb">
-          <canvas id="album-preview-canvas" width="120" height="120"></canvas>
+          <canvas id="album-preview-canvas" width="130" height="130"></canvas>
         </div>
-        <div class="album-title">MIDNIGHT RADIO</div>
-        <div class="album-price" id="album-status-tag">Cost: $25 &bull; In Stock</div>
+        <div class="album-title">LED ZEPPELIN II</div>
+        <div class="album-price-tag" id="album-status-tag">$25</div>
+        <p class="album-desc">The one album you've been dreaming about. Gotta get it before the shop closes.</p>
+        <div class="album-savings-info" id="album-savings-info">CASH: $4 &bull; NEED: $21 MORE</div>
       </section>
 
       <section class="panel-card">
         <div class="panel-title">
-          <span>CHORES & FAVORS</span>
-          <span id="quest-count" style="font-size: 0.85rem; color: var(--text-muted);">0/3</span>
+          <span>CHORES &amp; FAVORS</span>
+          <span id="quest-count" class="count-badge">0/3</span>
         </div>
         <ul class="quest-list">
-          <li class="quest-item" id="q-trash"><span class="quest-checkbox" id="check-trash"></span><span>Take out the trash</span><span class="quest-reward">+$2</span></li>
-          <li class="quest-item" id="q-hedge"><span class="quest-checkbox" id="check-hedge"></span><span>Trim garden hedges</span><span class="quest-reward">+$5</span></li>
-          <li class="quest-item" id="q-parcel"><span class="quest-checkbox" id="check-parcel"></span><span>Deliver Mrs. Miller's parcel</span><span class="quest-reward">+$7</span></li>
-          <li class="quest-item" id="q-optional-math"><span class="quest-checkbox" id="check-math"></span><span>Timmy's math bet</span><span class="quest-reward">+$2</span></li>
-          <li class="quest-item" id="q-optional-june"><span class="quest-checkbox" id="check-june"></span><span>June's music radio</span><span class="quest-reward">+$3</span></li>
-          <li class="quest-item" id="q-optional-dog"><span class="quest-checkbox" id="check-dog"></span><span>Bob's lost dog Barnaby</span><span class="quest-reward">+$4</span></li>
+          <li class="quest-item" id="q-trash"><span class="quest-checkbox" id="check-trash"></span><span class="quest-name">Take out the trash</span><span class="quest-reward">+$2</span></li>
+          <li class="quest-item" id="q-hedge"><span class="quest-checkbox" id="check-hedge"></span><span class="quest-name">Trim the hedges</span><span class="quest-reward">+$3-6</span></li>
+          <li class="quest-item" id="q-parcel"><span class="quest-checkbox" id="check-parcel"></span><span class="quest-name">Deliver Mrs. Miller's parcel</span><span class="quest-reward">+$7</span></li>
+          <li class="quest-divider"></li>
+          <li class="quest-item" id="q-optional-june"><span class="quest-checkbox" id="check-june"></span><span class="quest-name">Help June with radio quiz</span><span class="quest-reward">+$2</span></li>
+          <li class="quest-item" id="q-optional-dog"><span class="quest-checkbox" id="check-dog"></span><span class="quest-name">Find Buddy (lost dog)</span><span class="quest-reward">+$3</span></li>
+          <li class="quest-item" id="q-optional-math"><span class="quest-checkbox" id="check-math"></span><span class="quest-name">Timmy's math bet</span><span class="quest-reward">+$2</span></li>
+          <li class="quest-item" id="q-optional-paper"><span class="quest-checkbox" id="check-paper"></span><span class="quest-name">Return the newspaper</span><span class="quest-reward">+$2</span></li>
         </ul>
       </section>
 
-      <section class="panel-card">
+      <section class="panel-card controls-card">
         <div class="panel-title">
           <span>CONTROLS</span>
-          <button id="audio-toggle-btn" class="audio-btn" type="button">
-            <span id="audio-label">SOUND: ON</span>
-          </button>
+          <button id="audio-toggle-btn" class="audio-btn" type="button"><span id="audio-label">SOUND: ON</span></button>
         </div>
         <div class="controls-grid">
-          <span class="key-tag">WASD / &uarr;&darr;&larr;&rarr;</span><span>Walk (Grid movement)</span>
-          <span class="key-tag">E</span><span>Talk / Interact / Inspect</span>
-          <span class="key-tag">SPACE</span><span>Confirm / Cut / Action</span>
-          <span class="key-tag">1, 2, 3</span><span>Dialogue & Quiz Choices</span>
+          <div class="ctrl-row"><span class="key-tag">&uarr;&darr;&larr;&rarr; / WASD</span><span>Move</span></div>
+          <div class="ctrl-row"><span class="key-tag">E</span><span>Talk / Interact</span></div>
+          <div class="ctrl-row"><span class="key-tag">SPACE</span><span>Confirm Action</span></div>
+          <div class="ctrl-row"><span class="key-tag">1, 2, 3</span><span>Answer Quiz</span></div>
+          <div class="ctrl-row"><span class="key-tag">ESC</span><span>Exit Conversation</span></div>
         </div>
       </section>
-    </aside>
-  </main>
+    </div>
+  </aside>
 
-  <footer class="game-footer">
-    <p>SIDE B: One Perfect Afternoon &bull; Late 70s Suburban Adventure &bull; Standalone Edition</p>
-  </footer>
+  <!-- Floating Retro Dialogue Box -->
+  <div class="dialogue-overlay" id="dialogue-overlay">
+    <div class="dialogue-portrait-frame">
+      <canvas id="diag-portrait" width="48" height="48"></canvas>
+    </div>
+    <div class="dialogue-content">
+      <div class="dialogue-header">
+        <span class="speaker-tag" id="diag-speaker">June</span>
+      </div>
+      <div class="dialogue-text" id="diag-text"></div>
+      <div class="dialogue-choices" id="diag-choices"></div>
+      <div class="dialogue-footer">
+        <span class="diag-prompt" id="diag-prompt">[SPACE / E to Continue ▼]  [ESC to Exit]</span>
+      </div>
+    </div>
+  </div>
 
   <script type="module">
-    // Load modules from src directly via ES Modules!
     import { gameConfig } from './src/game/config.js';
     import { audioManager } from './src/game/systems/AudioManager.js';
 
@@ -243,6 +128,22 @@
             vinylIcon.classList.remove('playing');
           }
         }, 400);
+      }
+
+      const toggleBtn = document.getElementById('toggle-hud-btn');
+      const hudCards = document.getElementById('hud-cards-container');
+      if (toggleBtn && hudCards) {
+        let isHidden = false;
+        toggleBtn.addEventListener('click', () => {
+          isHidden = !isHidden;
+          if (isHidden) {
+            hudCards.classList.add('collapsed');
+            toggleBtn.textContent = 'HUD [SHOW ▼]';
+          } else {
+            hudCards.classList.remove('collapsed');
+            toggleBtn.textContent = 'HUD [HIDE ▲]';
+          }
+        });
       }
     });
   </script>

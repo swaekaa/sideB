@@ -3,127 +3,150 @@
 <head>
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  <meta name="description" content="SIDE B: One Perfect Afternoon - A 1970s retro pixel-art suburban neighborhood game built with Phaser 3 and Vite." />
-  <title>SIDE B: One Perfect Afternoon</title>
+  <meta name="description" content="SIDE B: One Perfect Afternoon (1969) - A 1960s retro pixel-art suburban neighborhood game built with Phaser 3 and Vite." />
+  <title>SIDE B: One Perfect Afternoon (1969)</title>
   <link rel="stylesheet" href="/src/style.css" />
 </head>
 <body>
 
-  <!-- Top Retro Printed Header -->
-  <header class="game-header">
-    <div class="logo-container">
-      <div id="header-vinyl" class="vinyl-icon" title="Side B Vinyl"></div>
-      <div class="title-group">
-        <h1>SIDE B</h1>
-        <div class="subtitle">ONE PERFECT AFTERNOON &bull; 1977</div>
+  <!-- Full-Screen Game Canvas Container -->
+  <div id="game-container"></div>
+
+  <!-- Floating Top Header Banner -->
+  <header class="floating-header">
+    <div class="header-left">
+      <div id="header-vinyl" class="vinyl-icon" title="Side B Vinyl - 1969"></div>
+      <div class="header-titles">
+        <span class="main-title">SIDE B</span>
+        <span class="sub-title">ONE PERFECT AFTERNOON &bull; 1969</span>
       </div>
     </div>
 
-    <div class="quick-status-bar">
-      <div class="badge">
-        <span>TIME:</span>
-        <span id="hud-time" class="badge-time">Sat 3:15 PM</span>
+    <div class="header-right">
+      <div class="hud-pill hud-time-pill">
+        <span id="hud-time">SAT 3:15 PM</span>
       </div>
-      <div class="badge">
-        <span>CASH:</span>
-        <span id="hud-cash" class="badge-cash">$4</span>
+      <div class="hud-pill hud-cash-pill">
+        <span id="hud-cash">$4</span>
       </div>
     </div>
   </header>
 
-  <!-- Main Game Stage & Side Panel -->
-  <main class="main-layout">
+  <!-- Floating Right Side HUD Cards -->
+  <aside class="floating-side-panel" id="floating-side-panel">
     
-    <!-- Canvas Viewport (Phaser 3) -->
-    <div class="canvas-wrapper">
-      <div id="game-container"></div>
+    <!-- HUD Toggle Button -->
+    <div class="hud-toggle-bar">
+      <button id="toggle-hud-btn" type="button" class="hud-toggle-btn">HUD [HIDE ▲]</button>
     </div>
 
-    <!-- Side Panel Inspired by 1970s Record Store Flyer -->
-    <aside class="side-panel">
-
-      <!-- Target Album Card -->
+    <div class="hud-cards-container" id="hud-cards-container">
+      <!-- Dream Record Card (Led Zeppelin II) -->
       <section class="panel-card record-showcase">
-        <div class="panel-title" style="width: 100%;">
+        <div class="panel-title">
           <span>DREAM RECORD</span>
-          <span style="font-size: 0.9rem; color: var(--accent-rust);">&starf; PRIORITY</span>
+          <span class="priority-tag">&starf; PRIORITY</span>
         </div>
-        <div class="album-cover-thumb" id="side-album-thumb">
-          <canvas id="album-preview-canvas" width="120" height="120"></canvas>
+        <div class="album-cover-thumb">
+          <canvas id="album-preview-canvas" width="130" height="130"></canvas>
         </div>
-        <div class="album-title">MIDNIGHT RADIO</div>
-        <div class="album-price" id="album-status-tag">Cost: $25 &bull; In Stock</div>
+        <div class="album-title">LED ZEPPELIN II</div>
+        <div class="album-price-tag" id="album-status-tag">$25</div>
+        <p class="album-desc">The one album you've been dreaming about. Gotta get it before the shop closes.</p>
+        <div class="album-savings-info" id="album-savings-info">CASH: $4 &bull; NEED: $21 MORE</div>
       </section>
 
-      <!-- Live Quest Checklist -->
+      <!-- Live Quest Checklist: Chores & Favors -->
       <section class="panel-card">
         <div class="panel-title">
-          <span>CHORES & FAVORS</span>
-          <span id="quest-count" style="font-size: 0.85rem; color: var(--text-muted);">0/3</span>
+          <span>CHORES &amp; FAVORS</span>
+          <span id="quest-count" class="count-badge">0/3</span>
         </div>
         <ul class="quest-list" id="quest-list">
           <li class="quest-item" id="q-trash">
             <span class="quest-checkbox" id="check-trash"></span>
-            <span>Take out the trash</span>
+            <span class="quest-name">Take out the trash</span>
             <span class="quest-reward">+$2</span>
           </li>
           <li class="quest-item" id="q-hedge">
             <span class="quest-checkbox" id="check-hedge"></span>
-            <span>Trim garden hedges</span>
-            <span class="quest-reward">+$5</span>
+            <span class="quest-name">Trim the hedges</span>
+            <span class="quest-reward">+$3-6</span>
           </li>
           <li class="quest-item" id="q-parcel">
             <span class="quest-checkbox" id="check-parcel"></span>
-            <span>Deliver Mrs. Miller's parcel</span>
+            <span class="quest-name">Deliver Mrs. Miller's parcel</span>
             <span class="quest-reward">+$7</span>
           </li>
-          <li class="quest-item" id="q-optional-math">
-            <span class="quest-checkbox" id="check-math"></span>
-            <span>Timmy's math bet</span>
-            <span class="quest-reward">+$2</span>
-          </li>
+          <li class="quest-divider"></li>
           <li class="quest-item" id="q-optional-june">
             <span class="quest-checkbox" id="check-june"></span>
-            <span>June's music radio</span>
-            <span class="quest-reward">+$3</span>
+            <span class="quest-name">Help June with radio quiz</span>
+            <span class="quest-reward">+$2</span>
           </li>
           <li class="quest-item" id="q-optional-dog">
             <span class="quest-checkbox" id="check-dog"></span>
-            <span>Bob's lost dog Barnaby</span>
-            <span class="quest-reward">+$4</span>
+            <span class="quest-name">Find Buddy (lost dog)</span>
+            <span class="quest-reward">+$3</span>
+          </li>
+          <li class="quest-item" id="q-optional-math">
+            <span class="quest-checkbox" id="check-math"></span>
+            <span class="quest-name">Timmy's math bet</span>
+            <span class="quest-reward">+$2</span>
+          </li>
+          <li class="quest-item" id="q-optional-paper">
+            <span class="quest-checkbox" id="check-paper"></span>
+            <span class="quest-name">Return the newspaper</span>
+            <span class="quest-reward">+$2</span>
           </li>
         </ul>
       </section>
 
-      <!-- Controls & Sound Toggle -->
-      <section class="panel-card">
+      <!-- Controls Card -->
+      <section class="panel-card controls-card">
         <div class="panel-title">
           <span>CONTROLS</span>
           <button id="audio-toggle-btn" class="audio-btn" type="button" title="Toggle audio synthesizer">
-            <span id="audio-icon">&sung;</span>
             <span id="audio-label">SOUND: ON</span>
           </button>
         </div>
         <div class="controls-grid">
-          <span class="key-tag">WASD / &uarr;&darr;&larr;&rarr;</span>
-          <span>Walk (Grid movement)</span>
-          <span class="key-tag">E</span>
-          <span>Talk / Interact / Inspect</span>
-          <span class="key-tag">SPACE</span>
-          <span>Confirm / Cut / Action</span>
-          <span class="key-tag">1, 2, 3</span>
-          <span>Dialogue & Quiz Choices</span>
+          <div class="ctrl-row"><span class="key-tag">&uarr;&darr;&larr;&rarr; / WASD</span><span>Move</span></div>
+          <div class="ctrl-row"><span class="key-tag">E</span><span>Talk / Interact</span></div>
+          <div class="ctrl-row"><span class="key-tag">SPACE</span><span>Confirm Action</span></div>
+          <div class="ctrl-row"><span class="key-tag">1, 2, 3</span><span>Answer Quiz</span></div>
+          <div class="ctrl-row"><span class="key-tag">ESC</span><span>Exit Conversation</span></div>
         </div>
       </section>
+    </div>
 
-    </aside>
-  </main>
+  </aside>
 
-  <footer class="game-footer">
-    <p>SIDE B: One Perfect Afternoon &bull; Late 70s Suburban Adventure &bull; Built with Phaser 3 & Vite</p>
-  </footer>
+  <!-- Razor-Sharp Floating Retro Dialogue Box -->
+  <div class="dialogue-overlay" id="dialogue-overlay">
+    <div class="dialogue-portrait-frame">
+      <canvas id="diag-portrait" width="48" height="48"></canvas>
+    </div>
 
-  <!-- Application Entry Point -->
+    <div class="dialogue-content">
+      <div class="dialogue-header">
+        <span class="speaker-tag" id="diag-speaker">June</span>
+      </div>
+
+      <div class="dialogue-text" id="diag-text">
+        <!-- Text typed here -->
+      </div>
+
+      <div class="dialogue-choices" id="diag-choices">
+        <!-- Choices dynamically populated -->
+      </div>
+
+      <div class="dialogue-footer">
+        <span class="diag-prompt" id="diag-prompt">[SPACE / E to Continue ▼]  [ESC to Exit]</span>
+      </div>
+    </div>
+  </div>
+
   <script type="module" src="/src/main.js"></script>
 </body>
 </html>

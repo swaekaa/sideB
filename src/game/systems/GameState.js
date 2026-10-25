@@ -1,6 +1,6 @@
 /**
  * GameState.js
- * Centralized, reactive state management for SIDE B
+ * Centralized, reactive state management for SIDE B (1969)
  */
 
 class GameState {
@@ -9,22 +9,24 @@ class GameState {
       cash: 4,
       timeMinutes: 15 * 60 + 15, // 3:15 PM
       quests: {
+        introGiven: false,
         trash: false,
         hedge: false,
         hedgeScore: 0,
         parcelCollected: false,
         parcelDelivered: false,
-        mathDone: false,
         juneDone: false,
         dogFound: false,
         dogRescued: false,
-        benchCoinFound: false,
+        mathDone: false,
+        newspaperFound: false,
+        newspaperReturned: false,
         albumBought: false,
         returnedHome: false
       },
       inventory: [],
       dogFollowing: false,
-      playerPos: { x: 5, y: 22 }
+      playerPos: { x: 7, y: 32 }
     };
 
     this.state = JSON.parse(JSON.stringify(this.initialState));
@@ -89,7 +91,7 @@ class GameState {
     const ampm = hours >= 12 ? 'PM' : 'AM';
     const displayHours = hours % 12 === 0 ? 12 : hours % 12;
     const displayMins = mins < 10 ? '0' + mins : mins;
-    return `Sat ${displayHours}:${displayMins} ${ampm}`;
+    return `SAT ${displayHours}:${displayMins} ${ampm}`;
   }
 
   // --- Inventory & Quest Flags ---
@@ -130,13 +132,13 @@ class GameState {
 
   save() {
     try {
-      localStorage.setItem('side_b_save', JSON.stringify(this.state));
+      localStorage.setItem('side_b_1969_save', JSON.stringify(this.state));
     } catch (e) {}
   }
 
   load() {
     try {
-      const data = localStorage.getItem('side_b_save');
+      const data = localStorage.getItem('side_b_1969_save');
       if (data) {
         const parsed = JSON.parse(data);
         this.state = Object.assign({}, this.initialState, parsed);
@@ -153,12 +155,41 @@ class GameState {
     const timeEl = document.getElementById('hud-time');
     const cashEl = document.getElementById('hud-cash');
     const questCountEl = document.getElementById('quest-count');
+    const savingsInfoEl = document.getElementById('album-savings-info');
+    const albumTagEl = document.getElementById('album-status-tag');
 
     if (timeEl) timeEl.textContent = this.getFormattedTime();
     if (cashEl) cashEl.textContent = `$${this.state.cash}`;
     if (questCountEl) questCountEl.textContent = `${this.getCompletedChoreCount()}/3`;
 
-    // Quest checkboxes & classes
+    // Savings formula: CASH: $6 • ALBUM: $25 • NEED: $19 MORE
+    if (savingsInfoEl) {
+      if (this.state.quests.albumBought) {
+        savingsInfoEl.textContent = 'ALBUM BOUGHT! IN BAG';
+        savingsInfoEl.style.background = '#d8ebd3';
+        savingsInfoEl.style.color = '#1b5e20';
+      } else if (this.state.cash >= 25) {
+        savingsInfoEl.textContent = `CASH: $${this.state.cash} • GO TO RECORD SHOP!`;
+        savingsInfoEl.style.background = '#fff0c7';
+        savingsInfoEl.style.color = '#7d5400';
+      } else {
+        const needed = 25 - this.state.cash;
+        savingsInfoEl.textContent = `CASH: $${this.state.cash} • NEED: $${needed} MORE`;
+        savingsInfoEl.style.background = '#efe7cf';
+        savingsInfoEl.style.color = '#31422d';
+      }
+    }
+
+    if (albumTagEl) {
+      if (this.state.quests.albumBought) {
+        albumTagEl.textContent = 'OWNED';
+        albumTagEl.style.color = '#1e6826';
+      } else {
+        albumTagEl.textContent = '$25';
+      }
+    }
+
+    // Quest checkboxes
     const updateItem = (id, isDone) => {
       const itemEl = document.getElementById(id);
       const checkEl = itemEl ? itemEl.querySelector('.quest-checkbox') : null;
@@ -176,30 +207,10 @@ class GameState {
     updateItem('q-trash', this.state.quests.trash);
     updateItem('q-hedge', this.state.quests.hedge);
     updateItem('q-parcel', this.state.quests.parcelDelivered);
-    updateItem('q-optional-math', this.state.quests.mathDone);
     updateItem('q-optional-june', this.state.quests.juneDone);
     updateItem('q-optional-dog', this.state.quests.dogRescued);
-
-    // Album tag update
-    const albumTag = document.getElementById('album-status-tag');
-    if (albumTag) {
-      if (this.state.quests.albumBought) {
-        albumTag.textContent = 'PURCHASED &bull; IN BAG';
-        albumTag.style.background = '#d9eed3';
-        albumTag.style.borderColor = '#47814b';
-        albumTag.style.color = '#1f5323';
-      } else if (this.state.cash >= 25) {
-        albumTag.textContent = 'CAN AFFORD &bull; GO TO SHOP!';
-        albumTag.style.background = '#fff1cb';
-        albumTag.style.borderColor = '#c59223';
-        albumTag.style.color = '#7c5308';
-      } else {
-        albumTag.textContent = `Cost: $25 &bull; Need $${25 - this.state.cash} more`;
-        albumTag.style.background = '#eee5cb';
-        albumTag.style.borderColor = '#7c6f50';
-        albumTag.style.color = '#2b3a29';
-      }
-    }
+    updateItem('q-optional-math', this.state.quests.mathDone);
+    updateItem('q-optional-paper', this.state.quests.newspaperReturned);
   }
 }
 

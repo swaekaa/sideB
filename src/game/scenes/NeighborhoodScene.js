@@ -1,7 +1,7 @@
 /**
  * NeighborhoodScene.js
- * The Primary Overworld for SIDE B: One Perfect Afternoon
- * 44 x 34 Tile Map, 16px Grid Movement, NPC Dialogues, Chores, Quests & Favors
+ * Expansive 1969 Suburban Neighborhood for SIDE B
+ * 64 x 48 Tile Map (1024 x 768 px), Multi-Block World, Camera Following, All Chores & Favors
  */
 
 import { gameState } from '../systems/GameState.js';
@@ -14,16 +14,16 @@ export class NeighborhoodScene extends Phaser.Scene {
   }
 
   create() {
-    this.mapW = 44;
-    this.mapH = 34;
+    this.mapW = 64;
+    this.mapH = 48;
     this.tileSize = 16;
-    this.worldPixelW = this.mapW * this.tileSize; // 704
-    this.worldPixelH = this.mapH * this.tileSize; // 544
+    this.worldPixelW = this.mapW * this.tileSize; // 1024 px
+    this.worldPixelH = this.mapH * this.tileSize; // 768 px
 
     this.physics.world.setBounds(0, 0, this.worldPixelW, this.worldPixelH);
     this.cameras.main.setBounds(0, 0, this.worldPixelW, this.worldPixelH);
 
-    // Collision Matrix: true = solid/obstacle, false = walkable
+    // Collision Matrix: true = solid/obstacle
     this.collisionGrid = Array(this.mapH).fill(null).map(() => Array(this.mapW).fill(false));
 
     this.buildWorldMap();
@@ -33,13 +33,10 @@ export class NeighborhoodScene extends Phaser.Scene {
     this.setupCamera();
     this.setupHUD();
 
-    // Dialogue Box
+    // In-Game Dialogue Box (512x288 Viewport)
     this.dialogueBox = new DialogueBox(this);
 
-    // Step counter for clock advancement
     this.stepCount = 0;
-
-    // Movement state
     this.isMoving = false;
     this.playerFacing = 'down';
 
@@ -54,7 +51,7 @@ export class NeighborhoodScene extends Phaser.Scene {
       space: this.input.keyboard.addKey(Phaser.Input.Keyboard.KeyCodes.SPACE)
     };
 
-    // On-screen Audio button listener
+    // On-screen Audio button hookup
     const audioBtn = document.getElementById('audio-toggle-btn');
     if (audioBtn) {
       audioBtn.onclick = () => {
@@ -65,7 +62,7 @@ export class NeighborhoodScene extends Phaser.Scene {
       };
     }
 
-    // First time introduction dialogue from Mom
+    // Mom's opening dialogue
     if (!gameState.state.quests.introGiven) {
       gameState.setQuest('introGiven', true);
       this.time.delayedCall(400, () => {
@@ -73,97 +70,129 @@ export class NeighborhoodScene extends Phaser.Scene {
           'Mom',
           'portrait_mom',
           [
-            'Good afternoon, honey! It\'s such a gorgeous Saturday out.',
-            'I know you\'ve been saving up for that record at the shop, but I need you to finish a few chores first.',
-            '1. Take out the trash\n2. Trim the garden hedges\n3. Deliver Mrs. Miller\'s parcel down the street',
-            'Do those and you\'ll have plenty of pocket money. Have fun, but be back before dinner!'
+            'Good afternoon, honey! It\'s a beautiful Saturday in 1969.',
+            'I know you\'ve been saving up every penny for that new Led Zeppelin II album at Mr. Vinyl\'s record shop.',
+            'If you want to earn enough before the shop closes at 6:00, finish these chores first:',
+            '1. Take out the trash by the garage\n2. Trim the overgrown garden hedges\n3. Deliver Mrs. Miller\'s parcel down the street',
+            'Take your time exploring, but don\'t be late for dinner!'
           ]
         );
       });
     }
 
-    // Refresh world props when returning from minigames
     this.events.on('resume', () => {
       this.refreshWorldState();
     });
   }
 
-  // --- Map Tile Construction ---
+  // --- Multi-Block 1969 Neighborhood Map Construction ---
 
   buildWorldMap() {
-    // 1. Fill ground with grass
+    // 1. Fill ground with grass & flower variations
     for (let y = 0; y < this.mapH; y++) {
       for (let x = 0; x < this.mapW; x++) {
-        const isFlower = (x * 7 + y * 13) % 17 === 0;
+        const isFlower = (x * 7 + y * 13) % 19 === 0;
         const key = isFlower ? 'tile_grass_flowers' : 'tile_grass';
         this.add.image(x * 16 + 8, y * 16 + 8, key);
       }
     }
 
-    // 2. Roads & Sidewalks Network
-    // Main Horizontal Avenue: y = 13, 14, 15
+    // 2. Roads & Sidewalks System
+
+    // Main East-West Street (Oakwood Blvd): y = 21, 22, 23
     for (let x = 0; x < this.mapW; x++) {
-      // North sidewalk
-      this.add.image(x * 16 + 8, 12 * 16 + 8, 'tile_sidewalk');
-      // Asphalt
-      this.add.image(x * 16 + 8, 13 * 16 + 8, 'tile_road');
-      this.add.image(x * 16 + 8, 14 * 16 + 8, (x % 2 === 0) ? 'tile_road_line_h' : 'tile_road');
-      this.add.image(x * 16 + 8, 15 * 16 + 8, 'tile_road');
-      // South sidewalk
-      this.add.image(x * 16 + 8, 16 * 16 + 8, 'tile_sidewalk');
+      this.add.image(x * 16 + 8, 20 * 16 + 8, 'tile_sidewalk');
+      this.add.image(x * 16 + 8, 21 * 16 + 8, 'tile_road');
+      this.add.image(x * 16 + 8, 22 * 16 + 8, (x % 2 === 0) ? 'tile_road_line_h' : 'tile_road');
+      this.add.image(x * 16 + 8, 23 * 16 + 8, 'tile_road');
+      this.add.image(x * 16 + 8, 24 * 16 + 8, 'tile_sidewalk');
     }
 
-    // Main Vertical Cross Street: x = 20, 21, 22
+    // North East-West Street: y = 2, 3
+    for (let x = 32; x < this.mapW; x++) {
+      this.add.image(x * 16 + 8, 1 * 16 + 8, 'tile_sidewalk');
+      this.add.image(x * 16 + 8, 2 * 16 + 8, 'tile_road');
+      this.add.image(x * 16 + 8, 3 * 16 + 8, 'tile_road');
+    }
+
+    // Main North-South Cross Avenue: x = 28, 29, 30
     for (let y = 0; y < this.mapH; y++) {
-      // West sidewalk
-      this.add.image(19 * 16 + 8, y * 16 + 8, 'tile_sidewalk');
-      // Asphalt
-      this.add.image(20 * 16 + 8, y * 16 + 8, 'tile_road');
-      this.add.image(21 * 16 + 8, y * 16 + 8, (y % 2 === 0) ? 'tile_road_line_v' : 'tile_road');
-      this.add.image(22 * 16 + 8, y * 16 + 8, 'tile_road');
-      // East sidewalk
-      this.add.image(23 * 16 + 8, y * 16 + 8, 'tile_sidewalk');
-    }
-
-    // Sidewalks connecting to house entrances
-    // Player's house path (x = 7, y = 20..24)
-    for (let y = 21; y <= 25; y++) {
-      this.add.image(7 * 16 + 8, y * 16 + 8, 'tile_sidewalk');
-    }
-    // Mrs. Miller's house path (x = 28, y = 21..25)
-    for (let y = 21; y <= 25; y++) {
-      this.add.image(28 * 16 + 8, y * 16 + 8, 'tile_sidewalk');
-    }
-    // Record Shop entrance path (x = 31, y = 10..12)
-    for (let y = 10; y <= 12; y++) {
+      this.add.image(27 * 16 + 8, y * 16 + 8, 'tile_sidewalk');
+      this.add.image(28 * 16 + 8, y * 16 + 8, 'tile_road');
+      this.add.image(29 * 16 + 8, y * 16 + 8, (y % 2 === 0) ? 'tile_road_line_v' : 'tile_road');
+      this.add.image(30 * 16 + 8, y * 16 + 8, 'tile_road');
       this.add.image(31 * 16 + 8, y * 16 + 8, 'tile_sidewalk');
     }
 
-    // 3. Park Pond (Top Left: x = 4..13, y = 4..9)
-    for (let py = 4; py <= 9; py++) {
-      for (let px = 4; px <= 13; px++) {
-        // Natural curved shape
-        if ((px === 4 && (py === 4 || py === 9)) || (px === 13 && (py === 4 || py === 9))) continue;
+    // Crosswalks at main intersection (x = 28..30, y = 20 & 24; y = 21..23, x = 27 & 31)
+    for (let cx = 28; cx <= 30; cx++) {
+      this.add.image(cx * 16 + 8, 20 * 16 + 8, 'tile_crosswalk');
+      this.add.image(cx * 16 + 8, 24 * 16 + 8, 'tile_crosswalk');
+    }
+    for (let cy = 21; cy <= 23; cy++) {
+      this.add.image(27 * 16 + 8, cy * 16 + 8, 'tile_crosswalk');
+      this.add.image(31 * 16 + 8, cy * 16 + 8, 'tile_crosswalk');
+    }
+
+    // Concrete Driveways
+    // Player's House Driveway (x: 6..7, y: 30..35)
+    for (let dy = 30; dy <= 35; dy++) {
+      this.add.image(6 * 16 + 8, dy * 16 + 8, 'tile_driveway');
+      this.add.image(7 * 16 + 8, dy * 16 + 8, 'tile_driveway');
+    }
+    // Mrs. Miller's Walkway (x: 20, y: 30..35)
+    for (let wy = 30; wy <= 35; wy++) {
+      this.add.image(20 * 16 + 8, wy * 16 + 8, 'tile_sidewalk');
+    }
+    // Bob's Driveway (x: 39..40, y: 30..35)
+    for (let dy = 30; dy <= 35; dy++) {
+      this.add.image(39 * 16 + 8, dy * 16 + 8, 'tile_driveway');
+      this.add.image(40 * 16 + 8, dy * 16 + 8, 'tile_driveway');
+    }
+
+    // 3. Oakwood Park Pond (Northwest Block: x = 6..22, y = 5..15)
+    for (let py = 5; py <= 15; py++) {
+      for (let px = 6; px <= 22; px++) {
+        // Natural curve edges
+        if ((px === 6 && (py <= 6 || py >= 14)) || (px === 22 && (py <= 6 || py >= 14))) continue;
+        if ((px === 7 && (py === 5 || py === 15)) || (px === 21 && (py === 5 || py === 15))) continue;
+
         this.add.image(px * 16 + 8, py * 16 + 8, 'tile_water');
-        this.collisionGrid[py][px] = true; // water is solid
+        this.collisionGrid[py][px] = true;
       }
     }
 
-    // 4. Buildings Architecture
-    // Building 1: Player's House (x = 4..10, y = 17..20)
-    this.buildHouse(4, 17, 7, 4, 'tile_roof_red', 'tile_wall_wood', 7, 20);
+    // Swimming Ducks on Pond
+    this.add.image(10 * 16 + 8, 8 * 16 + 8, 'prop_duck');
+    this.add.image(16 * 16 + 8, 11 * 16 + 8, 'prop_duck');
 
-    // Building 2: Mrs. Miller's House (x = 25..31, y = 17..20)
-    this.buildHouse(25, 17, 7, 4, 'tile_roof_brown', 'tile_wall_wood', 28, 20);
+    // Wooden Pier / Dock on Pond (x: 18, y: 12..14)
+    this.add.image(18 * 16 + 8, 13 * 16, 'prop_dock');
+    this.collisionGrid[13][18] = false; // Walkable dock!
+    this.collisionGrid[14][18] = false;
 
-    // Building 3: Neighbor Bob's House (x = 35..41, y = 17..20)
-    this.buildHouse(35, 17, 7, 4, 'tile_roof_red', 'tile_wall_wood', 38, 20);
+    // 4. Buildings & Houses
 
-    // Building 4: The Record Shop (x = 27..35, y = 4..8)
-    this.buildRecordShop(27, 4, 9, 5, 31, 8);
+    // House 1: Player's House (x = 5..14, y = 26..29)
+    this.buildHouse(5, 26, 10, 4, 'tile_roof_red', 'tile_wall_wood', 11, 29);
+    // Garage attached to Player's House (x: 6..7, y: 28..29)
+    this.add.image(7 * 16, 29 * 16, 'prop_garage');
+
+    // House 2: Mrs. Miller's House (x = 18..24, y = 26..29)
+    this.buildHouse(18, 26, 7, 4, 'tile_roof_brown', 'tile_wall_wood', 20, 29);
+
+    // House 3: Neighbor Bob's House (x = 34..43, y = 26..29)
+    this.buildHouse(34, 26, 10, 4, 'tile_roof_blue', 'tile_wall_wood', 36, 29);
+    this.add.image(40 * 16, 29 * 16, 'prop_garage');
+
+    // House 4: North Suburban House (x = 6..14, y = 1..4)
+    this.buildHouse(6, 1, 9, 4, 'tile_roof_red', 'tile_wall_wood', 10, 4);
+    this.add.image(7 * 16, 4 * 16, 'prop_garage');
+
+    // Building 5: The Record Shop (x = 34..44, y = 5..9)
+    this.buildRecordShop(34, 5, 11, 5, 39, 9);
 
     // 5. Surrounding Picket Fences & Trees
-    // Map Boundaries collision
     for (let x = 0; x < this.mapW; x++) {
       this.collisionGrid[0][x] = true;
       this.collisionGrid[this.mapH - 1][x] = true;
@@ -177,28 +206,32 @@ export class NeighborhoodScene extends Phaser.Scene {
       this.add.image((this.mapW - 1) * 16 + 8, y * 16 + 8, 'tile_fence');
     }
 
-    // Front yard picket fences for Player House
-    for (let fx = 4; fx <= 10; fx++) {
-      if (fx !== 7) { // opening for front path
-        this.add.image(fx * 16 + 8, 23 * 16 + 8, 'tile_fence');
-        this.collisionGrid[23][fx] = true;
+    // Front yard picket fences
+    for (let fx = 8; fx <= 15; fx++) {
+      if (fx !== 11) {
+        this.add.image(fx * 16 + 8, 33 * 16 + 8, 'tile_fence');
+        this.collisionGrid[33][fx] = true;
       }
     }
-
-    // Front yard fences for Mrs. Miller House
-    for (let fx = 25; fx <= 31; fx++) {
-      if (fx !== 28) {
-        this.add.image(fx * 16 + 8, 23 * 16 + 8, 'tile_fence');
-        this.collisionGrid[23][fx] = true;
+    for (let fx = 17; fx <= 24; fx++) {
+      if (fx !== 20) {
+        this.add.image(fx * 16 + 8, 33 * 16 + 8, 'tile_fence');
+        this.collisionGrid[33][fx] = true;
+      }
+    }
+    for (let fx = 33; fx <= 43; fx++) {
+      if (fx !== 36 && fx !== 39 && fx !== 40) {
+        this.add.image(fx * 16 + 8, 33 * 16 + 8, 'tile_fence');
+        this.collisionGrid[33][fx] = true;
       }
     }
 
     // Neighborhood Trees
     const treeCoords = [
-      [2, 3], [15, 3], [16, 7], [3, 10], [15, 11], // Park trees
-      [2, 17], [12, 17], [13, 23], [2, 25], [12, 28], // Player street trees
-      [23, 3], [37, 3], [42, 6], [38, 11], // North-east trees
-      [24, 25], [33, 25], [42, 25], [18, 30], [28, 31] // South trees
+      [2, 3], [16, 2], [24, 3], [24, 8], [3, 12], [24, 14], // Park trees
+      [2, 26], [15, 26], [16, 31], [2, 36], [15, 38], // Player block trees
+      [32, 2], [46, 3], [52, 6], [58, 10], [54, 14], // North-east trees
+      [32, 26], [45, 26], [52, 30], [33, 38], [44, 38], [55, 38] // South trees
     ];
 
     treeCoords.forEach(([tx, ty]) => {
@@ -213,7 +246,7 @@ export class NeighborhoodScene extends Phaser.Scene {
   buildHouse(startX, startY, width, height, roofKey, wallKey, doorX, doorY) {
     for (let y = startY; y < startY + height; y++) {
       for (let x = startX; x < startX + width; x++) {
-        this.collisionGrid[y][x] = true; // House is solid
+        this.collisionGrid[y][x] = true;
         if (y < startY + 2) {
           this.add.image(x * 16 + 8, y * 16 + 8, roofKey);
         } else if (x === doorX && y === doorY) {
@@ -236,81 +269,107 @@ export class NeighborhoodScene extends Phaser.Scene {
         } else if (x === doorX && y === doorY) {
           this.add.image(x * 16 + 8, y * 16 + 8, 'tile_door');
         } else {
-          this.add.image(x * 16 + 8, y * 16 + 8, 'tile_wall_wood');
+          this.add.image(x * 16 + 8, y * 16 + 8, 'tile_wall_brick');
         }
       }
     }
-    // "RECORDS" Banner sign above door
-    this.add.image((startX + 4) * 16 + 8, (startY + 2) * 16, 'prop_shop_sign');
-    // Display showcase window beside entrance
-    this.add.image((startX + 2) * 16 + 8, (startY + 3) * 16 + 8, 'prop_shop_window');
+    // Striped Awning & RECORDS banner
+    this.add.image((startX + 5) * 16 + 8, (startY + 2) * 16, 'prop_shop_facade');
   }
 
   // --- Static Props & Interactive Entities ---
 
   createStaticProps() {
-    // 1. Trash Can outside Player's House (x: 3, y: 21)
-    this.trashSprite = this.add.image(3 * 16 + 8, 21 * 16 + 8, 'prop_trash_full');
-    this.collisionGrid[21][3] = true;
+    // 1. Oakwood Park Wooden Sign (x: 14, y: 16)
+    this.add.image(14 * 16 + 8, 16 * 16 + 8, 'prop_park_sign');
+    this.collisionGrid[16][14] = true;
 
-    // 2. Garden Hedge to Trim in Mom's garden (x: 9, y: 22)
-    this.hedgeSprite = this.add.image(9 * 16 + 8, 22 * 16 + 8, 'prop_hedge_overgrown');
-    this.collisionGrid[22][9] = true;
+    // 2. Trash Can outside Player's Garage (x: 5, y: 30)
+    this.trashSprite = this.add.image(5 * 16 + 8, 30 * 16 + 8, 'prop_trash_full');
+    this.collisionGrid[30][5] = true;
 
-    // 3. Mrs. Miller's Parcel on Player's front porch (x: 6, y: 20)
-    this.parcelSprite = this.add.image(6 * 16 + 8, 20 * 16 + 8, 'prop_parcel');
+    // 3. Garden Hedge in Front Yard (x: 13, y: 31)
+    this.hedgeSprite = this.add.image(13 * 16 + 8, 31 * 16 + 8, 'prop_hedge_overgrown');
+    this.collisionGrid[31][13] = true;
 
-    // 4. Mailboxes
-    this.add.image(8 * 16 + 8, 23 * 16 + 8, 'prop_mailbox'); // Player's mailbox
-    this.add.image(27 * 16 + 8, 23 * 16 + 8, 'prop_mailbox'); // Mrs. Miller's mailbox
-    this.collisionGrid[23][8] = true;
-    this.collisionGrid[23][27] = true;
+    // 4. Mrs. Miller's Parcel on Front Porch (x: 10, y: 30)
+    this.parcelSprite = this.add.image(10 * 16 + 8, 30 * 16 + 8, 'prop_parcel');
 
-    // 5. Park Benches
-    this.bench1 = this.add.image(9 * 16 + 8, 3 * 16 + 8, 'prop_bench');
-    this.bench2 = this.add.image(14 * 16 + 8, 8 * 16 + 8, 'prop_bench');
-    this.collisionGrid[3][9] = true;
-    this.collisionGrid[8][14] = true;
+    // 5. Mailboxes
+    this.add.image(12 * 16 + 8, 33 * 16 + 8, 'prop_mailbox');
+    this.add.image(19 * 16 + 8, 33 * 16 + 8, 'prop_mailbox');
+    this.add.image(35 * 16 + 8, 33 * 16 + 8, 'prop_mailbox');
+    this.collisionGrid[33][12] = true;
+    this.collisionGrid[33][19] = true;
+    this.collisionGrid[33][35] = true;
 
-    // Shiny coin glint under Park Bench 1 (x: 9, y: 4)
-    this.coinGlint = this.add.circle(9 * 16 + 8, 4 * 16 + 2, 3, 0xf7e148);
-    this.tweens.add({
-      targets: this.coinGlint,
-      alpha: 0.3,
-      scale: 0.7,
-      duration: 500,
-      yoyo: true,
-      repeat: -1
-    });
+    // 6. Park Benches
+    this.add.image(11 * 16 + 8, 4 * 16 + 8, 'prop_bench');
+    this.add.image(21 * 16 + 8, 15 * 16 + 8, 'prop_bench');
+    this.collisionGrid[4][11] = true;
+    this.collisionGrid[15][21] = true;
 
-    // 6. June's Radio by the Park (x: 6, y: 11)
-    this.radioSprite = this.add.image(6 * 16 + 8, 11 * 16 + 8, 'prop_radio');
-    this.collisionGrid[11][6] = true;
+    // 7. June's 1969 Transistor Radio in Park (x: 17, y: 15)
+    this.radioSprite = this.add.image(17 * 16 + 8, 15 * 16 + 8, 'prop_radio');
+    this.collisionGrid[15][17] = true;
 
-    // Musical note particles emitting from radio
-    const radioNote = this.add.text(6 * 16 + 8, 11 * 16 - 2, '♪', {
+    // Musical note
+    const rNote = this.add.text(17 * 16 + 8, 15 * 16 - 2, '♪', {
       fontFamily: 'monospace',
-      fontSize: '8px',
+      fontSize: '9px',
       color: '#e69a37'
     });
     this.tweens.add({
-      targets: radioNote,
-      y: 11 * 16 - 16,
+      targets: rNote,
+      y: 15 * 16 - 16,
       alpha: 0,
       duration: 1200,
       repeat: -1
     });
 
-    // 7. Parked 1970s Vintage Cars
-    // Blue sedan on road (x: 21, y: 18)
-    this.add.image(21 * 16 + 16, 18 * 16 + 8, 'car_blue');
-    this.collisionGrid[18][21] = true;
-    this.collisionGrid[18][22] = true;
+    // 8. Vintage Bicycle leaning against fence (x: 16, y: 33)
+    this.add.image(16 * 16 + 8, 33 * 16 + 8, 'prop_bicycle');
 
-    // Orange wagon in Bob's driveway (x: 34, y: 22)
-    this.add.image(34 * 16 + 16, 22 * 16 + 8, 'car_orange');
+    // 9. Streetlights (Vintage 1969 iron poles)
+    this.add.image(13 * 16 + 8, 19 * 16 + 8, 'prop_streetlight');
+    this.add.image(26 * 16 + 8, 19 * 16 + 8, 'prop_streetlight');
+    this.add.image(32 * 16 + 8, 19 * 16 + 8, 'prop_streetlight');
+    this.add.image(45 * 16 + 8, 19 * 16 + 8, 'prop_streetlight');
+    this.collisionGrid[19][13] = true;
+    this.collisionGrid[19][26] = true;
+    this.collisionGrid[19][32] = true;
+    this.collisionGrid[19][45] = true;
+
+    // 10. Clothesline in Backyard (x: 43, y: 27)
+    this.add.image(43 * 16 + 8, 27 * 16 + 8, 'prop_clothesline');
+    this.collisionGrid[27][43] = true;
+
+    // 11. Basketball Hoop on Player's Garage (x: 7, y: 27)
+    this.add.image(7 * 16, 27 * 16 + 8, 'prop_hoop');
+
+    // 12. Lost Newspaper on Sidewalk (x: 23, y: 20)
+    this.newspaperSprite = this.add.image(23 * 16 + 8, 20 * 16 + 8, 'prop_newspaper');
+
+    // 13. Parked 1969 American Cars (Matching Image 1)
+    // Red Muscle Car in Player's Driveway (x: 7, y: 32)
+    this.add.image(7 * 16 + 8, 32 * 16 + 8, 'car_muscle_red');
+    this.collisionGrid[32][6] = true;
+    this.collisionGrid[32][7] = true;
+
+    // Turquoise Blue Sedan on Main Street (x: 18, y: 22)
+    this.add.image(18 * 16 + 8, 22 * 16 + 8, 'car_sedan_teal');
+    this.collisionGrid[22][17] = true;
+    this.collisionGrid[22][18] = true;
+
+    // Yellow Cruiser parked across street (x: 35, y: 22)
+    this.add.image(35 * 16 + 8, 22 * 16 + 8, 'car_cruiser_yellow');
     this.collisionGrid[22][34] = true;
     this.collisionGrid[22][35] = true;
+
+    // Woodgrain Station Wagon in Bob's Driveway (x: 40, y: 32)
+    this.add.image(40 * 16 + 8, 32 * 16 + 8, 'car_wagon_wood');
+    this.collisionGrid[32][39] = true;
+    this.collisionGrid[32][40] = true;
   }
 
   // --- NPCs Setup ---
@@ -318,85 +377,99 @@ export class NeighborhoodScene extends Phaser.Scene {
   createNPCs() {
     this.npcs = [];
 
-    // 1. Mom standing outside front garden (x: 7, y: 22)
-    this.momSprite = this.add.image(7 * 16 + 8, 22 * 16 + 8, 'npc_mom');
+    // 1. Mom standing near Player's front yard (x: 11, y: 32)
+    this.momSprite = this.add.image(11 * 16 + 8, 32 * 16 + 8, 'npc_mom');
     this.momSprite.setDisplaySize(16, 24);
-    this.collisionGrid[22][7] = true;
+    this.collisionGrid[32][11] = true;
     this.npcs.push({
       id: 'mom',
       name: 'Mom',
       portrait: 'portrait_mom',
-      x: 7,
-      y: 22,
+      x: 11,
+      y: 32,
       sprite: this.momSprite,
       interact: () => this.talkToMom()
     });
 
-    // 2. Mrs. Miller standing in her front yard (x: 28, y: 22)
-    this.millerSprite = this.add.image(28 * 16 + 8, 22 * 16 + 8, 'npc_mrs_miller');
+    // 2. Mrs. Miller standing in her flower yard (x: 20, y: 32)
+    this.millerSprite = this.add.image(20 * 16 + 8, 32 * 16 + 8, 'npc_mrs_miller');
     this.millerSprite.setDisplaySize(16, 24);
-    this.collisionGrid[22][28] = true;
+    this.collisionGrid[32][20] = true;
     this.npcs.push({
       id: 'miller',
       name: 'Mrs. Miller',
       portrait: 'portrait_miller',
-      x: 28,
-      y: 22,
+      x: 20,
+      y: 32,
       sprite: this.millerSprite,
       interact: () => this.talkToMrsMiller()
     });
 
-    // 3. June hanging out in the park by the radio (x: 7, y: 11)
-    this.juneSprite = this.add.image(7 * 16 + 8, 11 * 16 + 8, 'npc_june');
+    // 3. June hanging out in the park by the radio (x: 18, y: 15)
+    this.juneSprite = this.add.image(18 * 16 + 8, 15 * 16 + 8, 'npc_june');
     this.juneSprite.setDisplaySize(16, 24);
-    this.collisionGrid[11][7] = true;
+    this.collisionGrid[15][18] = true;
     this.npcs.push({
       id: 'june',
       name: 'June',
       portrait: 'portrait_june',
-      x: 7,
-      y: 11,
+      x: 18,
+      y: 15,
       sprite: this.juneSprite,
       interact: () => this.talkToJune()
     });
 
-    // 4. Timmy (Math Kid) standing on sidewalk (x: 20, y: 11)
-    this.timmySprite = this.add.image(20 * 16 + 8, 11 * 16 + 8, 'npc_timmy');
+    // 4. Mr. Vinyl outside his shop (x: 39, y: 10)
+    this.mrVinylSprite = this.add.image(39 * 16 + 8, 10 * 16 + 8, 'npc_mr_vinyl');
+    this.mrVinylSprite.setDisplaySize(16, 24);
+    this.collisionGrid[10][39] = true;
+    this.npcs.push({
+      id: 'vinyl',
+      name: 'Mr. Vinyl',
+      portrait: 'portrait_vinyl',
+      x: 39,
+      y: 10,
+      sprite: this.mrVinylSprite,
+      interact: () => this.enterRecordShop()
+    });
+
+    // 5. Timmy (Math Kid) on sidewalk (x: 26, y: 20)
+    this.timmySprite = this.add.image(26 * 16 + 8, 20 * 16 + 8, 'npc_timmy');
     this.timmySprite.setDisplaySize(16, 24);
-    this.collisionGrid[11][20] = true;
+    this.collisionGrid[20][26] = true;
     this.npcs.push({
       id: 'timmy',
       name: 'Timmy',
       portrait: 'portrait_timmy',
-      x: 20,
-      y: 11,
+      x: 26,
+      y: 20,
       sprite: this.timmySprite,
       interact: () => this.talkToTimmy()
     });
 
-    // 5. Neighbor Bob in his yard (x: 36, y: 22)
-    this.bobSprite = this.add.image(36 * 16 + 8, 22 * 16 + 8, 'npc_neighbor_bob');
+    // 6. Neighbor Bob in his driveway (x: 36, y: 32)
+    this.bobSprite = this.add.image(36 * 16 + 8, 32 * 16 + 8, 'npc_neighbor_bob');
     this.bobSprite.setDisplaySize(16, 24);
-    this.collisionGrid[22][36] = true;
+    this.collisionGrid[32][36] = true;
     this.npcs.push({
       id: 'bob',
       name: 'Neighbor Bob',
       portrait: 'portrait_bob',
       x: 36,
-      y: 22,
+      y: 32,
       sprite: this.bobSprite,
       interact: () => this.talkToBob()
     });
 
-    // 6. Barnaby the Dog sniffing in the park (x: 12, y: 11)
-    this.dogSprite = this.add.image(12 * 16 + 8, 11 * 16 + 8, 'npc_dog_barnaby');
+    // 7. Buddy the Dog in park flowers (x: 10, y: 15)
+    this.dogSprite = this.add.image(10 * 16 + 8, 15 * 16 + 8, 'npc_dog_buddy');
     this.dogSprite.setDisplaySize(16, 16);
     this.npcs.push({
-      id: 'dog',
-      name: 'Barnaby',
+      id: 'buddy',
+      name: 'Buddy',
       portrait: 'portrait_dog',
-      x: 12,
-      y: 11,
+      x: 10,
+      y: 15,
       sprite: this.dogSprite,
       interact: () => this.interactDog()
     });
@@ -405,8 +478,8 @@ export class NeighborhoodScene extends Phaser.Scene {
   // --- Player Setup & Camera ---
 
   createPlayer() {
-    this.playerTileX = 5;
-    this.playerTileY = 22;
+    this.playerTileX = 9;
+    this.playerTileY = 32;
 
     this.player = this.add.sprite(
       this.playerTileX * 16 + 8,
@@ -424,28 +497,33 @@ export class NeighborhoodScene extends Phaser.Scene {
 
   setupHUD() {
     // Context Interaction Prompt Banner
-    this.promptContainer = this.add.container(384 / 2, 202);
+    this.promptContainer = this.add.container(512 / 2, 270);
     this.promptContainer.setScrollFactor(0);
     this.promptContainer.setDepth(900);
     this.promptContainer.setVisible(false);
 
-    this.promptBg = this.add.rectangle(0, 0, 160, 20, 0x1f2b1d, 0.85);
-    this.promptBg.setStrokeStyle(1, 0xf6f1de);
+    this.promptBg = this.add.rectangle(0, 0, 180, 22, 0x1f2b1d, 0.88);
+    this.promptBg.setStrokeStyle(1.5, 0xf6f1de);
 
     this.promptText = this.add.text(0, 0, 'E - INTERACT', {
       fontFamily: 'monospace',
-      fontSize: '8px',
+      fontSize: '11px',
       color: '#f6f1de',
-      fontStyle: 'bold'
+      fontStyle: 'bold',
+      resolution: 3
     }).setOrigin(0.5);
 
     this.promptContainer.add([this.promptBg, this.promptText]);
+    this.dialogueCooldownUntil = 0;
+  }
+
+  onDialogueClosed() {
+    this.dialogueCooldownUntil = Date.now() + 450;
   }
 
   // --- Main Update Loop ---
 
   update(time, delta) {
-    // If dialogue is active, player cannot move
     if (this.dialogueBox && this.dialogueBox.isOpen) {
       this.promptContainer.setVisible(false);
       return;
@@ -480,15 +558,13 @@ export class NeighborhoodScene extends Phaser.Scene {
     }
 
     if (dir) {
-      audioManager.init(); // lazy audio unlock
+      audioManager.init();
       this.playerFacing = dir;
       const targetX = this.playerTileX + dx;
       const targetY = this.playerTileY + dy;
 
-      // Update facing frame
       this.player.setTexture(`player_${dir}_0`);
 
-      // Check walkability & collisions
       if (this.isTileWalkable(targetX, targetY)) {
         this.startTileMove(targetX, targetY, dir);
       }
@@ -509,13 +585,11 @@ export class NeighborhoodScene extends Phaser.Scene {
     this.isMoving = true;
     audioManager.playStep();
 
-    // Advance in-game time slightly
     this.stepCount++;
-    if (this.stepCount % 40 === 0) {
+    if (this.stepCount % 35 === 0) {
       gameState.advanceTime(1);
     }
 
-    // Walking animation alternating frames
     const stepFrame = (this.stepCount % 2 === 0) ? 1 : 2;
     this.player.setTexture(`player_${dir}_${stepFrame}`);
 
@@ -523,7 +597,7 @@ export class NeighborhoodScene extends Phaser.Scene {
       targets: this.player,
       x: targetX * 16 + 8,
       y: targetY * 16 + 8,
-      duration: 175,
+      duration: 165,
       ease: 'Linear',
       onComplete: () => {
         this.playerTileX = targetX;
@@ -534,7 +608,7 @@ export class NeighborhoodScene extends Phaser.Scene {
     });
   }
 
-  // --- Contextual Interaction Detection ---
+  // --- Contextual Interactions ---
 
   checkContextualPrompts() {
     let targetX = this.playerTileX;
@@ -548,81 +622,83 @@ export class NeighborhoodScene extends Phaser.Scene {
     let activePrompt = null;
     let actionFn = null;
 
-    // 1. Mom
-    if (targetX === 7 && targetY === 22) {
+    // 1. Mom (x: 11, y: 32)
+    if (targetX === 11 && targetY === 32) {
       activePrompt = 'E — TALK TO MOM';
       actionFn = () => this.talkToMom();
     }
-    // 2. Trash Can
-    else if (targetX === 3 && targetY === 21) {
+    // 2. Trash Can (x: 5, y: 30)
+    else if (targetX === 5 && targetY === 30) {
       activePrompt = gameState.state.quests.trash ? 'E — INSPECT TRASH CAN' : 'E — TAKE OUT TRASH';
       actionFn = () => this.interactTrash();
     }
-    // 3. Garden Hedge
-    else if (targetX === 9 && targetY === 22) {
-      activePrompt = gameState.state.quests.hedge ? 'E — INSPECT HEDGE' : 'E — TRIM GARDEN HEDGE';
+    // 3. Garden Hedge (x: 13, y: 31)
+    else if (targetX === 13 && targetY === 31) {
+      activePrompt = gameState.state.quests.hedge ? 'E — INSPECT HEDGE' : 'E — TRIM THE HEDGES';
       actionFn = () => this.interactHedge();
     }
-    // 4. Mrs. Miller's Parcel on Porch
-    else if (targetX === 6 && targetY === 20 && !gameState.state.quests.parcelCollected) {
+    // 4. Mrs. Miller's Parcel on Porch (x: 10, y: 30)
+    else if (targetX === 10 && targetY === 30 && !gameState.state.quests.parcelCollected) {
       activePrompt = 'E — PICK UP PARCEL';
       actionFn = () => this.interactParcel();
     }
-    // 5. Mrs. Miller
-    else if (targetX === 28 && targetY === 22) {
+    // 5. Mrs. Miller (x: 20, y: 32)
+    else if (targetX === 20 && targetY === 32) {
       activePrompt = 'E — TALK TO MRS. MILLER';
       actionFn = () => this.talkToMrsMiller();
     }
-    // 6. Record Shop Entrance
-    else if (targetX === 31 && targetY === 8) {
+    // 6. Record Shop / Mr. Vinyl (x: 39, y: 10)
+    else if (targetX === 39 && (targetY === 10 || targetY === 9)) {
       activePrompt = 'E — ENTER RECORD SHOP';
       actionFn = () => this.enterRecordShop();
     }
-    // 7. June
-    else if (targetX === 7 && targetY === 11) {
+    // 7. June (x: 18, y: 15)
+    else if (targetX === 18 && targetY === 15) {
       activePrompt = 'E — TALK TO JUNE';
       actionFn = () => this.talkToJune();
     }
-    // 8. Timmy (Math Bet)
-    else if (targetX === 20 && targetY === 11) {
+    // 8. Timmy (Math Bet) (x: 26, y: 20)
+    else if (targetX === 26 && targetY === 20) {
       activePrompt = 'E — TALK TO TIMMY';
       actionFn = () => this.talkToTimmy();
     }
-    // 9. Neighbor Bob
-    else if (targetX === 36 && targetY === 22) {
+    // 9. Neighbor Bob (x: 36, y: 32)
+    else if (targetX === 36 && targetY === 32) {
       activePrompt = 'E — TALK TO NEIGHBOR BOB';
       actionFn = () => this.talkToBob();
     }
-    // 10. Dog Barnaby
-    else if (Math.abs(this.playerTileX - 12) <= 1 && Math.abs(this.playerTileY - 11) <= 1 && !gameState.state.dogFollowing && !gameState.state.quests.dogRescued) {
-      activePrompt = 'E — PET BARNABY';
+    // 10. Buddy the Dog (around x: 10, y: 15)
+    else if (Math.abs(this.playerTileX - 10) <= 1 && Math.abs(this.playerTileY - 15) <= 1 && !gameState.state.dogFollowing && !gameState.state.quests.dogRescued) {
+      activePrompt = 'E — PET BUDDY';
       actionFn = () => this.interactDog();
     }
-    // 11. Shiny Coin under Park Bench (x: 9, y: 3 or 4)
-    else if (targetX === 9 && (targetY === 3 || targetY === 4) && !gameState.state.quests.benchCoinFound) {
-      activePrompt = 'E — PICK UP SHINY COIN';
-      actionFn = () => this.interactCoin();
+    // 11. Lost Newspaper (x: 23, y: 20)
+    else if (targetX === 23 && targetY === 20 && !gameState.state.quests.newspaperFound) {
+      activePrompt = 'E — PICK UP NEWSPAPER';
+      actionFn = () => this.interactNewspaper();
     }
-    // 12. Player's Front Door (x: 7, y: 20)
-    else if (targetX === 7 && targetY === 20) {
-      activePrompt = gameState.state.quests.albumBought ? 'E — ENTER BEDROOM (FINALE)' : 'E — HOME DOOR';
+    // 12. Player's Front Door (x: 11, y: 29)
+    else if (targetX === 11 && targetY === 29) {
+      activePrompt = gameState.state.quests.albumBought ? 'E — ENTER BEDROOM (LISTEN TO ALBUM)' : 'E — HOME DOOR';
       actionFn = () => this.interactHomeDoor();
     }
 
     if (activePrompt) {
       this.promptText.setText(activePrompt);
-      this.promptBg.setSize(activePrompt.length * 7 + 20, 20);
+      this.promptBg.setSize(activePrompt.length * 8 + 24, 22);
       this.promptContainer.setVisible(true);
 
-      if (Phaser.Input.Keyboard.JustDown(this.wasd.interact) || Phaser.Input.Keyboard.JustDown(this.wasd.space)) {
-        actionFn();
+      if (Phaser.Input.Keyboard.JustDown(this.wasd.interact)) {
+        if (Date.now() > this.dialogueCooldownUntil) {
+          actionFn();
+        }
       }
     } else {
       this.promptContainer.setVisible(false);
     }
   }
 
-  // --- Interactive Quest Handlers ---
+  // --- Quest & Story Handlers (1969 & Led Zeppelin II) ---
 
   talkToMom() {
     const choresDone = gameState.getCompletedChoreCount();
@@ -633,8 +709,8 @@ export class NeighborhoodScene extends Phaser.Scene {
         'Mom',
         'portrait_mom',
         [
-          'Oh! You actually bought Midnight Radio! Look at that gorgeous album sleeve!',
-          'Go on into your room and put it on your turntable! You earned it, sweetie.'
+          'Oh! You actually got Led Zeppelin II! Look at that airship cover!',
+          'Hurry inside to your bedroom and put it on your turntable before dinner!'
         ]
       );
     } else if (choresDone === 3) {
@@ -643,22 +719,22 @@ export class NeighborhoodScene extends Phaser.Scene {
         'portrait_mom',
         [
           'All three chores done and the yard looks fantastic!',
-          'You should have plenty of cash in your pocket now. Run over to the record shop before Mr. Vinyl closes!'
+          'You should have plenty of cash in your pocket now. Run over to Mr. Vinyl\'s shop before he closes!'
         ]
       );
     } else {
       const remaining = [];
-      if (!gameState.state.quests.trash) remaining.push('• Take out the trash by the side yard');
-      if (!gameState.state.quests.hedge) remaining.push('• Trim the unruly garden hedge');
+      if (!gameState.state.quests.trash) remaining.push('• Take out the trash by the garage');
+      if (!gameState.state.quests.hedge) remaining.push('• Trim the unruly garden hedges');
       if (!gameState.state.quests.parcelDelivered) remaining.push('• Deliver Mrs. Miller\'s parcel');
 
       this.dialogueBox.show(
         'Mom',
         'portrait_mom',
         [
-          'Here\'s what\'s left on your list today, honey:',
+          'Here\'s what\'s left on your afternoon list:',
           remaining.join('\n'),
-          'Keep at it! You\'ll have that record in no time.'
+          'Keep at it! You\'ll have that Zeppelin record in no time.'
         ]
       );
     }
@@ -682,8 +758,8 @@ export class NeighborhoodScene extends Phaser.Scene {
       'You',
       null,
       [
-        '★ Chore Complete: Took out the heavy trash bag! ★',
-        'Mom left $2 in the pocket-money jar for this chore. (+ $2.00)'
+        '★ Chore Complete: Emptied the heavy metal trash can! ★',
+        'Mom left $2.00 on the kitchen counter for completing this chore. (+ $2.00)'
       ]
     );
   }
@@ -767,7 +843,8 @@ export class NeighborhoodScene extends Phaser.Scene {
         'June',
         'portrait_june',
         [
-          'I\'m still grooving to the 4:00 PM station! Go grab Midnight Radio before Mr. Vinyl packs up for the evening!'
+          'I\'m still heading to the 4:00 PM station!',
+          'Go grab Led Zeppelin II before Mr. Vinyl packs up for the evening!'
         ]
       );
       return;
@@ -816,25 +893,25 @@ export class NeighborhoodScene extends Phaser.Scene {
       this.dialogueBox.show(
         'Neighbor Bob',
         'portrait_bob',
-        ['Barnaby has had enough adventures for one afternoon. Thanks again, kid!']
+        ['Buddy has had enough adventures for one afternoon. Thanks again, kid!']
       );
     } else if (gameState.state.dogFollowing) {
       audioManager.playSuccess();
       audioManager.playCoin();
       gameState.setQuest('dogRescued', true);
       gameState.setQuest('dogFollowing', false);
-      gameState.addCash(4);
+      gameState.addCash(3);
       gameState.advanceTime(10);
 
-      this.dogSprite.setX(35 * 16 + 8);
-      this.dogSprite.setY(23 * 16 + 8);
+      this.dogSprite.setX(37 * 16 + 8);
+      this.dogSprite.setY(33 * 16 + 8);
 
       this.dialogueBox.show(
         'Neighbor Bob',
         'portrait_bob',
         [
-          'Barnaby! You brought my dog back safe and sound!',
-          'You\'re a good kid. Here\'s $4 for helping out an old neighbor!'
+          'Buddy! You brought my dog back safe and sound!',
+          'You\'re a good kid. Here\'s $3.00 for helping out an old neighbor!'
         ]
       );
     } else {
@@ -842,8 +919,8 @@ export class NeighborhoodScene extends Phaser.Scene {
         'Neighbor Bob',
         'portrait_bob',
         [
-          'Have you seen my hound dog Barnaby? He caught scent of a squirrel and dashed off into the park near the pond!',
-          'If you see him, call him over and bring him home, would you?'
+          'Have you seen my hound dog Buddy? He caught scent of a squirrel and dashed off into the park flowers!',
+          'If you see him near the pond, call him over and bring him home, would you?'
         ]
       );
     }
@@ -852,7 +929,7 @@ export class NeighborhoodScene extends Phaser.Scene {
   interactDog() {
     if (gameState.state.quests.dogRescued) {
       audioManager.playTalk('dog');
-      this.dialogueBox.show('Barnaby', 'portrait_dog', ['*Woof!* Barnaby wags his tail contentedly.']);
+      this.dialogueBox.show('Buddy', 'portrait_dog', ['*Woof!* Buddy wags his tail contentedly.']);
       return;
     }
 
@@ -860,11 +937,11 @@ export class NeighborhoodScene extends Phaser.Scene {
     gameState.setQuest('dogFollowing', true);
 
     this.dialogueBox.show(
-      'Barnaby',
+      'Buddy',
       'portrait_dog',
       [
         '*Woof! Woof!*',
-        'Barnaby happily licks your hand and decides to follow you! Lead him back to Neighbor Bob\'s yard.'
+        'Buddy happily licks your hand and decides to follow you! Lead him back to Neighbor Bob\'s driveway.'
       ]
     );
   }
@@ -878,25 +955,33 @@ export class NeighborhoodScene extends Phaser.Scene {
     }
   }
 
-  interactCoin() {
+  interactNewspaper() {
+    audioManager.playSuccess();
     audioManager.playCoin();
-    gameState.addCash(1);
-    gameState.setQuest('benchCoinFound', true);
-    this.coinGlint.setVisible(false);
+    gameState.setQuest('newspaperFound', true);
+    gameState.setQuest('newspaperReturned', true);
+    gameState.addCash(2);
+    this.newspaperSprite.setVisible(false);
 
-    this.dialogueBox.show('You', null, ['Found a shiny $1.00 coin glinting under the park bench! (+$1.00)']);
+    this.dialogueBox.show(
+      'You',
+      null,
+      [
+        '★ Found the missing Saturday Gazette on the sidewalk! ★',
+        'Returned it to the neighbor\'s porch. They left a $2.00 finder\'s reward! (+ $2.00)'
+      ]
+    );
   }
 
   interactHomeDoor() {
     if (gameState.state.quests.albumBought) {
-      // Transition to Ending Scene!
       this.scene.stop('NeighborhoodScene');
       this.scene.start('EndingScene');
     } else {
       this.dialogueBox.show(
         'You',
         null,
-        ['You shouldn\'t head inside yet—you still want to earn enough money and buy Midnight Radio from the record shop!']
+        ['You shouldn\'t head inside yet—you still want to earn enough money and buy Led Zeppelin II from the record shop!']
       );
     }
   }
@@ -910,6 +995,9 @@ export class NeighborhoodScene extends Phaser.Scene {
     }
     if (gameState.state.quests.parcelCollected) {
       this.parcelSprite.setVisible(false);
+    }
+    if (gameState.state.quests.newspaperFound) {
+      this.newspaperSprite.setVisible(false);
     }
   }
 }

@@ -1,6 +1,6 @@
 /**
  * BootScene.js
- * Asset generation and game bootstrap for SIDE B
+ * Asset generation and game bootstrap for SIDE B (1969 Edition)
  */
 
 import { AssetGenerator } from '../systems/AssetGenerator.js';
@@ -14,41 +14,37 @@ export class BootScene extends Phaser.Scene {
   create() {
     this.cameras.main.setBackgroundColor('#1c261b');
 
-    const cx = 384 / 2;
-    const cy = 216 / 2;
+    const cx = 512 / 2;
+    const cy = 288 / 2;
 
-    // Vintage loading card
-    this.add.rectangle(cx, cy, 260, 90, 0xf6f1de).setStrokeStyle(2, 0x273824);
-    this.add.text(cx, cy - 20, 'SIDE B', {
+    this.add.rectangle(cx, cy, 300, 100, 0xf6f1de).setStrokeStyle(2.5, 0x273824);
+    this.add.text(cx, cy - 22, 'SIDE B', {
       fontFamily: 'monospace',
-      fontSize: '18px',
+      fontSize: '22px',
       color: '#b24534',
       fontStyle: 'bold'
     }).setOrigin(0.5);
 
-    this.add.text(cx, cy + 2, 'ONE PERFECT AFTERNOON • 1977', {
+    this.add.text(cx, cy + 3, 'ONE PERFECT AFTERNOON • 1969', {
       fontFamily: 'monospace',
-      fontSize: '8px',
+      fontSize: '9px',
       color: '#273824',
       fontStyle: 'bold'
     }).setOrigin(0.5);
 
-    const loadingText = this.add.text(cx, cy + 22, 'GENERATING NEIGHBORHOOD...', {
+    this.add.text(cx, cy + 24, 'GENERATING 1969 NEIGHBORHOOD...', {
       fontFamily: 'monospace',
-      fontSize: '7px',
+      fontSize: '8px',
       color: '#6e5e49'
     }).setOrigin(0.5);
 
-    // Generate all procedural pixel-art assets
     const generator = new AssetGenerator(this);
     generator.generateAll();
 
-    // Check for saved state
     gameState.load();
     gameState.notify();
 
-    // Switch to Neighborhood Scene
-    this.time.delayedCall(450, () => {
+    this.time.delayedCall(400, () => {
       this.scene.start('NeighborhoodScene');
     });
   }
