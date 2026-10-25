@@ -631,14 +631,6 @@ export class NeighborhoodScene extends Phaser.Scene {
     // Mrs. Miller — slow wander in her yard
     this.millerWander = { timer: 0, dir: 1 };
 
-    // June bobs more enthusiastically (listening to music)
-    this.tweens.add({
-      targets: this.juneSprite,
-      scaleX: -1,
-      duration: 3000,
-      yoyo: true,
-      repeat: -1
-    });
 
     // Ambient wandering kid on bicycle
     this.tweens.add({
