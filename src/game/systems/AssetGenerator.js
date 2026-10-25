@@ -17,6 +17,7 @@ export class AssetGenerator {
     this.createNPCSprites();
     this.createPortraits();
     this.createAlbumArt();
+    this.createPosters();
   }
 
   createCanvasTexture(key, width, height, drawFn) {
@@ -417,21 +418,79 @@ export class AssetGenerator {
       }
     });
 
-    // 2. Oakwood Park Sign
-    this.createCanvasTexture('prop_park_sign', 32, 16, (ctx) => {
-      ctx.fillStyle = '#4c3018';
-      ctx.fillRect(4, 9, 2, 7);
-      ctx.fillRect(26, 9, 2, 7);
-      ctx.fillStyle = '#d8c89e';
-      ctx.fillRect(2, 1, 28, 9);
-      ctx.strokeStyle = '#4c3018';
+    // 2. Oakwood Park Sign (High-definition rustic timber signboard)
+    this.createCanvasTexture('prop_park_sign', 64, 36, (ctx) => {
+      // Grass patch & base wildflowers
+      ctx.fillStyle = '#4c7a2b';
+      ctx.fillRect(4, 32, 56, 4);
+      ctx.fillStyle = '#689c38';
+      ctx.fillRect(8, 30, 48, 3);
+      // Small wildflowers
+      const baseFlowers = [[6, 31, '#fff'], [9, 32, '#fdd835'], [53, 31, '#fdd835'], [57, 32, '#fff']];
+      baseFlowers.forEach(([fx, fy, col]) => {
+        ctx.fillStyle = col;
+        ctx.fillRect(fx, fy, 2, 2);
+      });
+
+      // Wooden timber posts
+      ctx.fillStyle = '#3a2312';
+      ctx.fillRect(10, 14, 5, 20);
+      ctx.fillRect(49, 14, 5, 20);
+      ctx.fillStyle = '#54361c';
+      ctx.fillRect(11, 14, 3, 20);
+      ctx.fillRect(50, 14, 3, 20);
+      // Wood knots and shadows on posts
+      ctx.fillStyle = '#26160a';
+      ctx.fillRect(11, 22, 2, 2);
+      ctx.fillRect(50, 26, 2, 2);
+
+      // Ivy vines creeping up the left post
+      ctx.fillStyle = '#2d6a1e';
+      [[9, 28, 3, 3], [12, 25, 3, 2], [10, 20, 3, 3], [13, 17, 2, 2]].forEach(([ix, iy, iw, ih]) => {
+        ctx.fillRect(ix, iy, iw, ih);
+      });
+      ctx.fillStyle = '#4e9c32';
+      [[10, 29, 2, 1], [13, 25, 1, 1], [11, 21, 1, 1]].forEach(([ix, iy, iw, ih]) => {
+        ctx.fillRect(ix, iy, iw, ih);
+      });
+
+      // Signboard Drop Shadow
+      ctx.fillStyle = 'rgba(0, 0, 0, 0.4)';
+      ctx.fillRect(5, 4, 55, 22);
+
+      // Wooden Signboard Frame
+      ctx.fillStyle = '#3a2312';
+      ctx.fillRect(4, 2, 56, 22);
+      ctx.fillStyle = '#5c3a1e';
+      ctx.fillRect(5, 3, 54, 20);
+      ctx.fillStyle = '#7a4e28';
+      ctx.fillRect(5, 3, 54, 1);
+
+      // Inner Cream/Parchment Wooden Plaque
+      ctx.fillStyle = '#f4ecd8';
+      ctx.fillRect(7, 5, 50, 16);
+      ctx.strokeStyle = '#4a2c14';
       ctx.lineWidth = 1;
-      ctx.strokeRect(2, 1, 28, 9);
-      ctx.fillStyle = '#2e1a0a';
-      ctx.font = 'bold 5px monospace';
+      ctx.strokeRect(7, 5, 50, 16);
+
+      // Subtle horizontal wood planks on face
+      ctx.fillStyle = 'rgba(120, 80, 40, 0.12)';
+      ctx.fillRect(7, 10, 50, 1);
+      ctx.fillRect(7, 15, 50, 1);
+
+      // Crisp high-contrast readable typography
+      ctx.fillStyle = '#241408';
+      ctx.font = 'bold 7px monospace';
       ctx.textAlign = 'center';
-      ctx.fillText('OAKWOOD', 16, 5);
-      ctx.fillText('PARK', 16, 9);
+      ctx.fillText('OAKWOOD PARK', 32, 11);
+
+      ctx.fillStyle = '#2d5c22';
+      ctx.font = 'bold 5px monospace';
+      ctx.fillText('LAKE & GROVE', 32, 16);
+
+      ctx.fillStyle = '#7a4a28';
+      ctx.font = '5px monospace';
+      ctx.fillText('EST. 1924', 32, 20);
     });
 
     // 3. Swimming White Duck in Pond
@@ -656,37 +715,72 @@ export class AssetGenerator {
       ctx.fillRect(3, 2, 1, 4);
     });
 
-    // 15. Records Store Front Awning & Banner
-    this.createCanvasTexture('prop_shop_facade', 64, 32, (ctx) => {
-      ctx.fillStyle = '#8c3020';
-      ctx.fillRect(0, 0, 64, 12);
-      // Sign
-      ctx.fillStyle = '#142018';
-      ctx.fillRect(4, 2, 56, 9);
-      ctx.strokeStyle = '#e8b43a';
-      ctx.lineWidth = 1;
-      ctx.strokeRect(4, 2, 56, 9);
-      ctx.fillStyle = '#f0c242';
-      ctx.font = 'bold 7px monospace';
+    // 15. Records Store Front Awning & Banner (High-definition 1969 facade)
+    this.createCanvasTexture('prop_shop_facade', 96, 40, (ctx) => {
+      // Top Brick shadow
+      ctx.fillStyle = '#641e14';
+      ctx.fillRect(0, 0, 96, 2);
+
+      // Sign Marquee (Emerald enamel with gold trim)
+      ctx.fillStyle = '#0c2214';
+      ctx.fillRect(2, 2, 92, 16);
+      ctx.strokeStyle = '#d49b20';
+      ctx.lineWidth = 1.5;
+      ctx.strokeRect(3, 3, 90, 14);
+      // Inner subtle gold filigree line
+      ctx.strokeStyle = '#f5cb42';
+      ctx.lineWidth = 0.5;
+      ctx.strokeRect(5, 5, 86, 10);
+
+      // Gold Corner rivets
+      ctx.fillStyle = '#fce478';
+      [[5, 5], [90, 5], [5, 14], [90, 14]].forEach(([rx, ry]) => {
+        ctx.fillRect(rx, ry, 2, 2);
+      });
+
+      // Sharp, crystal-clear marquee text
+      ctx.fillStyle = '#f8d24a';
+      ctx.font = 'bold 8px monospace';
       ctx.textAlign = 'center';
-      ctx.fillText('★ RECORDS ★', 32, 9);
-      // Striped Awning (Red & Cream)
-      for (let i = 0; i < 8; i++) {
-        ctx.fillStyle = (i % 2 === 0) ? '#ac3020' : '#f0e8d0';
-        ctx.fillRect(i * 8, 12, 8, 8);
+      ctx.fillText('★ MR. VINYL\'S RECORDS ★', 48, 12);
+
+      // Striped Retractable Awning (Crimson & Warm Cream)
+      const stripeW = 8;
+      for (let i = 0; i < 12; i++) {
+        ctx.fillStyle = (i % 2 === 0) ? '#a02418' : '#fcf4dc';
+        ctx.fillRect(i * stripeW, 18, stripeW, 11);
+        // Subtle 3D shadow on left of each stripe
+        ctx.fillStyle = 'rgba(0, 0, 0, 0.12)';
+        ctx.fillRect(i * stripeW, 18, 1, 11);
       }
-      // Awning fringe
-      ctx.fillStyle = '#8c2018';
-      ctx.fillRect(0, 19, 64, 1);
-      for (let i = 0; i < 8; i++) {
-        ctx.fillRect(i * 8, 19, 4, 2);
+
+      // Awning bottom shadow line
+      ctx.fillStyle = '#6e150d';
+      ctx.fillRect(0, 28, 96, 1);
+
+      // Scalloped fringe
+      for (let i = 0; i < 12; i++) {
+        ctx.fillStyle = (i % 2 === 0) ? '#a02418' : '#fcf4dc';
+        ctx.fillRect(i * stripeW, 29, stripeW, 2);
+        ctx.fillStyle = '#6e150d';
+        ctx.fillRect(i * stripeW + 1, 30, stripeW - 2, 1);
       }
-      // Window area
-      ctx.fillStyle = '#1e2e22';
-      ctx.fillRect(4, 22, 56, 10);
-      ctx.fillStyle = '#d4c8a8';
-      ctx.font = 'bold 4px monospace';
-      ctx.fillText('CASSETTES · POSTERS · HI-FI', 32, 29);
+
+      // Drop shadow from awning onto transom window
+      ctx.fillStyle = 'rgba(0, 0, 0, 0.45)';
+      ctx.fillRect(4, 31, 88, 3);
+
+      // Transom Window with clean gold lettering
+      ctx.fillStyle = '#111c16';
+      ctx.fillRect(6, 32, 84, 8);
+      ctx.strokeStyle = '#5a7860';
+      ctx.lineWidth = 1;
+      ctx.strokeRect(6, 32, 84, 8);
+
+      ctx.fillStyle = '#e8d49a';
+      ctx.font = 'bold 5.5px monospace';
+      ctx.textAlign = 'center';
+      ctx.fillText('• LPs • 45s • HI-FI STEREO •', 48, 38);
     });
 
     // 16. Basketball Hoop on Garage
@@ -811,34 +905,147 @@ export class AssetGenerator {
     });
 
     // 22. Lemonade Stand
-    this.createCanvasTexture('prop_lemonade_stand', 32, 24, (ctx) => {
-      // Legs
-      ctx.fillStyle = '#7a5028';
-      ctx.fillRect(2, 14, 2, 10);
-      ctx.fillRect(28, 14, 2, 10);
-      // Awning
-      ctx.fillStyle = '#f0d020';
-      ctx.fillRect(0, 4, 32, 4);
-      ctx.fillStyle = '#c8aa10';
-      ctx.fillRect(0, 7, 32, 1);
-      // Awning fringe
-      for (let i = 0; i < 8; i++) {
-        ctx.fillStyle = (i % 2 === 0) ? '#f0d020' : '#e0c010';
-        ctx.fillRect(i * 4, 8, 4, 2);
+    // 22. Lemonade Stand (Rich 1969 neighborhood pixel-art stand)
+    this.createCanvasTexture('prop_lemonade_stand', 48, 36, (ctx) => {
+      // Awning / Striped Canopy
+      const awningW = 44;
+      const stripeW = 4;
+      for (let i = 0; i < 11; i++) {
+        ctx.fillStyle = (i % 2 === 0) ? '#fbc02d' : '#fffde7';
+        ctx.fillRect(2 + i * stripeW, 2, stripeW, 9);
+        // Subtle depth
+        ctx.fillStyle = 'rgba(0, 0, 0, 0.08)';
+        ctx.fillRect(2 + i * stripeW, 2, 1, 9);
       }
-      // Counter top
-      ctx.fillStyle = '#e8e0c0';
-      ctx.fillRect(2, 12, 28, 4);
-      // Pitcher
-      ctx.fillStyle = '#f0e060';
-      ctx.fillRect(12, 8, 8, 8);
-      ctx.fillStyle = '#ffe860';
-      ctx.fillRect(13, 9, 5, 4);
-      // Sign
-      ctx.fillStyle = '#c80020';
-      ctx.font = 'bold 4px monospace';
+      // Top awning trim (Cherry Red)
+      ctx.fillStyle = '#b71c1c';
+      ctx.fillRect(2, 1, awningW, 2);
+
+      // Scalloped fringe
+      for (let i = 0; i < 11; i++) {
+        ctx.fillStyle = (i % 2 === 0) ? '#fbc02d' : '#fffde7';
+        ctx.fillRect(2 + i * stripeW, 11, stripeW, 2);
+        ctx.fillStyle = '#c49000';
+        ctx.fillRect(2 + i * stripeW + 1, 12, stripeW - 2, 1);
+      }
+
+      // Awning drop shadow
+      ctx.fillStyle = 'rgba(0, 0, 0, 0.2)';
+      ctx.fillRect(4, 13, 40, 2);
+
+      // Wooden support poles
+      ctx.fillStyle = '#4e342e';
+      ctx.fillRect(4, 10, 3, 16);
+      ctx.fillRect(41, 10, 3, 16);
+      ctx.fillStyle = '#6d4c41';
+      ctx.fillRect(5, 10, 1, 16);
+      ctx.fillRect(42, 10, 1, 16);
+
+      // Wooden Table Top Counter
+      ctx.fillStyle = '#3e2723';
+      ctx.fillRect(3, 16, 42, 4);
+      ctx.fillStyle = '#6d4c41';
+      ctx.fillRect(3, 16, 42, 2);
+      ctx.fillStyle = '#8d6e63';
+      ctx.fillRect(3, 16, 42, 1);
+
+      // Stand Base: Whitewashed Wooden Planks
+      ctx.fillStyle = '#e0d8c3';
+      ctx.fillRect(5, 20, 38, 15);
+      ctx.fillStyle = '#f5efe0';
+      for (let y = 20; y <= 32; y += 4) {
+        ctx.fillRect(5, y, 38, 3);
+      }
+      ctx.fillStyle = '#c7bca0'; // plank crevices
+      for (let y = 23; y <= 32; y += 4) {
+        ctx.fillRect(5, y, 38, 1);
+      }
+      // Vertical frame posts on base
+      ctx.fillStyle = '#5d4037';
+      ctx.fillRect(5, 20, 2, 15);
+      ctx.fillRect(41, 20, 2, 15);
+      ctx.fillRect(5, 34, 38, 2);
+
+      // Hand-painted "LEMONADE" Signboard hanging on front
+      ctx.fillStyle = '#4e342e';
+      ctx.fillRect(8, 22, 32, 10);
+      ctx.fillStyle = '#fff9e6';
+      ctx.fillRect(9, 23, 30, 8);
+      ctx.strokeStyle = '#c49000';
+      ctx.lineWidth = 0.5;
+      ctx.strokeRect(9, 23, 30, 8);
+
+      // Cute Lemon icon on sign
+      ctx.fillStyle = '#fdd835';
+      ctx.beginPath();
+      ctx.arc(13, 27, 3, 0, Math.PI * 2);
+      ctx.fill();
+      ctx.fillStyle = '#43a047'; // leaf
+      ctx.fillRect(13, 23, 2, 2);
+
+      // Sign text
+      ctx.fillStyle = '#b71c1c';
+      ctx.font = 'bold 5px monospace';
       ctx.textAlign = 'center';
-      ctx.fillText('10¢', 16, 4);
+      ctx.fillText('LEMONADE', 25, 27.5);
+
+      ctx.fillStyle = '#2e7d32';
+      ctx.font = 'bold 4px monospace';
+      ctx.fillText('50¢', 35, 27.5);
+
+      // Items on the Counter:
+      // 1. Glass Pitcher with Lemonade & Ice
+      ctx.fillStyle = 'rgba(129, 212, 250, 0.5)';
+      ctx.fillRect(10, 11, 7, 7);
+      ctx.fillStyle = '#fff176'; // golden lemonade
+      ctx.fillRect(11, 13, 5, 4);
+      // Floating ice cubes
+      ctx.fillStyle = '#ffffff';
+      ctx.fillRect(12, 13, 1.5, 1.5);
+      ctx.fillRect(14, 14, 1.5, 1.5);
+      // Pitcher handle & spout
+      ctx.fillStyle = '#81d4fa';
+      ctx.fillRect(9, 12, 1, 4);
+      ctx.fillRect(17, 11, 1, 2);
+      // Lemon slice wheel on rim
+      ctx.fillStyle = '#fbc02d';
+      ctx.fillRect(15, 10, 2, 2);
+
+      // 2. Stack of Red & White Paper Cups
+      ctx.fillStyle = '#e53935';
+      ctx.fillRect(19, 13, 3, 5);
+      ctx.fillStyle = '#ffffff';
+      ctx.fillRect(19, 13, 3, 1);
+      ctx.fillRect(19, 15, 3, 1);
+
+      // 3. Cup of Lemonade with Red Straw
+      ctx.fillStyle = '#e53935';
+      ctx.fillRect(24, 14, 3, 4);
+      ctx.fillStyle = '#fff176';
+      ctx.fillRect(24, 14, 3, 1);
+      ctx.fillStyle = '#b71c1c'; // straw
+      ctx.fillRect(25, 11, 1, 3);
+
+      // 4. Little Tip / Coin Jar with Coins
+      ctx.fillStyle = '#b0bec5';
+      ctx.fillRect(29, 14, 4, 4);
+      ctx.fillStyle = '#fbc02d'; // shiny coins
+      ctx.fillRect(30, 13, 2, 2);
+
+      // 5. Wooden Lemon Crate beside stand
+      ctx.fillStyle = '#5d4037';
+      ctx.fillRect(38, 25, 8, 10);
+      ctx.fillStyle = '#8d6e63';
+      ctx.fillRect(39, 26, 6, 8);
+      // Lemons spilling over top
+      ctx.fillStyle = '#fdd835';
+      [[40, 24], [43, 24], [41, 22], [43, 26]].forEach(([lx, ly]) => {
+        ctx.beginPath();
+        ctx.arc(lx, ly, 1.8, 0, Math.PI * 2);
+        ctx.fill();
+      });
+      ctx.fillStyle = '#388e3c'; // little leaf
+      ctx.fillRect(42, 22, 1, 1);
     });
 
     // 23. Push Mower
@@ -1523,4 +1730,514 @@ export class AssetGenerator {
       drawLedZeppelin(sctx, 130, 130);
     }
   }
+
+  // --- 1969 Iconic Music Posters & Record Shop Props ---
+
+  createPosters() {
+    // 1. The Beatles — Abbey Road (September 1969)
+    this.createCanvasTexture('poster_beatles', 60, 76, (ctx, w, h) => {
+      // Off-white aged paper border
+      ctx.fillStyle = '#f6f1e3';
+      ctx.fillRect(0, 0, w, h);
+      ctx.strokeStyle = '#222';
+      ctx.lineWidth = 1;
+      ctx.strokeRect(1, 1, w - 2, h - 2);
+
+      // Inner image frame
+      ctx.fillStyle = '#1c221c';
+      ctx.fillRect(4, 4, w - 8, h - 8);
+
+      // Top: London Blue Sky & Leafy Green Trees
+      ctx.fillStyle = '#82a4b8';
+      ctx.fillRect(5, 5, w - 10, 24);
+      // Tree canopy
+      ctx.fillStyle = '#264e22';
+      [[8, 12, 10], [20, 10, 12], [34, 11, 14], [48, 13, 10]].forEach(([cx, cy, r]) => {
+        ctx.beginPath(); ctx.arc(cx, cy, r, 0, Math.PI * 2); ctx.fill();
+      });
+      ctx.fillStyle = '#3a6e34';
+      [[14, 9, 8], [28, 8, 9], [42, 9, 8]].forEach(([cx, cy, r]) => {
+        ctx.beginPath(); ctx.arc(cx, cy, r, 0, Math.PI * 2); ctx.fill();
+      });
+
+      // Road asphalt
+      ctx.fillStyle = '#32363a';
+      ctx.fillRect(5, 29, w - 10, h - 34);
+
+      // White Zebra Crossing Stripes (perspective angle)
+      ctx.fillStyle = '#f4f4ec';
+      const zebraStripes = [
+        [7, 36, 9, 15],
+        [18, 38, 9, 17],
+        [29, 41, 9, 18],
+        [40, 44, 9, 19]
+      ];
+      zebraStripes.forEach(([zx, zy, zw, zh]) => {
+        ctx.fillRect(zx, zy, zw, zh);
+      });
+
+      // Four Walking Silhouettes (John, Ringo, Paul, George)
+      // 1. John Lennon (all in white suit, leading right)
+      ctx.fillStyle = '#ffffff';
+      ctx.fillRect(42, 33, 4, 14); // body & legs
+      ctx.fillRect(44, 40, 3, 7); // stride leg
+      ctx.fillStyle = '#7a4e28'; // long hair & beard
+      ctx.fillRect(42, 30, 4, 4);
+
+      // 2. Ringo Starr (black suit)
+      ctx.fillStyle = '#111114';
+      ctx.fillRect(32, 35, 4, 13);
+      ctx.fillRect(34, 41, 3, 7);
+      ctx.fillStyle = '#3a2414'; // dark hair
+      ctx.fillRect(32, 32, 4, 3);
+
+      // 3. Paul McCartney (dark suit, barefoot)
+      ctx.fillStyle = '#1e2430';
+      ctx.fillRect(21, 36, 4, 13);
+      ctx.fillRect(23, 42, 3, 7);
+      ctx.fillStyle = '#f0c8a0'; // bare feet
+      ctx.fillRect(21, 49, 2, 2);
+      ctx.fillRect(24, 49, 2, 2);
+      ctx.fillStyle = '#3a2414';
+      ctx.fillRect(21, 33, 4, 3);
+
+      // 4. George Harrison (blue denim shirt & jeans)
+      ctx.fillStyle = '#2b4d7a';
+      ctx.fillRect(10, 37, 4, 13);
+      ctx.fillRect(12, 43, 3, 7);
+      ctx.fillStyle = '#54361c'; // long brown hair
+      ctx.fillRect(10, 34, 4, 4);
+
+      // Header Typography
+      ctx.fillStyle = '#ffffff';
+      ctx.font = 'bold 7px monospace';
+      ctx.textAlign = 'center';
+      ctx.fillText('THE BEATLES', w / 2, 12);
+
+      ctx.fillStyle = '#fdd835';
+      ctx.font = 'bold 5px monospace';
+      ctx.fillText('ABBEY ROAD', w / 2, 18);
+
+      // Corner Red Pin Tacks
+      ctx.fillStyle = '#c62828';
+      ctx.fillRect(2, 2, 2, 2);
+      ctx.fillRect(w - 4, 2, 2, 2);
+    });
+
+    // 2. Woodstock 1969 — "3 Days of Peace & Music" (Bird on Guitar)
+    this.createCanvasTexture('poster_woodstock', 60, 76, (ctx, w, h) => {
+      // Crimson Background
+      ctx.fillStyle = '#b71c1c';
+      ctx.fillRect(0, 0, w, h);
+      ctx.strokeStyle = '#fbc02d';
+      ctx.lineWidth = 1.5;
+      ctx.strokeRect(2, 2, w - 4, h - 4);
+
+      // Top Header
+      ctx.fillStyle = '#fdd835';
+      ctx.font = 'bold 8px monospace';
+      ctx.textAlign = 'center';
+      ctx.fillText('WOODSTOCK', w / 2, 12);
+
+      ctx.fillStyle = '#ffffff';
+      ctx.font = 'bold 4.5px monospace';
+      ctx.fillText('3 DAYS OF PEACE & MUSIC', w / 2, 18);
+
+      // Acoustic Guitar Headstock & Neck
+      const gx = 18;
+      const gy = 26;
+      ctx.fillStyle = '#5d4037';
+      ctx.fillRect(gx, gy + 12, 28, 7); // neck
+      ctx.fillStyle = '#8d6e63';
+      ctx.fillRect(gx, gy + 13, 28, 2); // frets highlight
+      ctx.fillStyle = '#3e2723';
+      ctx.fillRect(gx - 8, gy + 10, 9, 11); // headstock
+      // Tuning pegs
+      ctx.fillStyle = '#f5f5f5';
+      for (let i = 0; i < 3; i++) {
+        ctx.fillRect(gx - 7 + i * 2.5, gy + 8, 2, 2);
+        ctx.fillRect(gx - 7 + i * 2.5, gy + 21, 2, 2);
+      }
+
+      // The Iconic White Peace Dove perched on the guitar neck
+      const bx = 31;
+      const by = gy + 6;
+      ctx.fillStyle = '#ffffff';
+      // Dove body
+      ctx.beginPath();
+      ctx.ellipse(bx, by, 7, 5, -0.2, 0, Math.PI * 2);
+      ctx.fill();
+      // Dove head
+      ctx.beginPath();
+      ctx.arc(bx + 6, by - 4, 3.5, 0, Math.PI * 2);
+      ctx.fill();
+      // Orange beak
+      ctx.fillStyle = '#ff9800';
+      ctx.beginPath();
+      ctx.moveTo(bx + 9, by - 4);
+      ctx.lineTo(bx + 12, by - 3);
+      ctx.lineTo(bx + 9, by - 2);
+      ctx.fill();
+      // Eye dot
+      ctx.fillStyle = '#111';
+      ctx.fillRect(bx + 7, by - 5, 1, 1);
+      // Wing & tail feathers
+      ctx.fillStyle = '#e0e0e0';
+      ctx.beginPath();
+      ctx.moveTo(bx - 3, by - 1);
+      ctx.lineTo(bx - 10, by - 5);
+      ctx.lineTo(bx - 5, by + 3);
+      ctx.fill();
+
+      // Lower Festival Info
+      ctx.fillStyle = '#fdd835';
+      ctx.font = 'bold 5px monospace';
+      ctx.fillText('AUG 15-18, 1969', w / 2, 57);
+
+      ctx.fillStyle = '#ffffff';
+      ctx.font = 'bold 4.5px monospace';
+      ctx.fillText('BETHEL, NEW YORK', w / 2, 64);
+
+      ctx.fillStyle = '#ffcc80';
+      ctx.font = '4px monospace';
+      ctx.fillText('AN AQUARIAN EXPOSITION', w / 2, 70);
+    });
+
+    // 3. The Rolling Stones — 1969 American Tour & Tongue Logo
+    this.createCanvasTexture('poster_stones', 60, 76, (ctx, w, h) => {
+      // Midnight Cosmic Purple
+      ctx.fillStyle = '#1a0033';
+      ctx.fillRect(0, 0, w, h);
+
+      // Radiating Psychedelic Sunburst Rays
+      const cx = w / 2;
+      const cy = 41;
+      ctx.fillStyle = '#4a148c';
+      for (let a = 0; a < Math.PI * 2; a += Math.PI / 6) {
+        ctx.beginPath();
+        ctx.moveTo(cx, cy);
+        ctx.lineTo(cx + Math.cos(a) * 35, cy + Math.sin(a) * 35);
+        ctx.lineTo(cx + Math.cos(a + 0.25) * 35, cy + Math.sin(a + 0.25) * 35);
+        ctx.fill();
+      }
+
+      ctx.strokeStyle = '#ff007f';
+      ctx.lineWidth = 1.5;
+      ctx.strokeRect(2, 2, w - 4, h - 4);
+
+      // Header Typography
+      ctx.fillStyle = '#ffeb3b';
+      ctx.font = 'bold 7px monospace';
+      ctx.textAlign = 'center';
+      ctx.fillText('ROLLING STONES', cx, 11);
+
+      ctx.fillStyle = '#e040fb';
+      ctx.font = 'bold 4.5px monospace';
+      ctx.fillText('U.S. TOUR 1969', cx, 17);
+
+      // The Iconic Lips & Tongue Logo
+      // Black mouth interior
+      ctx.fillStyle = '#0a000a';
+      ctx.beginPath();
+      ctx.ellipse(cx, cy, 14, 10, 0, 0, Math.PI * 2);
+      ctx.fill();
+
+      // Red Lips
+      ctx.fillStyle = '#d50000';
+      // Upper lip
+      ctx.beginPath();
+      ctx.ellipse(cx, cy - 6, 14, 5, 0, 0, Math.PI);
+      ctx.fill();
+      // Lower lip
+      ctx.beginPath();
+      ctx.ellipse(cx, cy + 6, 14, 5, 0, Math.PI, Math.PI * 2);
+      ctx.fill();
+
+      // White Upper Teeth
+      ctx.fillStyle = '#ffffff';
+      ctx.fillRect(cx - 8, cy - 5, 16, 3);
+      ctx.fillStyle = '#0a000a';
+      for (let t = -6; t <= 6; t += 3) ctx.fillRect(cx + t, cy - 5, 1, 3);
+
+      // Huge Protruding Red Tongue
+      ctx.fillStyle = '#ff1744';
+      ctx.beginPath();
+      ctx.ellipse(cx, cy + 5, 9, 13, 0, 0, Math.PI);
+      ctx.fill();
+      // Tongue center cleft & highlight
+      ctx.fillStyle = '#b71c1c';
+      ctx.fillRect(cx - 0.5, cy + 2, 1, 12);
+      ctx.fillStyle = '#ff8a80';
+      ctx.beginPath();
+      ctx.ellipse(cx + 3, cy + 7, 3, 6, 0.2, 0, Math.PI * 2);
+      ctx.fill();
+
+      // Footer
+      ctx.fillStyle = '#00e5ff';
+      ctx.font = 'bold 5px monospace';
+      ctx.fillText('LET IT BLEED', cx, 66);
+      ctx.fillStyle = '#ffffff';
+      ctx.font = '4px monospace';
+      ctx.fillText('LIVE IN CONCERT', cx, 71);
+    });
+
+    // 4. Jimi Hendrix — Live at Woodstock 1969
+    this.createCanvasTexture('poster_hendrix', 60, 76, (ctx, w, h) => {
+      // Psychedelic Sunset Gradient
+      const grad = ctx.createLinearGradient(0, 0, 0, h);
+      grad.addColorStop(0, '#28054a');
+      grad.addColorStop(0.4, '#880e4f');
+      grad.addColorStop(0.8, '#e65100');
+      grad.addColorStop(1, '#ffb300');
+      ctx.fillStyle = grad;
+      ctx.fillRect(0, 0, w, h);
+
+      ctx.strokeStyle = '#ffd600';
+      ctx.lineWidth = 1.5;
+      ctx.strokeRect(2, 2, w - 4, h - 4);
+
+      // Soundwave concentric circles
+      ctx.strokeStyle = 'rgba(255, 235, 59, 0.35)';
+      ctx.lineWidth = 1;
+      [14, 22, 30].forEach(r => {
+        ctx.beginPath(); ctx.arc(w / 2, 38, r, 0, Math.PI * 2); ctx.stroke();
+      });
+
+      // Jimi Hendrix Silhouette
+      const jx = 24;
+      const jy = 26;
+      // Afro Hair
+      ctx.fillStyle = '#12051c';
+      ctx.beginPath();
+      ctx.arc(jx + 6, jy + 6, 8, 0, Math.PI * 2);
+      ctx.fill();
+      // Red Headband
+      ctx.fillStyle = '#d50000';
+      ctx.fillRect(jx, jy + 6, 12, 2.5);
+      // Headband fluttering trail
+      ctx.beginPath();
+      ctx.moveTo(jx, jy + 7);
+      ctx.lineTo(jx - 6, jy + 5);
+      ctx.lineTo(jx - 5, jy + 9);
+      ctx.fill();
+
+      // Body & Vest
+      ctx.fillStyle = '#12051c';
+      ctx.fillRect(jx + 2, jy + 12, 8, 16);
+      // Bellbottom legs
+      ctx.fillRect(jx + 1, jy + 28, 4, 12);
+      ctx.fillRect(jx + 7, jy + 28, 5, 12);
+
+      // White Fender Stratocaster Guitar (tilted high)
+      ctx.fillStyle = '#ffffff';
+      // Body
+      ctx.beginPath();
+      ctx.ellipse(jx + 8, jy + 19, 5, 3.5, 0.6, 0, Math.PI * 2);
+      ctx.fill();
+      // Neck
+      ctx.strokeStyle = '#ffffff';
+      ctx.lineWidth = 2;
+      ctx.beginPath();
+      ctx.moveTo(jx + 10, jy + 17);
+      ctx.lineTo(jx + 25, jy + 7); // angled up to sky!
+      ctx.stroke();
+      // Headstock
+      ctx.fillStyle = '#ffeb3b';
+      ctx.fillRect(jx + 24, jy + 6, 3, 2);
+
+      // Neon Energy Lightning Sparks
+      ctx.strokeStyle = '#00e5ff';
+      ctx.lineWidth = 1;
+      ctx.beginPath();
+      ctx.moveTo(jx + 26, jy + 6);
+      ctx.lineTo(jx + 30, jy + 3);
+      ctx.lineTo(jx + 28, jy + 9);
+      ctx.lineTo(jx + 34, jy + 6);
+      ctx.stroke();
+
+      // Header & Footer
+      ctx.fillStyle = '#ffff00';
+      ctx.font = 'bold 7px monospace';
+      ctx.textAlign = 'center';
+      ctx.fillText('JIMI HENDRIX', w / 2, 11);
+
+      ctx.fillStyle = '#ffffff';
+      ctx.font = 'bold 4.5px monospace';
+      ctx.fillText('ELECTRIC LADYLAND', w / 2, 16);
+
+      ctx.fillStyle = '#00e5ff';
+      ctx.font = 'bold 5px monospace';
+      ctx.fillText('LIVE AT WOODSTOCK', w / 2, 66);
+      ctx.fillStyle = '#ffffff';
+      ctx.font = '4px monospace';
+      ctx.fillText('THE STAR SPANGLED BANNER', w / 2, 71);
+    });
+
+    // 5. The Doors — 1969
+    this.createCanvasTexture('poster_doors', 52, 68, (ctx, w, h) => {
+      // Vintage Amber & Emerald Mood
+      ctx.fillStyle = '#0d2222';
+      ctx.fillRect(0, 0, w, h);
+      ctx.strokeStyle = '#e0a030';
+      ctx.lineWidth = 1;
+      ctx.strokeRect(2, 2, w - 4, h - 4);
+
+      // Jim Morrison Silhouette Portrait
+      ctx.fillStyle = '#223838';
+      ctx.beginPath();
+      ctx.arc(w / 2, 34, 16, 0, Math.PI * 2);
+      ctx.fill();
+
+      // Wild curly hair silhouette
+      ctx.fillStyle = '#081212';
+      ctx.beginPath();
+      ctx.arc(w / 2, 30, 11, 0, Math.PI * 2);
+      ctx.fill();
+      // Face profile & cheekbones
+      ctx.fillStyle = '#c89a68';
+      ctx.fillRect(w / 2 - 4, 30, 8, 10);
+      // Dark intense eyes & shadowed cheek
+      ctx.fillStyle = '#081212';
+      ctx.fillRect(w / 2 - 3, 33, 2, 1.5);
+      ctx.fillRect(w / 2 + 1, 33, 2, 1.5);
+      // Leather jacket
+      ctx.fillRect(w / 2 - 9, 41, 18, 9);
+
+      // Classic Geometric Typography
+      ctx.fillStyle = '#ffffff';
+      ctx.font = 'bold 7.5px monospace';
+      ctx.textAlign = 'center';
+      ctx.fillText('THE DOORS', w / 2, 12);
+
+      ctx.fillStyle = '#fdd835';
+      ctx.font = 'bold 4.5px monospace';
+      ctx.fillText('MORRISON HOTEL', w / 2, 18);
+
+      ctx.fillStyle = '#80cbc4';
+      ctx.font = '5px monospace';
+      ctx.fillText('1969 TOUR', w / 2, 59);
+    });
+
+    // 6. Led Zeppelin — 1969 Debut North American Tour
+    this.createCanvasTexture('poster_zeppelin_tour', 52, 68, (ctx, w, h) => {
+      // Dark Charcoal Sky
+      ctx.fillStyle = '#141618';
+      ctx.fillRect(0, 0, w, h);
+      ctx.strokeStyle = '#ff9100';
+      ctx.lineWidth = 1;
+      ctx.strokeRect(2, 2, w - 4, h - 4);
+
+      // Golden Searchlights sweeping into sky
+      ctx.fillStyle = 'rgba(255, 215, 64, 0.22)';
+      ctx.beginPath(); ctx.moveTo(8, h - 16); ctx.lineTo(24, 8); ctx.lineTo(34, 8); ctx.fill();
+      ctx.beginPath(); ctx.moveTo(w - 8, h - 16); ctx.lineTo(18, 8); ctx.lineTo(28, 8); ctx.fill();
+
+      // Rigid Airship Silhouette
+      ctx.fillStyle = '#3a4245';
+      ctx.beginPath();
+      ctx.ellipse(w / 2, 32, 18, 7, -0.05, 0, Math.PI * 2);
+      ctx.fill();
+      ctx.fillStyle = '#6c7a80';
+      ctx.beginPath();
+      ctx.ellipse(w / 2 - 2, 30, 14, 3, -0.05, 0, Math.PI * 2);
+      ctx.fill();
+      // Fins
+      ctx.fillStyle = '#222';
+      ctx.fillRect(w / 2 - 16, 29, 3, 6);
+
+      // Sunset smoke & flame clouds below
+      ctx.fillStyle = '#d84315';
+      [[14, 42, 6], [24, 40, 8], [34, 41, 7]].forEach(([cx, cy, r]) => {
+        ctx.beginPath(); ctx.arc(cx, cy, r, 0, Math.PI * 2); ctx.fill();
+      });
+
+      // Rock Typography
+      ctx.fillStyle = '#ff9100';
+      ctx.font = 'bold 7px monospace';
+      ctx.textAlign = 'center';
+      ctx.fillText('LED ZEPPELIN', w / 2, 12);
+
+      ctx.fillStyle = '#ffffff';
+      ctx.font = 'bold 4.5px monospace';
+      ctx.fillText('FIRST U.S. TOUR', w / 2, 18);
+
+      ctx.fillStyle = '#ffcc80';
+      ctx.font = 'bold 4.5px monospace';
+      ctx.fillText('FALL 1969', w / 2, 59);
+    });
+
+    // 7. Framed Certified Gold Record Award
+    this.createCanvasTexture('gold_record_award', 46, 58, (ctx, w, h) => {
+      // Walnut Lacquer Frame
+      ctx.fillStyle = '#2d1808';
+      ctx.fillRect(0, 0, w, h);
+      ctx.strokeStyle = '#d4af37';
+      ctx.lineWidth = 1.5;
+      ctx.strokeRect(1, 1, w - 2, h - 2);
+
+      // Black Velvet Matting
+      ctx.fillStyle = '#0a0a0f';
+      ctx.fillRect(4, 4, w - 8, h - 8);
+
+      // 12" Gold Vinyl Disc
+      const cx = w / 2;
+      const cy = 24;
+      // Outer gold rim
+      ctx.fillStyle = '#f5c542';
+      ctx.beginPath(); ctx.arc(cx, cy, 17, 0, Math.PI * 2); ctx.fill();
+      // Concentric grooves
+      ctx.strokeStyle = '#d49b20';
+      ctx.lineWidth = 0.5;
+      [14, 11, 8].forEach(r => {
+        ctx.beginPath(); ctx.arc(cx, cy, r, 0, Math.PI * 2); ctx.stroke();
+      });
+      // Center red label
+      ctx.fillStyle = '#c62828';
+      ctx.beginPath(); ctx.arc(cx, cy, 5, 0, Math.PI * 2); ctx.fill();
+      // Center silver spindle hole
+      ctx.fillStyle = '#e0e0e0';
+      ctx.beginPath(); ctx.arc(cx, cy, 1.5, 0, Math.PI * 2); ctx.fill();
+
+      // Brass Inscription Plaque at bottom
+      ctx.fillStyle = '#d4af37';
+      ctx.fillRect(6, 44, w - 12, 8);
+      ctx.strokeStyle = '#fae078';
+      ctx.lineWidth = 0.5;
+      ctx.strokeRect(6, 44, w - 12, 8);
+
+      ctx.fillStyle = '#1c1204';
+      ctx.font = 'bold 4px monospace';
+      ctx.textAlign = 'center';
+      ctx.fillText('★ CERTIFIED GOLD ★', cx, 48);
+      ctx.fillText('1,000,000 COPIES', cx, 51.5);
+    });
+
+    // 8. Vinyl Record Crates for Crate Digging
+    this.createCanvasTexture('vinyl_crate', 32, 22, (ctx, w, h) => {
+      // Slatted Wooden Crate
+      ctx.fillStyle = '#6d4c41';
+      ctx.fillRect(0, 6, w, h - 6);
+      ctx.fillStyle = '#8d6e63';
+      ctx.fillRect(1, 7, w - 2, h - 8);
+
+      // Handle Cutout
+      ctx.fillStyle = '#3e2723';
+      ctx.fillRect(w / 2 - 4, 11, 8, 3);
+
+      // Vertical Colorful LP Sleeves inside crate (tilted forward)
+      const lpColors = ['#d32f2f', '#1976d2', '#fbc02d', '#388e3c', '#7b1fa2', '#e64a19', '#0097a7', '#5d4037'];
+      lpColors.forEach((col, i) => {
+        const lx = 3 + i * 3.2;
+        ctx.fillStyle = col;
+        ctx.fillRect(lx, 2 + (i % 2), 3, 9);
+        ctx.fillStyle = '#fff';
+        ctx.fillRect(lx, 2 + (i % 2), 3, 1);
+      });
+
+      // Front Crate Plank lines
+      ctx.fillStyle = '#4e342e';
+      ctx.fillRect(0, 15, w, 1);
+    });
+  }
 }
+

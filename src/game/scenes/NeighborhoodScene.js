@@ -409,16 +409,53 @@ export class NeighborhoodScene extends Phaser.Scene {
         }
       }
     }
-    // Striped Awning & RECORDS banner
-    this.add.image((startX + 5) * 16 + 8, (startY + 2) * 16, 'prop_shop_facade');
+    // Striped Awning & RECORDS banner (positioned gracefully over shop front)
+    const facade = this.add.image((startX + 5) * 16 + 8, (startY + 2) * 16 - 2, 'prop_shop_facade');
+    facade.setDepth(3);
+
+    // Crystal-clear shop front signage
+    this.add.text((startX + 5) * 16 + 8, (startY + 2) * 16 - 10, "MR. VINYL'S RECORDS", {
+      fontFamily: 'monospace',
+      fontSize: '6.5px',
+      color: '#ffea75',
+      fontStyle: 'bold',
+      resolution: 3
+    }).setOrigin(0.5).setDepth(4);
+
+    this.add.text((startX + 5) * 16 + 8, (startY + 2) * 16 + 15, "• LPs • 45s • TAPES • HI-FI •", {
+      fontFamily: 'monospace',
+      fontSize: '4.5px',
+      color: '#f6eed6',
+      fontStyle: 'bold',
+      resolution: 3
+    }).setOrigin(0.5).setDepth(4);
   }
 
   // --- Static Props & Interactive Entities ---
 
   createStaticProps() {
-    // 1. Oakwood Park Wooden Sign (x: 14, y: 16)
-    this.add.image(14 * 16 + 8, 16 * 16 + 8, 'prop_park_sign');
+    // 1. Oakwood Park Wooden Sign (x: 14, y: 16) — Crisp rustic lake signboard
+    const parkSign = this.add.image(14 * 16 + 8, 16 * 16 + 6, 'prop_park_sign');
+    parkSign.setDisplaySize(48, 27);
+    parkSign.setDepth(3);
     this.collisionGrid[16][14] = true;
+
+    // Razor-sharp readable text overlay on park signboard
+    this.add.text(14 * 16 + 8, 16 * 16 + 1, 'OAKWOOD PARK', {
+      fontFamily: 'monospace',
+      fontSize: '5.5px',
+      color: '#261408',
+      fontStyle: 'bold',
+      resolution: 3
+    }).setOrigin(0.5).setDepth(4);
+
+    this.add.text(14 * 16 + 8, 16 * 16 + 6, 'LAKE & SANCTUARY', {
+      fontFamily: 'monospace',
+      fontSize: '4px',
+      color: '#204d1a',
+      fontStyle: 'bold',
+      resolution: 3
+    }).setOrigin(0.5).setDepth(4);
 
     // 2. Trash Can outside Player's Garage (x: 3, y: 30) — on west side of garage
     this.trashSprite = this.add.image(3 * 16 + 8, 30 * 16 + 8, 'prop_trash_full');
@@ -526,9 +563,20 @@ export class NeighborhoodScene extends Phaser.Scene {
     this.add.image(17 * 16 + 8, 30 * 16 + 8, 'prop_flower_pot');
     this.add.image(25 * 16 + 8, 30 * 16 + 8, 'prop_flower_pot');
 
-    // 17. Lemonade stand in park (x: 12, y: 18)
-    this.lemonadeSprite = this.add.image(12 * 16 + 8, 18 * 16 + 8, 'prop_lemonade_stand');
+    // 17. Lemonade stand in park (x: 12, y: 18) — Upgraded pixel-art stand
+    this.lemonadeSprite = this.add.image(12 * 16 + 8, 18 * 16 + 6, 'prop_lemonade_stand');
+    this.lemonadeSprite.setDisplaySize(44, 33);
+    this.lemonadeSprite.setDepth(3);
     this.collisionGrid[18][12] = true;
+
+    // Razor-sharp readable 50¢ sign on lemonade stand
+    this.add.text(12 * 16 + 7, 18 * 16 + 9.5, 'LEMONADE 50¢', {
+      fontFamily: 'monospace',
+      fontSize: '4.5px',
+      color: '#b71c1c',
+      fontStyle: 'bold',
+      resolution: 3
+    }).setOrigin(0.5).setDepth(4);
 
     // 18. Push mower left by garage (x: 3, y: 32)
     this.add.image(3 * 16 + 8, 32 * 16 + 8, 'prop_mower');

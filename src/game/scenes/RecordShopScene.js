@@ -13,34 +13,59 @@ export class RecordShopScene extends Phaser.Scene {
   }
 
   create() {
-    this.cameras.main.setBackgroundColor('#1e1218');
+    this.cameras.main.setBackgroundColor('#1a1016');
 
     const w = this.cameras.main.width;
     const h = this.cameras.main.height;
     const cx = w / 2;
 
-    // === BACK WALL (Brick) ===
+    // === BACK WALL (Red Brick) ===
+    const floorY = Math.round(h * 0.72);
     for (let bx = 0; bx < w; bx += 16) {
-      for (let by = 0; by < Math.round(h * 0.72); by += 16) {
+      for (let by = 0; by < floorY; by += 16) {
         this.add.image(bx + 8, by + 8, 'tile_wall_brick').setDisplaySize(16, 16);
       }
     }
 
     // === DARK WOOD FLOOR ===
-    const floorY = Math.round(h * 0.72);
-    this.add.rectangle(cx, (floorY + h) / 2, w, h - floorY, 0x2e1c0e);
+    this.add.rectangle(cx, (floorY + h) / 2, w, h - floorY, 0x28180c);
     // Floor planks
-    for (let fx = 0; fx < w; fx += 12) {
-      this.add.rectangle(fx, (floorY + h) / 2, 1, h - floorY, 0x3a2414, 0.6);
+    for (let fx = 0; fx < w; fx += 14) {
+      this.add.rectangle(fx, (floorY + h) / 2, 1, h - floorY, 0x382010, 0.7);
     }
-    // Floor edge shadow
-    this.add.rectangle(cx, floorY + 3, w, 6, 0x0a0806, 0.6);
+    // Floor shadow
+    this.add.rectangle(cx, floorY + 3, w, 6, 0x0a0604, 0.65);
 
-    // === VINYL SHELVES (Back wall) ===
+    // === NEON MARQUEE SIGN (Centered at cx, 44 — Clear of HTML Header!) ===
+    const signW = 270;
+    const signH = 24;
+    const signY = 44;
+    // Sign shadow & backing
+    this.add.rectangle(cx + 2, signY + 2, signW, signH, 0x000000, 0.5);
+    const signBg = this.add.rectangle(cx, signY, signW, signH, 0x0c2416);
+    signBg.setStrokeStyle(2, 0xd4a030);
+    this.add.rectangle(cx, signY, signW - 4, signH - 4, 0x000000, 0).setStrokeStyle(1, 0xfad040);
+
+    this.add.text(cx, signY - 3, "★  MR. VINYL'S HI-FI RECORDS  ★", {
+      fontFamily: 'monospace',
+      fontSize: '10px',
+      color: '#ffe57f',
+      fontStyle: 'bold',
+      resolution: 3
+    }).setOrigin(0.5);
+
+    this.add.text(cx, signY + 7, "• VINYL LPs • 45s • TURNTABLES • HI-FI STEREO •", {
+      fontFamily: 'monospace',
+      fontSize: '6px',
+      color: '#c8e8a0',
+      resolution: 3
+    }).setOrigin(0.5);
+
+    // === VINYL SHELVES (Lowered so they have breathing room) ===
     const drawShelf = (sx, sy, recordCount) => {
       // Shelf board
-      this.add.rectangle(sx, sy + 26, recordCount * 13 + 8, 6, 0x4a2e14);
-      this.add.rectangle(sx, sy + 23, recordCount * 13 + 8, 3, 0x6a4422);
+      this.add.rectangle(sx, sy + 25, recordCount * 12 + 6, 5, 0x4a2e14);
+      this.add.rectangle(sx, sy + 23, recordCount * 12 + 6, 2, 0x6a4422);
       // Records
       const colors = [
         0xd4523c, 0x4878a0, 0xd4b040, 0x3a7848, 0xc84878,
@@ -48,53 +73,69 @@ export class RecordShopScene extends Phaser.Scene {
         0x5070c0, 0xc8a820, 0x8040a0, 0x30606a
       ];
       for (let i = 0; i < recordCount; i++) {
-        const rx = sx - (recordCount * 13) / 2 + i * 13 + 6;
+        const rx = sx - (recordCount * 12) / 2 + i * 12 + 6;
         const col = colors[i % colors.length];
-        // Spine
-        this.add.rectangle(rx, sy + 10, 10, 22, col);
-        // Lighter edge
-        this.add.rectangle(rx - 4, sy + 10, 2, 22, 0xffffff, 0.15);
-        // Top label
-        this.add.rectangle(rx, sy + 2, 8, 4, 0xfff8e8);
+        this.add.rectangle(rx, sy + 10, 9, 22, col);
+        this.add.rectangle(rx - 3, sy + 10, 2, 22, 0xffffff, 0.18);
+        this.add.rectangle(rx, sy + 2, 7, 4, 0xfff8e8);
       }
     };
 
-    // Three rows of records
-    drawShelf(cx - 80, 20, 10);
-    drawShelf(cx + 80, 20, 10);
-    drawShelf(cx - 60, 62, 9);
-    drawShelf(cx + 90, 64, 8);
+    // Upper and lower shelves
+    drawShelf(cx - 75, 72, 8);
+    drawShelf(cx + 45, 72, 7);
+    drawShelf(cx - 75, 114, 8);
+    drawShelf(cx + 45, 114, 7);
 
-    // === NEON SIGN ===
-    const signBg = this.add.rectangle(cx - 60, 12, 180, 18, 0x0e2218);
-    signBg.setStrokeStyle(1.5, 0xd4a030);
-    this.add.text(cx - 60, 12, '★  MR. VINYL\'S RECORDS  ★  EST. 1962', {
-      fontFamily: 'monospace',
-      fontSize: '10px',
-      color: '#f0c242',
-      fontStyle: 'bold',
-      resolution: 2
-    }).setOrigin(0.5);
+    // === ICONIC 1969 MUSIC POSTERS WITH REAL ARTWORK ===
+    // Left Wall
+    this.add.image(52, 95, 'poster_beatles');
+    this.add.image(52, 180, 'poster_hendrix');
 
-    // === POSTERS on walls ===
-    this.drawPoster(40, 100, 'THE BEATLES', '#102a18', '#f0e030');
-    this.drawPoster(560, 95, 'ROLLING\nSTONES', '#1a0a2a', '#c840a0');
-    this.drawPoster(w - 60, 155, 'WOODSTOCK\n1969', '#1a1a10', '#e8a020');
+    // Back Wall (Above booth & between shelves)
+    this.add.image(cx - 150, 92, 'poster_woodstock');
+    this.add.image(cx + 10, 88, 'poster_doors');
+    this.add.image(cx + 66, 88, 'gold_record_award');
 
-    // === TURNTABLE DEMO STATION ===
+    // Right Wall
+    this.add.image(w - 52, 95, 'poster_stones');
+    this.add.image(w - 52, 180, 'poster_zeppelin_tour');
+
+    // === TURNTABLE LISTENING BOOTH ===
     const ttX = cx - 110;
-    const ttY = 155;
-    this.add.rectangle(ttX, ttY, 80, 54, 0x3a2210);
-    this.add.rectangle(ttX, ttY - 5, 70, 40, 0x1a1a1a);
-    this.add.text(ttX, ttY - 32, 'LISTEN BEFORE\nYOU BUY', {
-      fontFamily: 'monospace', fontSize: '7px', color: '#c8b88a',
-      fontStyle: 'bold', align: 'center'
+    const ttY = 192;
+    // Wooden console body
+    this.add.rectangle(ttX, ttY, 82, 54, 0x3e2412);
+    this.add.rectangle(ttX, ttY - 4, 72, 40, 0x161616);
+    this.add.rectangle(ttX, ttY + 16, 72, 10, 0x2a160c);
+    // Stereo VU Meters
+    this.add.rectangle(ttX - 16, ttY + 16, 12, 6, 0x0e2e18);
+    this.add.rectangle(ttX + 16, ttY + 16, 12, 6, 0x0e2e18);
+    this.add.text(ttX - 16, ttY + 16, 'VU', { fontFamily: 'monospace', fontSize: '4px', color: '#4caf50', resolution: 3 }).setOrigin(0.5);
+    this.add.text(ttX + 16, ttY + 16, 'VU', { fontFamily: 'monospace', fontSize: '4px', color: '#4caf50', resolution: 3 }).setOrigin(0.5);
+
+    // Booth Plaque (Clear & Readable!)
+    const plaque = this.add.rectangle(ttX, ttY - 32, 78, 15, 0x101a14);
+    plaque.setStrokeStyle(1, 0xd4a030);
+    this.add.text(ttX, ttY - 35, '★ HI-FI LISTENING BOOTH ★', {
+      fontFamily: 'monospace', fontSize: '6px', color: '#f8d24a',
+      fontStyle: 'bold', align: 'center', resolution: 3
     }).setOrigin(0.5);
-    // Spinning platter
-    this.spinDisk = this.add.circle(ttX - 5, ttY - 2, 16, 0x111111);
-    this.spinDisk.setStrokeStyle(1.5, 0x555555);
-    this.spinLabel = this.add.circle(ttX - 5, ttY - 2, 5, 0xc74a38);
-    this.add.line(0, 0, ttX + 20, ttY + 10, ttX + 5, ttY - 5, 0xc8c8c8).setLineWidth(2);
+    this.add.text(ttX, ttY - 28, 'DROP THE NEEDLE & GROOVE', {
+      fontFamily: 'monospace', fontSize: '4.5px', color: '#c8e0b0',
+      align: 'center', resolution: 3
+    }).setOrigin(0.5);
+
+    // Spinning Vinyl Platter
+    this.spinDisk = this.add.circle(ttX - 6, ttY - 4, 16, 0x111111);
+    this.spinDisk.setStrokeStyle(1.5, 0x666666);
+    this.spinLabel = this.add.circle(ttX - 6, ttY - 4, 5, 0xc74a38);
+    this.add.line(0, 0, ttX + 18, ttY + 8, ttX + 4, ttY - 6, 0xd8d8d8).setLineWidth(2);
+    // Over-ear headphones hanging on console
+    this.add.circle(ttX + 26, ttY - 8, 4, 0x222);
+    this.add.circle(ttX + 26, ttY + 2, 4, 0x222);
+    this.add.line(0, 0, ttX + 26, ttY - 8, ttX + 26, ttY + 2, 0xbbb).setLineWidth(2);
+
     // Spin animation
     this.tweens.add({
       targets: [this.spinDisk, this.spinLabel],
@@ -103,10 +144,10 @@ export class RecordShopScene extends Phaser.Scene {
       repeat: -1
     });
 
-    // Musical note animation
-    const noteColors = ['#f0c040', '#c84080', '#40c0e0'];
+    // Musical notes floating up
+    const noteColors = ['#f0c040', '#e040fb', '#00e5ff'];
     [0, 1, 2].forEach((i) => {
-      const note = this.add.text(ttX + Phaser.Math.Between(-15, 15), ttY - 18,
+      const note = this.add.text(ttX + Phaser.Math.Between(-15, 15), ttY - 20,
         ['♪', '♫', '♩'][i], {
           fontFamily: 'monospace', fontSize: '12px',
           color: noteColors[i], fontStyle: 'bold'
@@ -114,7 +155,7 @@ export class RecordShopScene extends Phaser.Scene {
       this.tweens.add({
         targets: note,
         x: note.x + Phaser.Math.Between(-20, 20),
-        y: note.y - 40,
+        y: note.y - 42,
         alpha: 0,
         duration: 1800 + i * 400,
         repeat: -1,
@@ -124,97 +165,101 @@ export class RecordShopScene extends Phaser.Scene {
 
     // === FEATURED SHOWCASE: Led Zeppelin II ===
     const showcaseX = cx + 160;
-    const showcaseY = 118;
+    const showcaseY = 126;
 
     // Shadow
-    this.add.rectangle(showcaseX + 4, showcaseY + 4, 116, 148, 0x000000, 0.5);
-    // Case background
-    const caseBg = this.add.rectangle(showcaseX, showcaseY, 116, 148, 0xf4ecda);
+    this.add.rectangle(showcaseX + 4, showcaseY + 4, 120, 156, 0x000000, 0.5);
+    // Case background (Velvet luxury frame)
+    const caseBg = this.add.rectangle(showcaseX, showcaseY, 120, 156, 0xf6efe2);
     caseBg.setStrokeStyle(2, 0x1e3020);
 
     // "FEATURED" banner
-    const featureBg = this.add.rectangle(showcaseX, showcaseY - 60, 110, 14, 0x8a2c1e);
-    featureBg.setStrokeStyle(1, 0xe8b030);
-    this.add.text(showcaseX, showcaseY - 60, '★  FEATURED LP  ★', {
-      fontFamily: 'monospace', fontSize: '8px', color: '#f8e8a0', fontStyle: 'bold'
+    const featureBg = this.add.rectangle(showcaseX, showcaseY - 64, 114, 16, 0x8a2c1e);
+    featureBg.setStrokeStyle(1, 0xfad040);
+    this.add.text(showcaseX, showcaseY - 64, '★  FEATURED LP OF THE WEEK  ★', {
+      fontFamily: 'monospace', fontSize: '7px', color: '#fff9c4', fontStyle: 'bold', resolution: 3
     }).setOrigin(0.5);
 
     // Album image
-    const albumImg = this.add.image(showcaseX, showcaseY - 14, 'album_led_zeppelin_ii');
-    albumImg.setDisplaySize(80, 80);
-    // Slight glow pulsing effect
+    const albumImg = this.add.image(showcaseX, showcaseY - 16, 'album_led_zeppelin_ii');
+    albumImg.setDisplaySize(82, 82);
+
     this.tweens.add({
       targets: caseBg,
-      fillColor: 0xfff8e8,
+      fillColor: 0xfffaed,
       duration: 1200,
       yoyo: true,
       repeat: -1
     });
 
-    this.add.text(showcaseX, showcaseY + 42, 'LED ZEPPELIN II', {
-      fontFamily: 'monospace', fontSize: '9px', color: '#1a2618', fontStyle: 'bold'
+    this.add.text(showcaseX, showcaseY + 38, 'LED ZEPPELIN II', {
+      fontFamily: 'monospace', fontSize: '9.5px', color: '#1a2618', fontStyle: 'bold', resolution: 3
     }).setOrigin(0.5);
 
-    this.add.text(showcaseX, showcaseY + 54, '"Whole Lotta Love"', {
-      fontFamily: 'monospace', fontSize: '7px', color: '#5a4030', fontStyle: 'italic'
+    this.add.text(showcaseX, showcaseY + 50, '"Whole Lotta Love" • 1969', {
+      fontFamily: 'monospace', fontSize: '7px', color: '#6d4c41', fontStyle: 'italic', resolution: 3
     }).setOrigin(0.5);
 
-    this.priceBadge = this.add.rectangle(showcaseX, showcaseY + 68, 64, 18, 0x264834);
-    this.priceBadge.setStrokeStyle(1, 0x60a840);
-    this.priceText = this.add.text(showcaseX, showcaseY + 68, '$25.00', {
-      fontFamily: 'monospace', fontSize: '10px', color: '#a0e870', fontStyle: 'bold'
+    this.priceBadge = this.add.rectangle(showcaseX, showcaseY + 65, 72, 18, 0x1b5e20);
+    this.priceBadge.setStrokeStyle(1.5, 0x66bb6a);
+    this.priceText = this.add.text(showcaseX, showcaseY + 65, '$25.00', {
+      fontFamily: 'monospace', fontSize: '10px', color: '#b9f6ca', fontStyle: 'bold', resolution: 3
     }).setOrigin(0.5);
 
     // === COUNTER ===
-    const counterY = Math.round(h * 0.72) - 28;
-    // Counter sides
-    this.add.rectangle(cx - 40, counterY + 16, 280, 52, 0x5a3518);
-    this.add.rectangle(cx - 40, counterY - 10, 284, 8, 0x7a4c28);
+    const counterY = Math.round(h * 0.72) - 24;
+    // Counter front & sides
+    this.add.rectangle(cx - 35, counterY + 18, 290, 52, 0x4e2d14);
+    this.add.rectangle(cx - 35, counterY - 10, 294, 8, 0x6d4020);
     // Counter top surface
-    this.add.rectangle(cx - 40, counterY - 14, 284, 6, 0x8c5c32);
-    // Counter items
-    this.add.circle(cx + 30, counterY - 18, 6, 0x222222); // small record on counter
-    this.add.circle(cx + 30, counterY - 18, 2, 0xc74a38);
-    this.add.rectangle(cx - 30, counterY - 18, 28, 12, 0x1c2c20); // cash register
-    this.add.rectangle(cx - 30, counterY - 24, 20, 4, 0x2a4030);
-    this.add.text(cx - 30, counterY - 26, '$$$', {
-      fontFamily: 'monospace', fontSize: '6px', color: '#c8e840'
+    this.add.rectangle(cx - 35, counterY - 14, 294, 6, 0x8a542a);
+
+    // Vinyl Record Crates (Crate digging!)
+    this.add.image(cx + 65, counterY - 16, 'vinyl_crate');
+    this.add.image(cx - 155, counterY + 42, 'vinyl_crate');
+
+    // Brass Cash Register
+    this.add.rectangle(cx - 25, counterY - 18, 28, 14, 0x223626);
+    this.add.rectangle(cx - 25, counterY - 26, 20, 6, 0x2e4a34);
+    this.add.text(cx - 25, counterY - 26, '$$$', {
+      fontFamily: 'monospace', fontSize: '6px', color: '#c8e840', resolution: 3
     }).setOrigin(0.5);
 
     // Mr. Vinyl behind the counter
-    const clerk = this.add.image(cx - 80, counterY - 36, 'npc_mr_vinyl');
+    const clerk = this.add.image(cx - 75, counterY - 36, 'npc_mr_vinyl');
     clerk.setDisplaySize(36, 54);
-    // Idle bob
     this.tweens.add({
       targets: clerk, y: clerk.y - 2, duration: 1200,
       yoyo: true, repeat: -1, ease: 'Sine.easeInOut'
     });
 
-    // === HUD ===
+    // === DIALOGUE & HUD ===
     this.dialogueBox = new DialogueBox(this);
 
-    this.cashDisplay = this.add.text(12, 10, `YOUR CASH: $${gameState.state.cash}`, {
-      fontFamily: 'monospace', fontSize: '11px', color: '#e8f8d0',
-      backgroundColor: '#182c18', padding: { x: 8, y: 5 }, resolution: 2
-    });
+    // Clean cash badge on counter
+    this.cashDisplay = this.add.text(cx - 25, counterY - 38, `YOUR CASH: $${gameState.state.cash}`, {
+      fontFamily: 'monospace', fontSize: '8px', color: '#e8f8d0',
+      backgroundColor: '#1b381e', padding: { x: 5, y: 3 }, resolution: 3
+    }).setOrigin(0.5);
 
-    const exitBtn = this.add.text(12, h - 28, '[ ESC / E — STEP OUTSIDE ]', {
-      fontFamily: 'monospace', fontSize: '9px', color: '#f0e8d0',
-      backgroundColor: '#6c2a1c', padding: { x: 8, y: 5 }, resolution: 2
+    // Exit Button
+    const exitBtn = this.add.text(16, h - 26, '[ ESC / E — STEP OUTSIDE ]', {
+      fontFamily: 'monospace', fontSize: '9px', color: '#f5ecd6',
+      backgroundColor: '#7f2316', padding: { x: 8, y: 5 }, resolution: 3
     });
     exitBtn.setInteractive({ useHandCursor: true });
     exitBtn.on('pointerdown', () => this.exitShop());
-    exitBtn.on('pointerover', () => exitBtn.setBackgroundColor('#8c3828'));
-    exitBtn.on('pointerout', () => exitBtn.setBackgroundColor('#6c2a1c'));
+    exitBtn.on('pointerover', () => exitBtn.setBackgroundColor('#9c2c1c'));
+    exitBtn.on('pointerout', () => exitBtn.setBackgroundColor('#7f2316'));
 
-    // Buy button (prominent!)
+    // Buy button (pulsing gold & green)
     if (!gameState.state.quests.albumBought) {
       this.buyBtn = this.add.text(showcaseX, showcaseY + 92, '[ PRESS E TO BUY ]', {
-        fontFamily: 'monospace', fontSize: '9px', color: '#fff8d0',
-        backgroundColor: '#264834', padding: { x: 8, y: 5 }, resolution: 2
+        fontFamily: 'monospace', fontSize: '9px', color: '#fff9c4',
+        backgroundColor: '#1b5e20', padding: { x: 9, y: 5 }, resolution: 3
       }).setOrigin(0.5);
       this.tweens.add({
-        targets: this.buyBtn, alpha: 0.3, duration: 600,
+        targets: this.buyBtn, alpha: 0.35, duration: 600,
         yoyo: true, repeat: -1
       });
     }
@@ -225,18 +270,6 @@ export class RecordShopScene extends Phaser.Scene {
     });
 
     this.time.delayedCall(350, () => this.talkToMrVinyl());
-  }
-
-  drawPoster(x, y, text, bg, fg) {
-    const w = 52;
-    const h = 64;
-    this.add.rectangle(x, y, w, h, Phaser.Display.Color.HexStringToColor(bg).color);
-    this.add.rectangle(x, y, w, h, 0xffffff, 0).setStrokeStyle(1.5, Phaser.Display.Color.HexStringToColor(fg).color);
-    this.add.text(x, y - 4, text, {
-      fontFamily: 'monospace', fontSize: '9px',
-      color: '#' + fg.replace('#', ''),
-      fontStyle: 'bold', align: 'center'
-    }).setOrigin(0.5);
   }
 
   talkToMrVinyl() {
