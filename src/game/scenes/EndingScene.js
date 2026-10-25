@@ -1014,6 +1014,9 @@ export class EndingScene extends Phaser.Scene {
 
   interactTurntable() {
     if (gameState.state.quests.albumBought) {
+      if (!audioManager.mp3Audio || audioManager.mp3Audio.paused) {
+        audioManager.playMusic('ending');
+      }
       this.dialogueBox.show('Turntable', null, [
         '★ GARRARD MODEL 301 HI-FI TURNTABLE ★',
         'The needle drops into the groove. Jimmy Page\'s heavy opening riff for "Whole Lotta Love" roars through the stereo speakers!'

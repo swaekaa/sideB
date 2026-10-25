@@ -330,6 +330,13 @@ class AudioManager {
     } catch (e) {}
   }
 
+  stopSynthesizer() {
+    if (this.musicTimer) {
+      clearInterval(this.musicTimer);
+      this.musicTimer = null;
+    }
+  }
+
   // --- Music Synthesizer ---
 
   playMusic(type = 'ambient') {
@@ -344,8 +351,11 @@ class AudioManager {
       this.startRadioLoop();
     } else if (type === 'ending' || type === 'zeppelin') {
       this.playNeedleDrop();
-      setTimeout(() => {
-        if (!this.isMuted) this.playWholeLottaLoveAudio();
+      if (this.needleTimeout) clearTimeout(this.needleTimeout);
+      this.needleTimeout = setTimeout(() => {
+        if (!this.isMuted && (this.currentMusicType === 'ending' || this.currentMusicType === 'zeppelin')) {
+          this.playWholeLottaLoveAudio();
+        }
       }, 520);
     }
   }
@@ -357,10 +367,11 @@ class AudioManager {
   }
 
   stopMusic() {
-    if (this.musicTimer) {
-      clearInterval(this.musicTimer);
-      this.musicTimer = null;
+    if (this.needleTimeout) {
+      clearTimeout(this.needleTimeout);
+      this.needleTimeout = null;
     }
+    this.stopSynthesizer();
     if (this.mp3Audio) {
       try {
         this.mp3Audio.pause();
@@ -371,61 +382,73 @@ class AudioManager {
   }
 
   playWholeLottaLoveAudio() {
-    this.stopMusic();
+    // 1. Immediately shut down any ongoing synthesized loops (ambient, synth riff, radio, etc.)
+    this.stopSynthesizer();
     this.currentMusicType = 'ending';
     if (this.isMuted) return;
 
-    // Try HTML5 Audio with user's MP3 file in public folder
-    const mp3Sources = [
-      '/Led_Zeppelin_-_Whole_Lotta_Love_Official_Music_Video_(mp3.pm).mp3',
-      './src/public/Led_Zeppelin_-_Whole_Lotta_Love_Official_Music_Video_(mp3.pm).mp3',
-      '/src/public/Led_Zeppelin_-_Whole_Lotta_Love_Official_Music_Video_(mp3.pm).mp3'
-    ];
+    // If an MP3 audio instance is already playing Whole Lotta Love, ensure synth is stopped and return
+    if (this.mp3Audio && !this.mp3Audio.paused) {
+      this.stopSynthesizer();
+      return;
+    }
 
-    let triedIdx = 0;
-    const tryNext = () => {
-      if (triedIdx >= mp3Sources.length) {
-        // Fallback to our high-energy synthesized Jimmy Page & John Bonham loop
-        this.startWholeLottaLoveLoop();
-        return;
-      }
-      const src = mp3Sources[triedIdx++];
+    // Stop any stale MP3 before creating a new one
+    if (this.mp3Audio) {
       try {
-        const audio = new Audio();
-        audio.src = src;
-        audio.volume = 0.65;
-        audio.loop = true;
-        let played = false;
+        this.mp3Audio.pause();
+        this.mp3Audio.currentTime = 0;
+      } catch (e) {}
+      this.mp3Audio = null;
+    }
 
-        audio.oncanplay = () => {
-          if (!played && (this.currentMusicType === 'ending' || this.currentMusicType === 'zeppelin') && !this.isMuted) {
-            played = true;
-            audio.play().then(() => {
-              this.mp3Audio = audio;
-            }).catch(() => {
-              tryNext();
-            });
+    // Exact URL served by Vite from src/public
+    const songUrl = encodeURI('/Led_Zeppelin_-_Whole_Lotta_Love_Official_Music_Video_(mp3.pm).mp3');
+
+    try {
+      const audio = new Audio();
+      audio.src = songUrl;
+      audio.volume = 0.70;
+      audio.loop = true;
+      let started = false;
+
+      const triggerPlay = () => {
+        if (started) return;
+        if (this.currentMusicType !== 'ending' && this.currentMusicType !== 'zeppelin') return;
+        if (this.isMuted) return;
+
+        started = true;
+        // Absolutely stop any synthesizer or background loop!
+        this.stopSynthesizer();
+
+        audio.play().then(() => {
+          this.mp3Audio = audio;
+          // Re-assert that no synthesizer or background loop is active
+          this.stopSynthesizer();
+        }).catch((err) => {
+          console.warn('MP3 play permission or load failed:', err);
+          // Only fall back to synthesizer if HTML5 Audio completely fails to play
+          if (!this.mp3Audio && (this.currentMusicType === 'ending' || this.currentMusicType === 'zeppelin')) {
+            this.startWholeLottaLoveLoop();
           }
-        };
+        });
+      };
 
-        audio.onerror = () => {
-          if (!played) tryNext();
-        };
+      audio.oncanplay = triggerPlay;
+      audio.onloadeddata = triggerPlay;
 
-        audio.load();
+      audio.onerror = (e) => {
+        console.warn('MP3 file error, using synth fallback:', e);
+        if (!started && !this.mp3Audio && (this.currentMusicType === 'ending' || this.currentMusicType === 'zeppelin')) {
+          this.startWholeLottaLoveLoop();
+        }
+      };
 
-        // Safety timeout if audio loading hangs
-        setTimeout(() => {
-          if (!played && !this.mp3Audio && (this.currentMusicType === 'ending' || this.currentMusicType === 'zeppelin')) {
-            tryNext();
-          }
-        }, 1200);
-      } catch (e) {
-        tryNext();
-      }
-    };
-
-    tryNext();
+      audio.load();
+    } catch (e) {
+      console.warn('Audio construction error:', e);
+      this.startWholeLottaLoveLoop();
+    }
   }
 
   playRadioJingle() {
