@@ -20,8 +20,8 @@ export class RecordShopScene extends Phaser.Scene {
     const h = this.cameras.main.height;
     const cx = w / 2;
 
-    // Interior scene - hide joystick so shop buttons & vinyl racks are fully visible
-    touchControls.setVisible(false);
+    // Keep action buttons (E / SPACE) active on mobile so player can talk & advance dialogue cleanly
+    touchControls.setMode('actionsOnly');
 
     // === BACK WALL (Red Brick) ===
     const floorY = Math.round(h * 0.72);
@@ -355,7 +355,7 @@ export class RecordShopScene extends Phaser.Scene {
       this.dialogueBox.close();
       return;
     }
-    touchControls.setVisible(true);
+    touchControls.setMode('all');
     this.scene.stop('RecordShopScene');
     this.scene.resume('NeighborhoodScene');
   }

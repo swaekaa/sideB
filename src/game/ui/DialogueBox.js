@@ -23,6 +23,7 @@ export class DialogueBox {
     this.displayedText = '';
     this.isTyping = false;
     this.justOpened = false;
+    this.lastAdvanceTime = 0;
 
     this.initDOM();
     this.setupInputs();
@@ -39,6 +40,8 @@ export class DialogueBox {
   }
 
   setupInputs() {
+    window.__activeDialogueBox = this;
+
     // Window-level keyboard listeners for dialogue
     window.addEventListener('keydown', (e) => {
       if (!this.isOpen) return;
@@ -51,7 +54,7 @@ export class DialogueBox {
 
       if (e.key === ' ' || e.key === 'e' || e.key === 'E' || e.key === 'Enter') {
         e.preventDefault();
-        this.handleAdvance();
+        this.triggerAdvance();
         return;
       }
 
@@ -62,13 +65,41 @@ export class DialogueBox {
       }
     });
 
+    // Touch & pointerdown listeners on dialogue box itself
     if (this.el) {
-      this.el.addEventListener('click', (e) => {
+      const handleBoxTap = (e) => {
         if (!this.isOpen || this.justOpened) return;
-        if (this.choices && this.choices.length > 0) return;
-        this.handleAdvance();
-      });
+        if (e && e.target && e.target.closest && e.target.closest('.choice-btn')) return;
+        this.triggerAdvance();
+      };
+      this.el.addEventListener('pointerdown', handleBoxTap);
+      this.el.addEventListener('click', handleBoxTap);
     }
+
+    // Window-level tap listener so tapping ANYWHERE on screen advances dialogue
+    window.addEventListener('pointerdown', (e) => {
+      if (!this.isOpen || this.justOpened) return;
+      if (e && e.target && e.target.closest && (
+        e.target.closest('.choice-btn') || 
+        e.target.closest('.hud-toggle-btn') || 
+        e.target.closest('.v-action-btn')
+      )) return;
+      this.triggerAdvance();
+    });
+  }
+
+  triggerAdvance() {
+    if (!this.isOpen || this.justOpened) return;
+    const now = Date.now();
+    if (now - this.lastAdvanceTime < 200) return; // Debounce dual pointerdown + click
+    this.lastAdvanceTime = now;
+
+    // If waiting for choice selection on the last page, do not advance until player picks a choice
+    if (this.choices && this.choices.length > 0 && this.currentPageIndex === this.pages.length - 1) {
+      return;
+    }
+
+    this.handleAdvance();
   }
 
   show(speakerName, portraitKey, pages, onComplete = null, choices = null, onChoice = null) {
@@ -129,7 +160,7 @@ export class DialogueBox {
 
     setTimeout(() => {
       this.justOpened = false;
-    }, 250);
+    }, 120);
   }
 
   displayCurrentPage() {
@@ -148,10 +179,11 @@ export class DialogueBox {
     if (this.textEl) this.textEl.textContent = '';
 
     if (this.promptEl) {
+      const isTouch = document.body.classList.contains('is-touch-device') || ('ontouchstart' in window);
       if (this.currentPageIndex === this.pages.length - 1 && this.choices) {
-        this.promptEl.textContent = 'Press 1, 2, or 3  [F to Cancel]';
+        this.promptEl.textContent = isTouch ? 'Tap an option above  [F to Cancel]' : 'Press 1, 2, or 3  [F to Cancel]';
       } else {
-        this.promptEl.textContent = '[SPACE / E to Continue ▼]  [F to Exit]';
+        this.promptEl.textContent = isTouch ? '[ TAP TO CONTINUE ▶ ]' : '[SPACE / E to Continue ▼]  [F to Exit]';
       }
     }
 
@@ -198,7 +230,17 @@ export class DialogueBox {
       btn.type = 'button';
       btn.textContent = `[${idx + 1}]  ${choice}`;
       const choiceIdx = idx + 1;
-      btn.onclick = () => this.selectChoice(choiceIdx);
+      
+      const onPick = (e) => {
+        if (e) {
+          e.preventDefault();
+          e.stopPropagation();
+        }
+        this.selectChoice(choiceIdx);
+      };
+
+      btn.addEventListener('pointerdown', onPick);
+      btn.onclick = onPick;
       this.choicesEl.appendChild(btn);
     });
     this.choicesEl.style.display = 'flex';

@@ -202,6 +202,11 @@ class TouchControlsManager {
         this.state.interactJustDown = true;
         this.btnInteractEl.classList.add('active');
         if (navigator.vibrate) try { navigator.vibrate(10); } catch (_) {}
+
+        // If dialogue is open, advance dialogue immediately
+        if (window.__activeDialogueBox && window.__activeDialogueBox.isOpen) {
+          window.__activeDialogueBox.triggerAdvance();
+        }
       }, { passive: false });
 
       const endInteract = () => {
@@ -219,6 +224,11 @@ class TouchControlsManager {
         this.state.spaceJustDown = true;
         this.btnSpaceEl.classList.add('active');
         if (navigator.vibrate) try { navigator.vibrate(10); } catch (_) {}
+
+        // If dialogue is open, advance dialogue immediately
+        if (window.__activeDialogueBox && window.__activeDialogueBox.isOpen) {
+          window.__activeDialogueBox.triggerAdvance();
+        }
       }, { passive: false });
 
       const endSpace = () => {
@@ -230,15 +240,30 @@ class TouchControlsManager {
     }
   }
 
-  setVisible(visible) {
-    this.isVisible = visible;
+  setMode(mode) {
+    this.mode = mode; // 'all' | 'actionsOnly' | 'none'
     if (!this.containerEl || !this.isTouchDevice) return;
     const isPortrait = window.innerHeight > window.innerWidth;
-    if (visible && !isPortrait) {
-      this.containerEl.style.display = 'flex';
-    } else {
+
+    if (isPortrait || mode === 'none') {
       this.containerEl.style.display = 'none';
+      return;
     }
+
+    this.containerEl.style.display = 'flex';
+    const actionBtns = this.containerEl.querySelector('.v-action-buttons');
+
+    if (mode === 'actionsOnly') {
+      if (this.joystickZoneEl) this.joystickZoneEl.style.display = 'none';
+      if (actionBtns) actionBtns.style.display = 'flex';
+    } else {
+      if (this.joystickZoneEl) this.joystickZoneEl.style.display = 'flex';
+      if (actionBtns) actionBtns.style.display = 'flex';
+    }
+  }
+
+  setVisible(visible) {
+    this.setMode(visible ? 'all' : 'none');
   }
 
   isLeft() { return this.state.left; }

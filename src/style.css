@@ -410,6 +410,9 @@ html, body {
   align-items: flex-start;
   pointer-events: auto;
   box-sizing: border-box;
+  cursor: pointer;
+  -webkit-tap-highlight-color: transparent;
+  touch-action: manipulation;
 }
 
 .dialogue-overlay.visible {
@@ -484,7 +487,7 @@ html, body {
   background: #efe7cf;
   border: 2px solid var(--border-dark);
   border-radius: 3px;
-  padding: 6px 12px;
+  padding: 8px 12px;
   font-family: var(--font-retro);
   font-size: 13.5px;
   font-weight: bold;
@@ -493,6 +496,8 @@ html, body {
   text-align: left;
   transition: all 0.1s ease;
   box-shadow: 2px 2px 0px var(--border-dark);
+  touch-action: manipulation;
+  -webkit-tap-highlight-color: transparent;
 }
 
 .choice-btn:hover {
