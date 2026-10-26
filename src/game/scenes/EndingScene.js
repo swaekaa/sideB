@@ -1143,7 +1143,7 @@ export class EndingScene extends Phaser.Scene {
       };
     }
 
-    // [ PLAY AGAIN ]: Resets state and restarts fresh game
+    // [ PLAY AGAIN ]: Resets state and restarts fresh game to cinematic Title Screen
     if (btnRestart) {
       btnRestart.onclick = () => {
         overlay.style.display = 'none';
@@ -1151,8 +1151,14 @@ export class EndingScene extends Phaser.Scene {
         if (btnShowCredits) btnShowCredits.style.display = 'none';
         audioManager.stopMusic();
         gameState.reset();
+        const leftHud = document.getElementById('top-left-hud');
+        const toggleBar = document.querySelector('.hud-toggle-bar');
+        const sidePanel = document.getElementById('floating-side-panel');
+        if (leftHud) leftHud.style.display = 'none';
+        if (toggleBar) toggleBar.style.display = 'none';
+        if (sidePanel) sidePanel.style.display = 'none';
         this.scene.stop('EndingScene');
-        this.scene.start('NeighborhoodScene');
+        this.scene.start('TitleScene');
       };
     }
 

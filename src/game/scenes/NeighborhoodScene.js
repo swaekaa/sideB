@@ -953,6 +953,18 @@ export class NeighborhoodScene extends Phaser.Scene {
   }
 
   setupHUD() {
+    // Reveal DOM HUD for gameplay (Time, Cash, Quests, Restart Controls)
+    const leftHud = document.getElementById('top-left-hud');
+    const toggleBar = document.querySelector('.hud-toggle-bar');
+    const sidePanel = document.getElementById('floating-side-panel');
+    const restartBtn = document.getElementById('restart-game-btn');
+    const toggleHudBtn = document.getElementById('toggle-hud-btn');
+    if (leftHud) leftHud.style.display = 'flex';
+    if (toggleBar) toggleBar.style.display = 'flex';
+    if (sidePanel) sidePanel.style.display = 'flex';
+    if (restartBtn) restartBtn.style.display = '';
+    if (toggleHudBtn) toggleHudBtn.style.display = '';
+
     // Context Interaction Prompt Banner
     this.promptContainer = this.add.container(0, -40);
     this.promptContainer.setScrollFactor(0);

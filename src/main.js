@@ -7,14 +7,9 @@ import Phaser from 'phaser';
 import { gameConfig } from './game/config.js';
 import { audioManager } from './game/systems/AudioManager.js';
 import { gameState } from './game/systems/GameState.js';
-import { IntroOverlay } from './game/ui/IntroOverlay.js';
-
 window.addEventListener('DOMContentLoaded', () => {
   // Initialize Phaser 3 Game
   const game = new Phaser.Game(gameConfig);
-
-  // Initialize Cinematic Story Prologue & Disclaimer
-  new IntroOverlay();
 
   // Initialize audio context on first user click or key press
   const unlockAudio = () => {
@@ -41,7 +36,7 @@ window.addEventListener('DOMContentLoaded', () => {
   const restartBtn = document.getElementById('restart-game-btn');
   if (restartBtn) {
     restartBtn.addEventListener('click', () => {
-      const confirmed = window.confirm('Restart SIDE B from Saturday 3:15 PM? (All progress will be reset)');
+      const confirmed = window.confirm('Restart SIDE B from the opening title screen? (All progress will be reset)');
       if (confirmed) {
         try { audioManager.stopMusic(); } catch (e) {}
         try { gameState.reset(); } catch (e) {}

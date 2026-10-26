@@ -83,6 +83,38 @@ export class BootScene extends Phaser.Scene {
       repeat: -1
     });
 
+    // Top-Right In-Canvas Fullscreen Button on Loading Screen
+    const fsContainer = this.add.container(640 - 58, 20);
+    const fsBg = this.add.rectangle(0, 0, 92, 20, 0xf0e8d2);
+    fsBg.setStrokeStyle(1.5, 0x1e2e18);
+    fsBg.setInteractive({ useHandCursor: true });
+    const fsTxt = this.add.text(0, 0, '⛶ FULLSCREEN', {
+      fontFamily: 'monospace',
+      fontSize: '8.5px',
+      color: '#1e2e18',
+      fontStyle: 'bold'
+    }).setOrigin(0.5);
+    fsContainer.add([fsBg, fsTxt]);
+
+    const toggleFS = () => {
+      if (!document.fullscreenElement) {
+        if (document.documentElement.requestFullscreen) {
+          document.documentElement.requestFullscreen().catch(() => {});
+        } else if (document.documentElement.webkitRequestFullscreen) {
+          document.documentElement.webkitRequestFullscreen();
+        }
+      } else {
+        if (document.exitFullscreen) {
+          document.exitFullscreen().catch(() => {});
+        } else if (document.webkitExitFullscreen) {
+          document.webkitExitFullscreen();
+        }
+      }
+    };
+
+    fsBg.on('pointerdown', toggleFS);
+    this.input.keyboard.on('keydown-F', toggleFS);
+
     const generator = new AssetGenerator(this);
     generator.generateAll();
 
@@ -90,7 +122,7 @@ export class BootScene extends Phaser.Scene {
     gameState.notify();
 
     this.time.delayedCall(600, () => {
-      this.scene.start('NeighborhoodScene');
+      this.scene.start('TitleScene');
     });
   }
 }

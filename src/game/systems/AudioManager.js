@@ -348,6 +348,27 @@ class AudioManager {
     } catch (e) {}
   }
 
+  playVinylCrackle(vol = 0.04) {
+    if (this.isMuted || !this.ctx) return;
+    try {
+      const t = this.ctx.currentTime;
+      const bufferSize = Math.floor(this.ctx.sampleRate * 0.35);
+      const buffer = this.ctx.createBuffer(1, bufferSize, this.ctx.sampleRate);
+      const data = buffer.getChannelData(0);
+      for (let i = 0; i < bufferSize; i++) {
+        data[i] = (Math.random() > 0.99 ? (Math.random() * 2 - 1) * 0.45 : 0) + (Math.random() * 0.018 - 0.009);
+      }
+      const noise = this.ctx.createBufferSource();
+      noise.buffer = buffer;
+      const gain = this.ctx.createGain();
+      gain.gain.setValueAtTime(vol, t);
+      gain.gain.exponentialRampToValueAtTime(0.001, t + 0.34);
+      noise.connect(gain);
+      gain.connect(this.ctx.destination);
+      noise.start(t);
+    } catch (e) {}
+  }
+
   stopSynthesizer() {
     if (this.musicTimer) {
       clearInterval(this.musicTimer);
@@ -363,7 +384,9 @@ class AudioManager {
     this.init();
     this.stopMusic();
 
-    if (type === 'ambient' || type === 'blues' || type === 'bgm') {
+    if (type === 'title') {
+      this.startTitleTheme();
+    } else if (type === 'ambient' || type === 'blues' || type === 'bgm') {
       this.startAmbientNostalgiaLoop();
     } else if (type === 'radio') {
       this.startRadioLoop();
@@ -594,6 +617,64 @@ class AudioManager {
 
     playChordBar();
     this.musicTimer = setInterval(playChordBar, 1900);
+  }
+
+  // --- Vintage Cinematic Hollywood Title Theme (1969) ---
+  // Warm, slow cinematic progression with delicate vinyl needle warmth: Dmaj7 - Gmaj7 - Bm7 - A7sus4
+  startTitleTheme() {
+    const progression = [
+      { chord: [293.66, 369.99, 440.00, 554.37], bass: 73.42 }, // Dmaj7
+      { chord: [196.00, 246.94, 293.66, 369.99], bass: 49.00 }, // Gmaj7
+      { chord: [246.94, 293.66, 369.99, 440.00], bass: 61.74 }, // Bm7
+      { chord: [220.00, 277.18, 329.63, 440.00], bass: 55.00 }, // A7sus4
+      { chord: [293.66, 369.99, 440.00, 587.33], bass: 73.42 }  // D(add9)
+    ];
+    let progIndex = 0;
+
+    const playBar = () => {
+      if (this.isMuted || !this.ctx) return;
+      try {
+        const item = progression[progIndex % progression.length];
+        const t = this.ctx.currentTime;
+
+        // Cinematic mellow Rhodes / acoustic chime
+        item.chord.forEach((freq, idx) => {
+          const osc = this.ctx.createOscillator();
+          const gain = this.ctx.createGain();
+          osc.type = 'sine';
+          osc.frequency.setValueAtTime(freq, t + idx * 0.08);
+
+          // Gentle bell-like transient and lush decay
+          gain.gain.setValueAtTime(0.045, t + idx * 0.08);
+          gain.gain.exponentialRampToValueAtTime(0.002, t + 2.3);
+
+          osc.connect(gain);
+          gain.connect(this.ctx.destination);
+          osc.start(t + idx * 0.08);
+          osc.stop(t + 2.35);
+        });
+
+        // Deep warm cinematic cellos / bass
+        const bOsc = this.ctx.createOscillator();
+        const bGain = this.ctx.createGain();
+        bOsc.type = 'triangle';
+        bOsc.frequency.setValueAtTime(item.bass, t);
+        bGain.gain.setValueAtTime(0.065, t);
+        bGain.gain.exponentialRampToValueAtTime(0.003, t + 2.2);
+        bOsc.connect(bGain);
+        bGain.connect(this.ctx.destination);
+        bOsc.start(t);
+        bOsc.stop(t + 2.25);
+
+        // Subtle vintage vinyl surface crackle
+        this.playVinylCrackle(0.03);
+
+        progIndex++;
+      } catch (e) {}
+    };
+
+    playBar();
+    this.musicTimer = setInterval(playBar, 2500);
   }
 
   // --- Led Zeppelin: "Whole Lotta Love" (Led Zeppelin II, 1969) Synthesizer ---

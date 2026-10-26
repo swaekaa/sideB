@@ -5,6 +5,8 @@
 
 import Phaser from 'phaser';
 import { BootScene } from './scenes/BootScene.js';
+import { TitleScene } from './scenes/TitleScene.js';
+import { NarrationScene } from './scenes/NarrationScene.js';
 import { NeighborhoodScene } from './scenes/NeighborhoodScene.js';
 import { HedgeMinigameScene } from './scenes/HedgeMinigameScene.js';
 import { MathMinigameScene } from './scenes/MathMinigameScene.js';
@@ -39,6 +41,8 @@ export const gameConfig = {
   },
   scene: [
     BootScene,
+    TitleScene,
+    NarrationScene,
     NeighborhoodScene,
     HedgeMinigameScene,
     MathMinigameScene,

@@ -6,6 +6,9 @@
   <meta name="description" content="SIDE B: One Perfect Afternoon (1969) - A 1960s retro pixel-art suburban neighborhood game built with Phaser 3 and Vite." />
   <title>SIDE B: One Perfect Afternoon (1969)</title>
   <link rel="icon" type="image/jpeg" href="/favicon.jpg" />
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Cinzel:wght@700;800;900&family=Playfair+Display:ital,wght@0,700;0,900;1,700&display=swap" rel="stylesheet">
   <link rel="stylesheet" href="/src/style.css" />
 </head>
 <body>
@@ -13,8 +16,8 @@
   <!-- Full-Screen Game Canvas Container -->
   <div id="game-container"></div>
 
-  <!-- Simplified Top-Left Retro HUD (Time & Cash Only) -->
-  <div class="top-left-hud" id="top-left-hud">
+  <!-- Simplified Top-Left Retro HUD (Time & Cash Only) - Hidden during Title & Narrator -->
+  <div class="top-left-hud" id="top-left-hud" style="display: none;">
     <span class="hud-time" id="hud-time">SAT 3:15 PM</span>
     <span class="hud-divider">|</span>
     <span class="hud-cash-label">CASH: <span id="hud-cash">$4</span></span>
@@ -22,13 +25,13 @@
 
   <!-- Top-Right Controls Bar (Restart, HUD Toggle, Fullscreen) -->
   <div class="hud-toggle-bar">
-    <button id="restart-game-btn" type="button" class="hud-toggle-btn" title="Restart Game">↺ RESTART</button>
-    <button id="toggle-hud-btn" type="button" class="hud-toggle-btn">HUD [HIDE ▲]</button>
+    <button id="restart-game-btn" type="button" class="hud-toggle-btn" title="Restart Game" style="display: none;">↺ RESTART</button>
+    <button id="toggle-hud-btn" type="button" class="hud-toggle-btn" style="display: none;">HUD [HIDE ▲]</button>
     <button id="fullscreen-btn" type="button" class="hud-toggle-btn" title="Toggle Fullscreen">⛶ FULLSCREEN</button>
   </div>
 
-  <!-- Floating Right Side HUD Cards -->
-  <aside class="floating-side-panel" id="floating-side-panel">
+  <!-- Floating Right Side HUD Cards - Hidden during Title & Narrator -->
+  <aside class="floating-side-panel" id="floating-side-panel" style="display: none;">
     <div class="hud-cards-container" id="hud-cards-container">
       <!-- Dream Record Card (Led Zeppelin II) -->
       <section class="panel-card record-showcase">
@@ -110,35 +113,6 @@
     </div>
 
   </aside>
-
-  <!-- Narrator Dialogue Overlay (Solid Black Background - Game World Hidden Until Done) -->
-  <div class="intro-story-overlay" id="intro-story-overlay">
-    <div class="narrator-dialog-card" id="intro-narrator-card">
-      <div class="narrator-dialog-header">
-        <span class="speaker-tag">NARRATOR</span>
-        <span class="narrator-meta">OCTOBER 1969</span>
-      </div>
-
-      <div class="narrator-card-divider"></div>
-
-      <div class="narrator-dialog-body" id="intro-story-content">
-        <p id="intro-story-p1" class="narrator-dialog-para"></p>
-        <p id="intro-story-p2" class="narrator-dialog-para"></p>
-      </div>
-
-      <div class="narrator-dialog-footer">
-        <div id="intro-typing-prompt" class="narrator-prompt-blinker">
-          [ SPACE / E / CLICK TO ADVANCE ▼ ] &bull; [ F TO SKIP ]
-        </div>
-        <div id="intro-btn-wrapper" class="theme-btn-wrapper" style="display: none; opacity: 0;">
-          <button id="intro-dive-btn" type="button" class="theme-dive-button">
-            [ DIVE IN (PRESS SPACE OR CLICK) ▶ ]
-          </button>
-          <span class="theme-skip-text">Press <strong>F</strong> to skip</span>
-        </div>
-      </div>
-    </div>
-  </div>
 
   <!-- Razor-Sharp Floating Retro Dialogue Box -->
   <div class="dialogue-overlay" id="dialogue-overlay">
