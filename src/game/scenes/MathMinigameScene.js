@@ -221,26 +221,61 @@ export class MathMinigameScene extends Phaser.Scene {
   showResults() {
     this.isAnswering = false;
 
-    // Hide question option buttons
+    // Hide question UI elements cleanly to avoid any overlapping
+    this.progressText.setVisible(false);
+    this.questionText.setVisible(false);
+    this.feedbackText.setVisible(false);
     this.buttons.forEach(btn => {
       btn.bg.setVisible(false);
       btn.text.setVisible(false);
     });
 
+    const cx = this.cameras.main.width / 2;
+    const cy = this.cameras.main.height / 2;
     const passed = this.score >= 3;
     const perfect = this.score === 5;
 
-    this.progressText.setText('★ CHALLENGE COMPLETED ★');
-    this.progressText.setColor(passed ? '#2e7d32' : '#c62828');
+    // 1. Result Status Badge (Pill)
+    const outcomeBg = this.add.rectangle(cx, cy - 48, 250, 20, passed ? 0x275a28 : 0x8b2020);
+    outcomeBg.setStrokeStyle(1.5, passed ? 0x183b1a : 0x5a1212);
 
+    const outcomeTextStr = perfect
+      ? '★ PERFECT SCORE: 5 / 5! ★'
+      : passed
+      ? `★ YOU WON THE BET: ${this.score} / 5! ★`
+      : `CHALLENGE FAILED: ${this.score} / 5`;
+
+    this.add.text(cx, cy - 48, outcomeTextStr, {
+      fontFamily: 'monospace',
+      fontSize: '10px',
+      color: '#f6f1de',
+      fontStyle: 'bold',
+      resolution: 3
+    }).setOrigin(0.5);
+
+    // 2. Timmy's Dialogue Box
+    this.add.rectangle(cx, cy - 8, 290, 44, 0xebe3cb).setStrokeStyle(1.5, 0x3d4f3b);
+
+    let quote = '';
     if (perfect) {
-      this.questionText.setText(`PERFECT SCORE: 5 / 5!\n\nTimmy: "Holy smokes, you got all 5 right!\nMy brother won't believe this! Here's the $2.00!"`);
+      quote = 'Timmy: "Holy smokes, you got all 5 right!\nMy brother won\'t believe this! Here\'s the $2.00!"';
     } else if (passed) {
-      this.questionText.setText(`YOU WON THE BET: ${this.score} / 5!\n\nTimmy: "Awesome job! We passed the challenge!\nHere is your $2.00 as promised!"`);
+      quote = 'Timmy: "Awesome job! We passed the challenge!\nHere is your $2.00 as promised!"';
     } else {
-      this.questionText.setText(`SCORE: ${this.score} / 5\n\nTimmy: "Aw shucks, we needed at least 3 right!\nLet's study up and try again in a bit!"`);
+      quote = 'Timmy: "Aw shucks, we needed at least 3 right!\nLet\'s study up and try again in a bit!"';
     }
 
+    this.add.text(cx, cy - 8, quote, {
+      fontFamily: 'monospace',
+      fontSize: '9.5px',
+      color: '#1c2619',
+      fontStyle: 'bold',
+      align: 'center',
+      lineSpacing: 4,
+      resolution: 3
+    }).setOrigin(0.5);
+
+    // 3. Reward / Outcome Badge
     if (passed) {
       audioManager.playSuccess();
       audioManager.playCoin();
@@ -248,17 +283,69 @@ export class MathMinigameScene extends Phaser.Scene {
       gameState.setQuest('mathDone', true);
       gameState.advanceTime(5);
 
-      this.feedbackText.setText('★ REWARD EARNED: +$2.00 CASH! ★');
-      this.feedbackText.setColor('#236e29');
+      const rewardBg = this.add.rectangle(cx, cy + 28, 260, 18, 0xd8ebd3);
+      rewardBg.setStrokeStyle(1, 0x2e7d32);
+
+      this.add.text(cx, cy + 28, '★ REWARD EARNED: +$2.00 CASH! ★', {
+        fontFamily: 'monospace',
+        fontSize: '9px',
+        color: '#1b5e20',
+        fontStyle: 'bold',
+        resolution: 3
+      }).setOrigin(0.5);
     } else {
       gameState.advanceTime(5);
-      this.feedbackText.setText('Talk to Timmy on the sidewalk to try again!');
-      this.feedbackText.setColor('#a83626');
+
+      const rewardBg = this.add.rectangle(cx, cy + 28, 260, 18, 0xffebee);
+      rewardBg.setStrokeStyle(1, 0xc62828);
+
+      this.add.text(cx, cy + 28, 'NEED 3 / 5 TO WIN • TALK TO TIMMY TO RETRY', {
+        fontFamily: 'monospace',
+        fontSize: '8.5px',
+        color: '#b71c1c',
+        fontStyle: 'bold',
+        resolution: 3
+      }).setOrigin(0.5);
     }
 
-    this.time.delayedCall(2400, () => {
+    // 4. Continue Button (Interactive & Keyboard Hookup)
+    const btn = this.add.rectangle(cx, cy + 58, 210, 22, 0x273824);
+    btn.setStrokeStyle(1.5, 0x1b2819);
+    btn.setInteractive({ useHandCursor: true });
+
+    const btnText = this.add.text(cx, cy + 58, 'CONTINUE  [SPACE / CLICK]', {
+      fontFamily: 'monospace',
+      fontSize: '9px',
+      color: '#f6f1de',
+      fontStyle: 'bold',
+      resolution: 3
+    }).setOrigin(0.5);
+
+    btn.on('pointerover', () => {
+      btn.setFillStyle(0x3a5436);
+      btnText.setColor('#ffffff');
+    });
+    btn.on('pointerout', () => {
+      btn.setFillStyle(0x273824);
+      btnText.setColor('#f6f1de');
+    });
+
+    let closed = false;
+    const finish = () => {
+      if (closed) return;
+      closed = true;
       this.scene.stop('MathMinigameScene');
       this.scene.resume('NeighborhoodScene');
-    });
+    };
+
+    btn.on('pointerdown', finish);
+
+    this.input.keyboard.once('keydown-SPACE', finish);
+    this.input.keyboard.once('keydown-ENTER', finish);
+    this.input.keyboard.once('keydown-E', finish);
+    this.input.keyboard.once('keydown-ESC', finish);
+
+    // Auto-advance fallback after 6 seconds if player doesn't press anything
+    this.time.delayedCall(6000, finish);
   }
 }
