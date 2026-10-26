@@ -699,67 +699,67 @@ export class EndingScene extends Phaser.Scene {
     this.interactables = [
       {
         id: 'bed',
-        x: 125, y: 195, radius: 45,
+        x: 125, y: 195, radius: 56,
         prompt: 'E — REST ON BED',
         action: () => this.interactBed()
       },
       {
         id: 'desk',
-        x: 278, y: 170, radius: 40,
+        x: 278, y: 170, radius: 50,
         prompt: 'E — INSPECT STUDY DESK',
         action: () => this.interactDesk()
       },
       {
         id: 'turntable',
-        x: 445, y: 175, radius: 44,
+        x: 445, y: 175, radius: 52,
         prompt: gameState.state.quests.albumBought ? 'E — LISTEN TO LED ZEPPELIN II' : 'E — INSPECT GARRARD TURNTABLE',
         action: () => this.interactTurntable()
       },
       {
         id: 'records',
-        x: 398, y: 215, radius: 36,
+        x: 398, y: 215, radius: 44,
         prompt: 'E — BROWSE VINYL COLLECTION',
         action: () => this.interactRecordCollection()
       },
       {
         id: 'armchair',
-        x: 475, y: 235, radius: 36,
+        x: 475, y: 235, radius: 44,
         prompt: 'E — SIT IN LISTENING ARMCHAIR',
         action: () => this.interactArmchair()
       },
       {
         id: 'guitar_left',
-        x: 82, y: 265, radius: 32,
+        x: 82, y: 265, radius: 38,
         prompt: 'E — STRUM ACOUSTIC GUITAR',
         action: () => this.interactGuitar('left')
       },
       {
         id: 'guitar_right',
-        x: 550, y: 195, radius: 32,
+        x: 550, y: 195, radius: 38,
         prompt: 'E — STRUM ACOUSTIC GUITAR',
         action: () => this.interactGuitar('right')
       },
       {
         id: 'radio',
-        x: 275, y: 135, radius: 30,
+        x: 275, y: 135, radius: 36,
         prompt: 'E — TUNE BEDROOM RADIO',
         action: () => this.interactRadio()
       },
       {
         id: 'window',
-        x: 155, y: 130, radius: 36,
+        x: 155, y: 130, radius: 42,
         prompt: 'E — LOOK OUT WINDOW',
         action: () => this.interactWindow()
       },
       {
         id: 'wardrobe',
-        x: 535, y: 270, radius: 38,
+        x: 535, y: 270, radius: 44,
         prompt: 'E — INSPECT WARDROBE',
         action: () => this.interactWardrobe()
       },
       {
         id: 'door',
-        x: 320, y: 320, radius: 36,
+        x: 320, y: 320, radius: 42,
         prompt: 'E / S — EXIT TO NEIGHBORHOOD',
         action: () => this.exitToNeighborhood()
       }
@@ -774,11 +774,13 @@ export class EndingScene extends Phaser.Scene {
     this.playerFacing = 'up';
     this.stepFrame = 0;
     this.stepCounter = 0;
+    // 2.0x integer scaling (32x48px) — perfectly matching Neighborhood camera zoom & furniture scale
+    this.avatarScale = 2.0;
 
     // Spawns just inside the doorway facing into the room
-    this.player = this.add.sprite(320, 275, 'player_up_0');
-    this.player.setDisplaySize(16, 24);
-    this.player.setDepth(275);
+    this.player = this.add.sprite(320, 265, 'player_up_0');
+    this.player.setScale(this.avatarScale);
+    this.player.setDepth(265 + 16);
   }
 
   setupControls() {
@@ -865,7 +867,7 @@ export class EndingScene extends Phaser.Scene {
 
     if (dir) {
       this.playerFacing = dir;
-      const speed = 105 * (delta / 1000);
+      const speed = 115 * (delta / 1000);
       const newX = this.player.x + dx * speed;
       const newY = this.player.y + dy * speed;
 
@@ -874,41 +876,45 @@ export class EndingScene extends Phaser.Scene {
         this.player.y = newY;
 
         this.stepCounter += speed;
-        if (this.stepCounter >= 16) {
+        if (this.stepCounter >= 20) {
           this.stepCounter = 0;
           this.stepFrame = (this.stepFrame % 2) + 1;
           audioManager.playStep('wood');
         }
         this.player.setTexture(`player_${dir}_${this.stepFrame}`);
+        this.player.setScale(this.avatarScale);
       } else if (this.canMoveTo(newX, this.player.y)) {
         this.player.x = newX;
         this.player.setTexture(`player_${dir}_1`);
+        this.player.setScale(this.avatarScale);
       } else if (this.canMoveTo(this.player.x, newY)) {
         this.player.y = newY;
         this.player.setTexture(`player_${dir}_1`);
+        this.player.setScale(this.avatarScale);
       }
 
       // Check if walking through doorway threshold to leave room
-      if (this.player.y >= 330 && this.player.x >= 300 && this.player.x <= 340) {
+      if (this.player.y >= 316 && this.player.x >= 295 && this.player.x <= 345) {
         this.exitToNeighborhood();
         return;
       }
     } else {
       this.player.setTexture(`player_${this.playerFacing}_0`);
+      this.player.setScale(this.avatarScale);
     }
 
-    // Dynamic depth sorting: player depth equals Y coordinate
-    this.player.setDepth(this.player.y);
+    // Dynamic depth sorting: player depth equals Y coordinate + feet offset
+    this.player.setDepth(this.player.y + 16);
   }
 
   canMoveTo(px, py) {
     const footX = px;
-    const footY = py + 7;
-    const hw = 5;
-    const hh = 3;
+    const footY = py + 16;
+    const hw = 8;
+    const hh = 4;
 
     // Doorway exit exception
-    if (footX >= 302 && footX <= 338 && footY >= 328 && footY <= 344) {
+    if (footX >= 295 && footX <= 345 && footY >= 320 && footY <= 352) {
       return true;
     }
 

@@ -85,11 +85,23 @@ html, body {
   color: #1e5c24;
 }
 
-/* --- Floating Right Side HUD Panel --- */
-.floating-side-panel {
+/* --- Top-Right HUD Controls Bar & Side Cards --- */
+.hud-toggle-bar {
   position: fixed;
   top: 12px;
-  right: 16px;
+  right: 14px;
+  z-index: 105;
+  display: flex;
+  align-items: center;
+  justify-content: flex-end;
+  gap: 6px;
+  pointer-events: auto;
+}
+
+.floating-side-panel {
+  position: fixed;
+  top: 48px;
+  right: 14px;
   bottom: 12px;
   width: 275px;
   z-index: 100;
@@ -97,13 +109,6 @@ html, body {
   display: flex;
   flex-direction: column;
   gap: 6px;
-}
-
-.hud-toggle-bar {
-  display: flex;
-  justify-content: flex-end;
-  gap: 6px;
-  pointer-events: auto;
 }
 
 .hud-toggle-btn {
@@ -114,21 +119,28 @@ html, body {
   font-size: 1.05rem;
   font-weight: bold;
   color: var(--border-dark);
-  padding: 2px 10px;
+  padding: 3px 10px;
   cursor: pointer;
-  box-shadow: 2px 2px 0px rgba(0,0,0,0.5);
+  box-shadow: 2px 2px 0px rgba(0, 0, 0, 0.55);
   transition: all 0.1s ease;
+  user-select: none;
 }
 
 .hud-toggle-btn:hover {
   background: #efe7cf;
   transform: translate(-1px, -1px);
-  box-shadow: 3px 3px 0px rgba(0,0,0,0.6);
+  box-shadow: 3px 3px 0px rgba(0, 0, 0, 0.65);
 }
 
 .hud-toggle-btn:active {
   transform: translate(1px, 1px);
-  box-shadow: 1px 1px 0px rgba(0,0,0,0.5);
+  box-shadow: 1px 1px 0px rgba(0, 0, 0, 0.5);
+}
+
+#restart-game-btn:hover {
+  background: #fdf0ee;
+  color: #9a231b;
+  border-color: #9a231b;
 }
 
 .header-btn {
@@ -162,7 +174,7 @@ html, body {
   flex-direction: column;
   gap: 8px;
   overflow-y: auto;
-  max-height: calc(100vh - 54px);
+  max-height: calc(100vh - 64px);
   padding-right: 2px;
   transition: opacity 0.2s ease, transform 0.2s ease;
 }

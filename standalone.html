@@ -26,13 +26,15 @@
     <span class="hud-cash-label">CASH: <span id="hud-cash">$4</span></span>
   </div>
 
+  <!-- Top-Right Controls Bar (Restart, HUD Toggle, Fullscreen) -->
+  <div class="hud-toggle-bar">
+    <button id="restart-game-btn" type="button" class="hud-toggle-btn" title="Restart Game">↺ RESTART</button>
+    <button id="toggle-hud-btn" type="button" class="hud-toggle-btn">HUD [HIDE ▲]</button>
+    <button id="fullscreen-btn" type="button" class="hud-toggle-btn" title="Toggle Fullscreen">⛶ FULLSCREEN</button>
+  </div>
+
   <!-- Floating Right Side Panel -->
   <aside class="floating-side-panel">
-    <div class="hud-toggle-bar">
-      <button id="toggle-hud-btn" type="button" class="hud-toggle-btn">HUD [HIDE ▲]</button>
-      <button id="fullscreen-btn" type="button" class="hud-toggle-btn" title="Toggle Fullscreen">⛶ FULLSCREEN</button>
-    </div>
-
     <div class="hud-cards-container" id="hud-cards-container">
       <section class="panel-card record-showcase">
         <div class="panel-title">
@@ -302,6 +304,18 @@
             vinylIcon.classList.remove('playing');
           }
         }, 400);
+      }
+
+      // Restart Game Handler (Top-Right Button)
+      const restartBtn = document.getElementById('restart-game-btn');
+      if (restartBtn) {
+        restartBtn.addEventListener('click', () => {
+          const confirmed = window.confirm('Restart SIDE B from Saturday 3:15 PM? (All progress will be reset)');
+          if (confirmed) {
+            try { localStorage.removeItem('side_b_1969_save'); } catch (e) {}
+            window.location.reload();
+          }
+        });
       }
 
       const toggleBtn = document.getElementById('toggle-hud-btn');

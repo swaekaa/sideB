@@ -6,6 +6,7 @@
 import Phaser from 'phaser';
 import { gameConfig } from './game/config.js';
 import { audioManager } from './game/systems/AudioManager.js';
+import { gameState } from './game/systems/GameState.js';
 import { IntroOverlay } from './game/ui/IntroOverlay.js';
 
 window.addEventListener('DOMContentLoaded', () => {
@@ -34,6 +35,20 @@ window.addEventListener('DOMContentLoaded', () => {
         vinylIcon.classList.remove('playing');
       }
     }, 400);
+  }
+
+  // Restart Game Handler (Top-Right Button)
+  const restartBtn = document.getElementById('restart-game-btn');
+  if (restartBtn) {
+    restartBtn.addEventListener('click', () => {
+      const confirmed = window.confirm('Restart SIDE B from Saturday 3:15 PM? (All progress will be reset)');
+      if (confirmed) {
+        try { audioManager.stopMusic(); } catch (e) {}
+        try { gameState.reset(); } catch (e) {}
+        try { localStorage.removeItem('side_b_1969_save'); } catch (e) {}
+        window.location.reload();
+      }
+    });
   }
 
   // HUD Collapse / Expand Toggle
