@@ -300,6 +300,7 @@ export class NarrationScene extends Phaser.Scene {
   }
 
   handleUserAdvance() {
+    audioManager.unlock();
     if (this.isExiting) return;
 
     if (this.isTyping) {
@@ -337,7 +338,7 @@ export class NarrationScene extends Phaser.Scene {
     }
 
     // Play coin/success cue and transition smoothly to neighborhood ambient BGM
-    audioManager.init();
+    audioManager.unlock();
     audioManager.playCoin();
 
     // Smoothly dissolve card and camera

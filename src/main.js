@@ -16,14 +16,16 @@ window.addEventListener('DOMContentLoaded', () => {
   // Initialize Phaser 3 Game
   const game = new Phaser.Game(gameConfig);
 
-  // Initialize audio context on first user click or key press
+  // Comprehensive mobile & desktop audio unlocker:
+  // Unlocks Web Audio with silent buffer priming & promotes iOS Safari audio session to Playback
   const unlockAudio = () => {
-    audioManager.init();
-    window.removeEventListener('pointerdown', unlockAudio);
-    window.removeEventListener('keydown', unlockAudio);
+    audioManager.unlock();
   };
-  window.addEventListener('pointerdown', unlockAudio, { once: true });
-  window.addEventListener('keydown', unlockAudio, { once: true });
+
+  ['touchstart', 'touchend', 'pointerdown', 'mousedown', 'keydown'].forEach(evt => {
+    window.addEventListener(evt, unlockAudio, { passive: true });
+    document.addEventListener(evt, unlockAudio, { passive: true });
+  });
 
   // Hook up vinyl spinning animation in header when music is playing
   const vinylIcon = document.getElementById('header-vinyl');

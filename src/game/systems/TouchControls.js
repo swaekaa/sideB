@@ -5,6 +5,8 @@
  * Preserves 100% desktop fidelity with zero interference on mouse/keyboard.
  */
 
+import { audioManager } from './AudioManager.js';
+
 class TouchControlsManager {
   constructor() {
     this.isTouchDevice = false;
@@ -100,6 +102,7 @@ class TouchControlsManager {
     if (!this.joystickZoneEl || !this.joystickKnobEl || !this.joystickBaseEl) return;
 
     const onTouchStart = (e) => {
+      audioManager.unlock();
       if (this.joystick.active) return;
       const touch = e.changedTouches[0];
       if (!touch) return;
@@ -197,6 +200,7 @@ class TouchControlsManager {
   setupActionButtons() {
     if (this.btnInteractEl) {
       this.btnInteractEl.addEventListener('touchstart', (e) => {
+        audioManager.unlock();
         e.preventDefault();
         this.state.interact = true;
         this.state.interactJustDown = true;
@@ -219,6 +223,7 @@ class TouchControlsManager {
 
     if (this.btnSpaceEl) {
       this.btnSpaceEl.addEventListener('touchstart', (e) => {
+        audioManager.unlock();
         e.preventDefault();
         this.state.space = true;
         this.state.spaceJustDown = true;

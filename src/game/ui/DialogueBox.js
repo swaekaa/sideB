@@ -89,6 +89,7 @@ export class DialogueBox {
   }
 
   triggerAdvance() {
+    audioManager.unlock();
     if (!this.isOpen || this.justOpened) return;
     const now = Date.now();
     if (now - this.lastAdvanceTime < 200) return; // Debounce dual pointerdown + click
@@ -249,6 +250,7 @@ export class DialogueBox {
   selectChoice(index) {
     if (!this.isOpen || !this.choices) return;
     if (index >= 1 && index <= this.choices.length) {
+      audioManager.unlock();
       audioManager.playTalk('player');
       const callback = this.onChoice;
       this.close();

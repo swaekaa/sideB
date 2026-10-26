@@ -525,7 +525,7 @@ export class TitleScene extends Phaser.Scene {
     this.isTransitioning = true;
 
     // 1. Legally unlock browser audio context on user gesture
-    audioManager.init();
+    audioManager.unlock();
     audioManager.playMusic('title');
 
     // 2. Smooth Hollywood fade & dissolve into Narrator Introduction

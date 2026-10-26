@@ -12,6 +12,20 @@ class AudioManager {
     this.currentMusicType = null;
     this.crackleNode = null;
     this.mp3Audio = null;
+    this.htmlAudioUnlocked = false;
+    this.isUnlocked = false;
+
+    // Auto-heal on visibility change (phone lock / app switch / tab switch)
+    if (typeof document !== 'undefined') {
+      document.addEventListener('visibilitychange', () => {
+        if (document.visibilityState === 'visible') {
+          this.ensureRunning();
+          if (this.mp3Audio && (this.currentMusicType === 'ending' || this.currentMusicType === 'zeppelin') && !this.isMuted) {
+            this.mp3Audio.play().catch(() => {});
+          }
+        }
+      });
+    }
   }
 
   init() {
@@ -19,10 +33,76 @@ class AudioManager {
       const AudioCtx = window.AudioContext || window.webkitAudioContext;
       if (AudioCtx) {
         this.ctx = new AudioCtx();
+        try {
+          this.ctx.onstatechange = () => {
+            if (this.ctx && this.ctx.state === 'running' && this.currentMusicType && !this.musicTimer && !this.mp3Audio && !this.isMuted) {
+              if (this.currentMusicType !== 'ending' && this.currentMusicType !== 'zeppelin') {
+                this.playMusic(this.currentMusicType);
+              }
+            }
+          };
+        } catch (e) {}
       }
     }
-    if (this.ctx && this.ctx.state === 'suspended') {
-      this.ctx.resume();
+    this.ensureRunning();
+  }
+
+  ensureRunning() {
+    if (!this.ctx) {
+      const AudioCtx = window.AudioContext || window.webkitAudioContext;
+      if (AudioCtx) {
+        this.ctx = new AudioCtx();
+      }
+    }
+    if (this.ctx && (this.ctx.state === 'suspended' || this.ctx.state === 'interrupted')) {
+      this.ctx.resume().catch(() => {});
+    }
+  }
+
+  unlock() {
+    this.init();
+    if (!this.ctx) return;
+
+    if (this.ctx.state === 'suspended' || this.ctx.state === 'interrupted') {
+      this.ctx.resume().catch(() => {});
+    }
+
+    // 1. Web Audio silent buffer priming for iOS Safari / WebKit
+    try {
+      const buffer = this.ctx.createBuffer(1, 1, 22050);
+      const source = this.ctx.createBufferSource();
+      source.buffer = buffer;
+      source.connect(this.ctx.destination);
+      source.start(0);
+      if (typeof source.noteOn === 'function') source.noteOn(0);
+    } catch (e) {}
+
+    // 2. HTML5 Audio Category Promotion for iPhone / iPad:
+    // In iOS Safari, Web Audio defaults to AVAudioSessionCategorySoloAmbient, which is
+    // completely silenced if the iPhone's physical silent switch is engaged!
+    // Playing an HTML5 <audio> element forces iOS WebKit into AVAudioSessionCategoryPlayback,
+    // allowing all Web Audio synthesizer sounds to play out of the phone speaker even on silent!
+    if (!this.htmlAudioUnlocked) {
+      try {
+        const silentWav = 'data:audio/wav;base64,UklGRjIAAABXQVZFZm10IBAAAAABAAEAQB8AAEAfAAABAAgAZGF0YQIAAAAAAAA=';
+        const silentAudio = new Audio(silentWav);
+        silentAudio.volume = 0.01;
+        const playPromise = silentAudio.play();
+        if (playPromise && typeof playPromise.then === 'function') {
+          playPromise.then(() => {
+            this.htmlAudioUnlocked = true;
+          }).catch(() => {});
+        }
+      } catch (e) {}
+    }
+
+    this.isUnlocked = true;
+
+    // If music was supposed to play but was waiting on context, start it now
+    if (this.currentMusicType && !this.musicTimer && !this.mp3Audio && !this.isMuted) {
+      if (this.currentMusicType !== 'ending' && this.currentMusicType !== 'zeppelin') {
+        this.playMusic(this.currentMusicType);
+      }
     }
   }
 
@@ -37,6 +117,7 @@ class AudioManager {
         this.musicTimer = null;
       }
     } else {
+      this.ensureRunning();
       if (this.mp3Audio && (this.currentMusicType === 'ending' || this.currentMusicType === 'zeppelin')) {
         this.mp3Audio.play().catch(() => {});
       } else if (this.currentMusicType) {
@@ -49,7 +130,9 @@ class AudioManager {
   // --- Sound Effects ---
 
   playStep(ground = 'grass') {
-    if (this.isMuted || !this.ctx) return;
+    if (this.isMuted) return;
+    this.ensureRunning();
+    if (!this.ctx) return;
     try {
       const t = this.ctx.currentTime;
 
@@ -60,7 +143,7 @@ class AudioManager {
         osc.type = 'triangle';
         osc.frequency.setValueAtTime(280, t);
         osc.frequency.exponentialRampToValueAtTime(110, t + 0.035);
-        gain.gain.setValueAtTime(0.055, t);
+        gain.gain.setValueAtTime(0.065, t);
         gain.gain.exponentialRampToValueAtTime(0.001, t + 0.035);
         osc.connect(gain);
         gain.connect(this.ctx.destination);
@@ -79,7 +162,7 @@ class AudioManager {
         f.frequency.value = 2400;
         f.Q.value = 3;
         const ng = this.ctx.createGain();
-        ng.gain.setValueAtTime(0.04, t);
+        ng.gain.setValueAtTime(0.045, t);
         ng.gain.exponentialRampToValueAtTime(0.001, t + 0.02);
         n.connect(f);
         f.connect(ng);
@@ -93,7 +176,7 @@ class AudioManager {
         osc.type = 'triangle';
         osc.frequency.setValueAtTime(130, t);
         osc.frequency.exponentialRampToValueAtTime(45, t + 0.045);
-        gain.gain.setValueAtTime(0.06, t);
+        gain.gain.setValueAtTime(0.07, t);
         gain.gain.exponentialRampToValueAtTime(0.001, t + 0.045);
         osc.connect(gain);
         gain.connect(this.ctx.destination);
@@ -111,7 +194,7 @@ class AudioManager {
         f.type = 'lowpass';
         f.frequency.value = 1100;
         const ng = this.ctx.createGain();
-        ng.gain.setValueAtTime(0.03, t);
+        ng.gain.setValueAtTime(0.035, t);
         ng.gain.exponentialRampToValueAtTime(0.001, t + 0.03);
         n.connect(f);
         f.connect(ng);
@@ -125,7 +208,7 @@ class AudioManager {
         osc.type = 'triangle';
         osc.frequency.setValueAtTime(360, t);
         osc.frequency.exponentialRampToValueAtTime(170, t + 0.035);
-        gain.gain.setValueAtTime(0.05, t);
+        gain.gain.setValueAtTime(0.065, t);
         gain.gain.exponentialRampToValueAtTime(0.001, t + 0.035);
         osc.connect(gain);
         gain.connect(this.ctx.destination);
@@ -139,7 +222,7 @@ class AudioManager {
         osc.type = 'triangle';
         osc.frequency.setValueAtTime(180, t);
         osc.frequency.exponentialRampToValueAtTime(80, t + 0.06);
-        gain.gain.setValueAtTime(0.075, t);
+        gain.gain.setValueAtTime(0.085, t);
         gain.gain.exponentialRampToValueAtTime(0.001, t + 0.06);
 
         const resFilter = this.ctx.createBiquadFilter();
@@ -154,13 +237,13 @@ class AudioManager {
         osc.stop(t + 0.065);
 
       } else {
-        // 'grass' — Soft, organic rustle/crush in lawn
+        // 'grass' — Soft, organic rustle/crush in lawn with audible mobile pop
         const osc = this.ctx.createOscillator();
         const gain = this.ctx.createGain();
-        osc.type = 'sine';
-        osc.frequency.setValueAtTime(75, t);
-        osc.frequency.exponentialRampToValueAtTime(32, t + 0.04);
-        gain.gain.setValueAtTime(0.035, t);
+        osc.type = 'triangle';
+        osc.frequency.setValueAtTime(160, t);
+        osc.frequency.exponentialRampToValueAtTime(70, t + 0.04);
+        gain.gain.setValueAtTime(0.055, t);
         gain.gain.exponentialRampToValueAtTime(0.001, t + 0.04);
         osc.connect(gain);
         gain.connect(this.ctx.destination);
@@ -176,9 +259,9 @@ class AudioManager {
         n.buffer = buf;
         const f = this.ctx.createBiquadFilter();
         f.type = 'lowpass';
-        f.frequency.value = 750;
+        f.frequency.value = 850;
         const ng = this.ctx.createGain();
-        ng.gain.setValueAtTime(0.025, t);
+        ng.gain.setValueAtTime(0.045, t);
         ng.gain.exponentialRampToValueAtTime(0.001, t + 0.04);
         n.connect(f);
         f.connect(ng);
@@ -189,7 +272,9 @@ class AudioManager {
   }
 
   playTalk(speaker = 'player') {
-    if (this.isMuted || !this.ctx) return;
+    if (this.isMuted) return;
+    this.ensureRunning();
+    if (!this.ctx) return;
     try {
       let freq = 420;
       let wave = 'square';
@@ -204,7 +289,7 @@ class AudioManager {
       const gain = this.ctx.createGain();
       osc.type = wave;
       osc.frequency.setValueAtTime(freq + (Math.random() * 40 - 20), this.ctx.currentTime);
-      gain.gain.setValueAtTime(0.05, this.ctx.currentTime);
+      gain.gain.setValueAtTime(0.08, this.ctx.currentTime);
       gain.gain.exponentialRampToValueAtTime(0.001, this.ctx.currentTime + 0.06);
       osc.connect(gain);
       gain.connect(this.ctx.destination);
@@ -214,7 +299,9 @@ class AudioManager {
   }
 
   playTypewriter() {
-    if (this.isMuted || !this.ctx || this.ctx.state !== 'running') return;
+    if (this.isMuted) return;
+    this.ensureRunning();
+    if (!this.ctx) return;
     try {
       const t = this.ctx.currentTime;
       const osc = this.ctx.createOscillator();
@@ -222,7 +309,7 @@ class AudioManager {
       osc.type = 'triangle';
       osc.frequency.setValueAtTime(1400 + Math.random() * 600, t);
       osc.frequency.exponentialRampToValueAtTime(300, t + 0.02);
-      gain.gain.setValueAtTime(0.045, t);
+      gain.gain.setValueAtTime(0.075, t);
       gain.gain.exponentialRampToValueAtTime(0.001, t + 0.02);
       osc.connect(gain);
       gain.connect(this.ctx.destination);
@@ -232,7 +319,9 @@ class AudioManager {
   }
 
   playCoin() {
-    if (this.isMuted || !this.ctx) return;
+    if (this.isMuted) return;
+    this.ensureRunning();
+    if (!this.ctx) return;
     try {
       const t = this.ctx.currentTime;
       const osc = this.ctx.createOscillator();
@@ -250,7 +339,9 @@ class AudioManager {
   }
 
   playSnip() {
-    if (this.isMuted || !this.ctx) return;
+    if (this.isMuted) return;
+    this.ensureRunning();
+    if (!this.ctx) return;
     try {
       const bufferSize = this.ctx.sampleRate * 0.07;
       const buffer = this.ctx.createBuffer(1, bufferSize, this.ctx.sampleRate);
@@ -277,7 +368,9 @@ class AudioManager {
   }
 
   playSuccess() {
-    if (this.isMuted || !this.ctx) return;
+    if (this.isMuted) return;
+    this.ensureRunning();
+    if (!this.ctx) return;
     try {
       const notes = [523.25, 659.25, 783.99, 1046.50]; // C5, E5, G5, C6
       const t = this.ctx.currentTime;
@@ -297,7 +390,9 @@ class AudioManager {
   }
 
   playError() {
-    if (this.isMuted || !this.ctx) return;
+    if (this.isMuted) return;
+    this.ensureRunning();
+    if (!this.ctx) return;
     try {
       const t = this.ctx.currentTime;
       const osc = this.ctx.createOscillator();
@@ -315,7 +410,9 @@ class AudioManager {
   }
 
   playNeedleDrop() {
-    if (this.isMuted || !this.ctx) return;
+    if (this.isMuted) return;
+    this.ensureRunning();
+    if (!this.ctx) return;
     try {
       const t = this.ctx.currentTime;
       // Low thump
@@ -349,7 +446,9 @@ class AudioManager {
   }
 
   playVinylCrackle(vol = 0.04) {
-    if (this.isMuted || !this.ctx) return;
+    if (this.isMuted) return;
+    this.ensureRunning();
+    if (!this.ctx) return;
     try {
       const t = this.ctx.currentTime;
       const bufferSize = Math.floor(this.ctx.sampleRate * 0.35);
@@ -381,7 +480,7 @@ class AudioManager {
   playMusic(type = 'ambient') {
     this.currentMusicType = type;
     if (this.isMuted) return;
-    this.init();
+    this.ensureRunning();
     this.stopMusic();
 
     if (type === 'title') {
@@ -493,7 +592,9 @@ class AudioManager {
   }
 
   playRadioJingle() {
-    if (this.isMuted || !this.ctx) return;
+    if (this.isMuted) return;
+    this.ensureRunning();
+    if (!this.ctx) return;
     try {
       const t = this.ctx.currentTime;
       // Retro transistor radio chime
@@ -525,7 +626,9 @@ class AudioManager {
     let step = 0;
 
     const playStepBeat = () => {
-      if (this.isMuted || !this.ctx) return;
+      if (this.isMuted) return;
+      this.ensureRunning();
+      if (!this.ctx) return;
       try {
         const t = this.ctx.currentTime;
         // Bass
@@ -580,7 +683,9 @@ class AudioManager {
     let progIndex = 0;
 
     const playChordBar = () => {
-      if (this.isMuted || !this.ctx) return;
+      if (this.isMuted) return;
+      this.ensureRunning();
+      if (!this.ctx) return;
       try {
         const item = progression[progIndex % progression.length];
         const t = this.ctx.currentTime;
@@ -632,7 +737,9 @@ class AudioManager {
     let progIndex = 0;
 
     const playBar = () => {
-      if (this.isMuted || !this.ctx) return;
+      if (this.isMuted) return;
+      this.ensureRunning();
+      if (!this.ctx) return;
       try {
         const item = progression[progIndex % progression.length];
         const t = this.ctx.currentTime;

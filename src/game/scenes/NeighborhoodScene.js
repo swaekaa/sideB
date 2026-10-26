@@ -70,7 +70,7 @@ export class NeighborhoodScene extends Phaser.Scene {
     const audioBtn = document.getElementById('audio-toggle-btn');
     if (audioBtn) {
       audioBtn.onclick = () => {
-        audioManager.init();
+        audioManager.unlock();
         const isMuted = audioManager.toggleMute();
         const label = document.getElementById('audio-label');
         if (label) label.textContent = isMuted ? 'SOUND: OFF' : 'SOUND: ON';
