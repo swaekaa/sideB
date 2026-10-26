@@ -381,5 +381,52 @@
       document.addEventListener('webkitfullscreenchange', updateFullscreenUI);
     });
   </script>
+  <!-- Mobile Landscape Orientation Gate Overlay (Visible only in portrait on mobile devices) -->
+  <div id="rotate-device-overlay" class="rotate-device-overlay" style="display: none;">
+    <div class="rotate-card">
+      <div class="rotate-icon-animation">
+        <div class="rotate-phone-frame">
+          <div class="rotate-phone-notch"></div>
+          <div class="rotate-phone-screen"></div>
+        </div>
+        <div class="rotate-arrow-badge">↻</div>
+      </div>
+      <h2 class="rotate-card-title">★ ROTATE YOUR SCREEN ★</h2>
+      <div class="rotate-card-subtitle">SIDE B: ONE PERFECT AFTERNOON (1969)</div>
+      <p class="rotate-card-desc">
+        This 1969 neighborhood story is designed for widescreen landscape play.<br>
+        Please turn your phone sideways to enter Oakwood.
+      </p>
+      <div class="rotate-card-tip">Tip: Turn off orientation lock on your device if screen doesn't rotate</div>
+    </div>
+  </div>
+
+  <!-- Responsive Virtual Joystick & Action Touch Controls (Hidden on desktop) -->
+  <div id="mobile-touch-controls" class="mobile-touch-controls" style="display: none;">
+    <!-- Virtual Analog Joystick (Lower-Left) -->
+    <div id="virtual-joystick-zone" class="v-joystick-zone">
+      <div id="virtual-joystick-base" class="v-joystick-base">
+        <div class="v-compass-mark v-mark-up">▲</div>
+        <div class="v-compass-mark v-mark-down">▼</div>
+        <div class="v-compass-mark v-mark-left">◀</div>
+        <div class="v-compass-mark v-mark-right">▶</div>
+        <div id="virtual-joystick-knob" class="v-joystick-knob">
+          <div class="v-knob-ridge"></div>
+        </div>
+      </div>
+    </div>
+
+    <!-- Virtual Action Buttons (Lower-Right) -->
+    <div class="v-action-buttons">
+      <button id="v-btn-space" class="v-action-btn v-btn-space" type="button" aria-label="Action (Space)">
+        <span class="v-btn-label-primary">SPACE</span>
+        <span class="v-btn-label-sub">ACTION</span>
+      </button>
+      <button id="v-btn-interact" class="v-action-btn v-btn-interact" type="button" aria-label="Interact (E)">
+        <span class="v-btn-label-primary">E</span>
+        <span class="v-btn-label-sub">INTERACT</span>
+      </button>
+    </div>
+  </div>
 </body>
 </html>

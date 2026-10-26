@@ -6,6 +6,7 @@
 import { gameState } from '../systems/GameState.js';
 import { audioManager } from '../systems/AudioManager.js';
 import { DialogueBox } from '../ui/DialogueBox.js';
+import { touchControls } from '../systems/TouchControls.js';
 
 export class RecordShopScene extends Phaser.Scene {
   constructor() {
@@ -18,6 +19,9 @@ export class RecordShopScene extends Phaser.Scene {
     const w = this.cameras.main.width;
     const h = this.cameras.main.height;
     const cx = w / 2;
+
+    // Interior scene - hide joystick so shop buttons & vinyl racks are fully visible
+    touchControls.setVisible(false);
 
     // === BACK WALL (Red Brick) ===
     const floorY = Math.round(h * 0.72);
@@ -260,6 +264,8 @@ export class RecordShopScene extends Phaser.Scene {
         fontStyle: 'bold',
         backgroundColor: '#f5c542', padding: { x: 8, y: 5 }, resolution: 4
       }).setOrigin(0.5);
+      this.buyBtn.setInteractive({ useHandCursor: true });
+      this.buyBtn.on('pointerdown', () => this.talkToMrVinyl());
       this.tweens.add({
         targets: this.buyBtn,
         scaleX: 1.05,
@@ -349,6 +355,7 @@ export class RecordShopScene extends Phaser.Scene {
       this.dialogueBox.close();
       return;
     }
+    touchControls.setVisible(true);
     this.scene.stop('RecordShopScene');
     this.scene.resume('NeighborhoodScene');
   }

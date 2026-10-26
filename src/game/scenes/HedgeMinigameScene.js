@@ -5,6 +5,7 @@
 
 import { gameState } from '../systems/GameState.js';
 import { audioManager } from '../systems/AudioManager.js';
+import { touchControls } from '../systems/TouchControls.js';
 
 export class HedgeMinigameScene extends Phaser.Scene {
   constructor() {
@@ -93,6 +94,10 @@ export class HedgeMinigameScene extends Phaser.Scene {
 
   update(time, delta) {
     if (!this.isActive) return;
+
+    if (touchControls.consumeSpace() || touchControls.consumeInteract()) {
+      this.trySnip();
+    }
 
     const dt = delta / 1000;
     this.markerPos += this.markerSpeed * this.markerDir * dt;

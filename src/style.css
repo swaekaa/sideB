@@ -1112,3 +1112,353 @@ html, body {
   to { opacity: 0.35; }
 }
 
+/* ==========================================================================
+   MOBILE RESPONSIVENESS, ROTATE SCREEN OVERLAY & VIRTUAL JOYSTICK
+   Strictly active only on mobile/touch devices; 100% untouched on desktop.
+   ========================================================================== */
+
+/* Hidden on desktop by default */
+#rotate-device-overlay,
+#mobile-touch-controls {
+  display: none;
+}
+
+/* 1. Mobile Portrait Orientation Gate Overlay */
+.rotate-device-overlay {
+  position: fixed;
+  inset: 0;
+  z-index: 99999;
+  background: radial-gradient(circle at center, #181220 0%, #0a080e 100%);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  padding: 20px;
+  box-sizing: border-box;
+}
+
+.rotate-card {
+  max-width: 380px;
+  width: 90%;
+  background: #141018;
+  border: 2px solid #8c6a28;
+  border-radius: 8px;
+  padding: 26px 20px;
+  box-shadow: 0 10px 32px rgba(0, 0, 0, 0.9), inset 0 0 0 1px #463414;
+  text-align: center;
+  color: #f6f0df;
+}
+
+.rotate-icon-animation {
+  position: relative;
+  width: 64px;
+  height: 64px;
+  margin: 0 auto 16px auto;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+.rotate-phone-frame {
+  width: 32px;
+  height: 52px;
+  border: 2.5px solid #d4a034;
+  border-radius: 6px;
+  background: #201828;
+  position: relative;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  animation: phoneRotateAnim 2.4s ease-in-out infinite;
+  box-shadow: 0 0 12px rgba(212, 160, 52, 0.35);
+}
+
+.rotate-phone-notch {
+  width: 10px;
+  height: 2px;
+  background: #8c6a28;
+  border-radius: 1px;
+  margin-top: 2px;
+}
+
+.rotate-phone-screen {
+  flex: 1;
+  width: 24px;
+  background: #32243e;
+  margin: 2px 0;
+  border-radius: 2px;
+}
+
+.rotate-arrow-badge {
+  position: absolute;
+  bottom: -4px;
+  right: -4px;
+  font-size: 22px;
+  color: #ffde70;
+  animation: arrowPulseAnim 1.2s infinite alternate;
+}
+
+@keyframes phoneRotateAnim {
+  0%, 25% {
+    transform: rotate(0deg);
+  }
+  65%, 100% {
+    transform: rotate(90deg);
+  }
+}
+
+@keyframes arrowPulseAnim {
+  from { transform: scale(0.9) rotate(0deg); opacity: 0.8; }
+  to { transform: scale(1.15) rotate(25deg); opacity: 1; }
+}
+
+.rotate-card-title {
+  font-family: var(--font-hollywood);
+  font-size: 1.15rem;
+  letter-spacing: 2px;
+  color: #ffea85;
+  margin-bottom: 6px;
+  text-shadow: 0 2px 4px rgba(0, 0, 0, 0.8);
+}
+
+.rotate-card-subtitle {
+  font-family: var(--font-pixel);
+  font-size: 1.1rem;
+  letter-spacing: 1px;
+  color: #c4a45a;
+  margin-bottom: 14px;
+  border-bottom: 1px solid #4a3818;
+  padding-bottom: 8px;
+}
+
+.rotate-card-desc {
+  font-family: var(--font-retro);
+  font-size: 0.88rem;
+  line-height: 1.5;
+  color: #d8cebe;
+  margin-bottom: 14px;
+}
+
+.rotate-card-tip {
+  font-family: var(--font-pixel);
+  font-size: 0.95rem;
+  color: #8c7e6c;
+}
+
+/* 2. Responsive Virtual Joystick & Touch Action Buttons */
+.mobile-touch-controls {
+  position: fixed;
+  inset: 0;
+  pointer-events: none;
+  z-index: 250;
+  user-select: none;
+  -webkit-user-select: none;
+  touch-action: none;
+}
+
+/* Lower-Left Virtual Joystick Zone */
+.v-joystick-zone {
+  position: absolute;
+  bottom: 18px;
+  left: 20px;
+  width: 120px;
+  height: 120px;
+  pointer-events: auto;
+  touch-action: none;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+.v-joystick-base {
+  width: 104px;
+  height: 104px;
+  border-radius: 50%;
+  background: radial-gradient(circle, rgba(22, 16, 12, 0.76) 0%, rgba(10, 8, 6, 0.88) 100%);
+  border: 2px solid rgba(212, 160, 52, 0.45);
+  box-shadow: 0 4px 14px rgba(0, 0, 0, 0.75), inset 0 0 10px rgba(0, 0, 0, 0.6);
+  position: relative;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+.v-compass-mark {
+  position: absolute;
+  font-size: 9px;
+  color: rgba(212, 160, 52, 0.45);
+  font-family: monospace;
+  pointer-events: none;
+}
+
+.v-mark-up { top: 5px; left: 50%; transform: translateX(-50%); }
+.v-mark-down { bottom: 5px; left: 50%; transform: translateX(-50%); }
+.v-mark-left { left: 6px; top: 50%; transform: translateY(-50%); }
+.v-mark-right { right: 6px; top: 50%; transform: translateY(-50%); }
+
+.v-joystick-knob {
+  width: 44px;
+  height: 44px;
+  border-radius: 50%;
+  background: radial-gradient(circle at 35% 35%, #fae69e 0%, #d4a034 50%, #7e5c18 100%);
+  border: 2px solid #3d2a08;
+  box-shadow: 0 3px 8px rgba(0, 0, 0, 0.8), inset 0 1px 1px rgba(255, 255, 255, 0.6);
+  position: relative;
+  pointer-events: none;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+.v-knob-ridge {
+  width: 22px;
+  height: 22px;
+  border-radius: 50%;
+  border: 1.5px dashed rgba(60, 40, 10, 0.55);
+}
+
+/* Lower-Right Virtual Action Buttons */
+.v-action-buttons {
+  position: absolute;
+  bottom: 18px;
+  right: 20px;
+  pointer-events: auto;
+  display: flex;
+  align-items: flex-end;
+  gap: 12px;
+  touch-action: none;
+}
+
+.v-action-btn {
+  border-radius: 50%;
+  cursor: pointer;
+  touch-action: none;
+  user-select: none;
+  -webkit-user-select: none;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  transition: transform 0.08s ease, filter 0.08s ease;
+  outline: none;
+}
+
+.v-action-btn:active,
+.v-action-btn.active {
+  transform: scale(0.92) !important;
+  filter: brightness(1.25) !important;
+  box-shadow: 0 1px 4px rgba(0, 0, 0, 0.9) !important;
+}
+
+/* Button E (Interact / Talk / Inspect) */
+.v-btn-interact {
+  width: 58px;
+  height: 58px;
+  background: radial-gradient(circle at 35% 35%, #fff2c4 0%, #d4a034 55%, #8c6418 100%);
+  border: 2.5px solid #281a06;
+  box-shadow: 0 4px 10px rgba(0, 0, 0, 0.7), inset 0 1px 1px rgba(255, 255, 255, 0.8);
+  color: #1e1202;
+}
+
+.v-btn-interact .v-btn-label-primary {
+  font-family: var(--font-hollywood);
+  font-size: 17px;
+  font-weight: 900;
+  line-height: 1;
+}
+
+.v-btn-interact .v-btn-label-sub {
+  font-family: var(--font-pixel);
+  font-size: 8px;
+  font-weight: bold;
+  letter-spacing: 0.5px;
+  margin-top: 1px;
+  color: #442a06;
+}
+
+/* Button SPACE (Action / Snip / Confirm) */
+.v-btn-space {
+  width: 50px;
+  height: 50px;
+  background: radial-gradient(circle at 35% 35%, #eb7262 0%, #b4382a 55%, #661810 100%);
+  border: 2.5px solid #260806;
+  box-shadow: 0 4px 10px rgba(0, 0, 0, 0.7), inset 0 1px 1px rgba(255, 255, 255, 0.5);
+  color: #ffffff;
+  margin-bottom: 8px;
+}
+
+.v-btn-space .v-btn-label-primary {
+  font-family: var(--font-pixel);
+  font-size: 11px;
+  font-weight: bold;
+  line-height: 1;
+  letter-spacing: 0.5px;
+}
+
+.v-btn-space .v-btn-label-sub {
+  font-family: var(--font-pixel);
+  font-size: 7.5px;
+  font-weight: bold;
+  letter-spacing: 0.5px;
+  margin-top: 1px;
+  color: #fbd6d2;
+}
+
+/* --- Responsive Adjustments on Mobile Landscape --- */
+@media screen and (max-height: 520px) and (orientation: landscape) {
+  .floating-side-panel {
+    width: 220px;
+    right: 8px;
+    top: 40px;
+  }
+
+  .top-left-hud {
+    top: 8px;
+    left: 8px;
+    padding: 2px 8px;
+    font-size: 0.95rem;
+  }
+
+  .hud-toggle-bar {
+    top: 8px;
+    right: 8px;
+    gap: 4px;
+  }
+
+  .hud-toggle-btn {
+    font-size: 0.88rem;
+    padding: 2px 6px;
+  }
+
+  .dialogue-overlay {
+    bottom: 8px;
+    padding: 8px 12px;
+    gap: 10px;
+    max-height: 82vh;
+  }
+
+  .dialogue-portrait-frame {
+    width: 44px;
+    height: 44px;
+  }
+
+  .dialogue-portrait-frame canvas {
+    width: 40px;
+    height: 40px;
+  }
+
+  .dialogue-speaker {
+    font-size: 1.1rem;
+  }
+
+  .dialogue-text {
+    font-size: 0.85rem;
+    line-height: 1.4;
+  }
+
+  .dialogue-prompt {
+    font-size: 0.85rem;
+  }
+}
+
+

@@ -7,6 +7,7 @@
  */
 
 import { audioManager } from '../systems/AudioManager.js';
+import { touchControls } from '../systems/TouchControls.js';
 
 export class TitleScene extends Phaser.Scene {
   constructor() {
@@ -16,6 +17,7 @@ export class TitleScene extends Phaser.Scene {
 
   create() {
     this.isTransitioning = false;
+    touchControls.setVisible(false);
     this.cameras.main.setBackgroundColor('#0a080c');
     this.cameras.main.fadeIn(800, 0, 0, 0);
 

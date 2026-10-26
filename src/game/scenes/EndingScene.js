@@ -8,6 +8,7 @@
 import { gameState } from '../systems/GameState.js';
 import { audioManager } from '../systems/AudioManager.js';
 import { DialogueBox } from '../ui/DialogueBox.js';
+import { touchControls } from '../systems/TouchControls.js';
 
 export class EndingScene extends Phaser.Scene {
   constructor() {
@@ -42,6 +43,9 @@ export class EndingScene extends Phaser.Scene {
     this.setupControls();
     this.setupHUDPrompt();
     this.setupMusic();
+
+    // Enable mobile touch controls in bedroom
+    touchControls.setVisible(true);
 
     // Setup movie credits overlay hookups
     this.setupEndingOverlay();
@@ -855,13 +859,13 @@ export class EndingScene extends Phaser.Scene {
     let dy = 0;
     let dir = null;
 
-    if (this.cursors.left.isDown || this.wasd.left.isDown) {
+    if (this.cursors.left.isDown || this.wasd.left.isDown || touchControls.isLeft()) {
       dx = -1; dir = 'left';
-    } else if (this.cursors.right.isDown || this.wasd.right.isDown) {
+    } else if (this.cursors.right.isDown || this.wasd.right.isDown || touchControls.isRight()) {
       dx = 1; dir = 'right';
-    } else if (this.cursors.up.isDown || this.wasd.up.isDown) {
+    } else if (this.cursors.up.isDown || this.wasd.up.isDown || touchControls.isUp()) {
       dy = -1; dir = 'up';
-    } else if (this.cursors.down.isDown || this.wasd.down.isDown) {
+    } else if (this.cursors.down.isDown || this.wasd.down.isDown || touchControls.isDown()) {
       dy = 1; dir = 'down';
     }
 
@@ -975,7 +979,10 @@ export class EndingScene extends Phaser.Scene {
       this.promptBg.setSize(pText.length * 7.5 + 24, 20);
       this.promptContainer.setVisible(true);
 
-      if (Phaser.Input.Keyboard.JustDown(this.wasd.interact) || Phaser.Input.Keyboard.JustDown(this.wasd.space)) {
+      if (Phaser.Input.Keyboard.JustDown(this.wasd.interact) || 
+          Phaser.Input.Keyboard.JustDown(this.wasd.space) || 
+          touchControls.consumeInteract() || 
+          touchControls.consumeSpace()) {
         closest.action();
       }
     } else {

@@ -5,6 +5,7 @@
 
 import { gameState } from '../systems/GameState.js';
 import { audioManager } from '../systems/AudioManager.js';
+import { touchControls } from '../systems/TouchControls.js';
 
 export class JuneMinigameScene extends Phaser.Scene {
   constructor() {
@@ -76,6 +77,10 @@ export class JuneMinigameScene extends Phaser.Scene {
 
   update(time, delta) {
     if (!this.isActive) return;
+
+    if (touchControls.consumeSpace() || touchControls.consumeInteract()) {
+      this.tryCatchBeat();
+    }
 
     const dt = delta / 1000;
     this.waveRadius -= this.waveSpeed * dt;

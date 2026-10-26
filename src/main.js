@@ -7,7 +7,12 @@ import Phaser from 'phaser';
 import { gameConfig } from './game/config.js';
 import { audioManager } from './game/systems/AudioManager.js';
 import { gameState } from './game/systems/GameState.js';
+import { touchControls } from './game/systems/TouchControls.js';
+
 window.addEventListener('DOMContentLoaded', () => {
+  // Initialize mobile touch controls & orientation detection
+  touchControls.init();
+
   // Initialize Phaser 3 Game
   const game = new Phaser.Game(gameConfig);
 

@@ -7,6 +7,7 @@
 import { gameState } from '../systems/GameState.js';
 import { audioManager } from '../systems/AudioManager.js';
 import { DialogueBox } from '../ui/DialogueBox.js';
+import { touchControls } from '../systems/TouchControls.js';
 
 export class NeighborhoodScene extends Phaser.Scene {
   constructor() {
@@ -38,6 +39,9 @@ export class NeighborhoodScene extends Phaser.Scene {
     this.setupFloatingLabels();
     this.setupHUD();
     this.setupTimeOverlay();
+
+    // Enable mobile touch joystick & action buttons if on mobile/touch device
+    touchControls.setVisible(true);
 
     // In-Game Dialogue Box
     this.dialogueBox = new DialogueBox(this);
@@ -965,6 +969,13 @@ export class NeighborhoodScene extends Phaser.Scene {
     if (restartBtn) restartBtn.style.display = '';
     if (toggleHudBtn) toggleHudBtn.style.display = '';
 
+    // On mobile devices, collapse HUD cards by default so screen isn't covered
+    const hudCards = document.getElementById('hud-cards-container');
+    if (touchControls.isTouchDevice && hudCards && toggleHudBtn) {
+      hudCards.classList.add('collapsed');
+      toggleHudBtn.textContent = 'HUD [SHOW ▼]';
+    }
+
     // Context Interaction Prompt Banner
     this.promptContainer = this.add.container(0, -40);
     this.promptContainer.setScrollFactor(0);
@@ -1060,13 +1071,13 @@ export class NeighborhoodScene extends Phaser.Scene {
     let dy = 0;
     let dir = null;
 
-    if (this.cursors.left.isDown || this.wasd.left.isDown) {
+    if (this.cursors.left.isDown || this.wasd.left.isDown || touchControls.isLeft()) {
       dx = -1; dir = 'left';
-    } else if (this.cursors.right.isDown || this.wasd.right.isDown) {
+    } else if (this.cursors.right.isDown || this.wasd.right.isDown || touchControls.isRight()) {
       dx = 1; dir = 'right';
-    } else if (this.cursors.up.isDown || this.wasd.up.isDown) {
+    } else if (this.cursors.up.isDown || this.wasd.up.isDown || touchControls.isUp()) {
       dy = -1; dir = 'up';
-    } else if (this.cursors.down.isDown || this.wasd.down.isDown) {
+    } else if (this.cursors.down.isDown || this.wasd.down.isDown || touchControls.isDown()) {
       dy = 1; dir = 'down';
     }
 
@@ -1232,7 +1243,10 @@ export class NeighborhoodScene extends Phaser.Scene {
       this.promptBg.setSize(activePrompt.length * 7.5 + 28, 22);
       this.promptContainer.setVisible(true);
 
-      if (Phaser.Input.Keyboard.JustDown(this.wasd.interact) || Phaser.Input.Keyboard.JustDown(this.wasd.space)) {
+      if (Phaser.Input.Keyboard.JustDown(this.wasd.interact) || 
+          Phaser.Input.Keyboard.JustDown(this.wasd.space) || 
+          touchControls.consumeInteract() || 
+          touchControls.consumeSpace()) {
         if (Date.now() > this.dialogueCooldownUntil) {
           actionFn();
         }
