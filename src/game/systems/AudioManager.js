@@ -213,6 +213,24 @@ class AudioManager {
     } catch (e) {}
   }
 
+  playTypewriter() {
+    if (this.isMuted || !this.ctx || this.ctx.state !== 'running') return;
+    try {
+      const t = this.ctx.currentTime;
+      const osc = this.ctx.createOscillator();
+      const gain = this.ctx.createGain();
+      osc.type = 'triangle';
+      osc.frequency.setValueAtTime(1400 + Math.random() * 600, t);
+      osc.frequency.exponentialRampToValueAtTime(300, t + 0.02);
+      gain.gain.setValueAtTime(0.045, t);
+      gain.gain.exponentialRampToValueAtTime(0.001, t + 0.02);
+      osc.connect(gain);
+      gain.connect(this.ctx.destination);
+      osc.start(t);
+      osc.stop(t + 0.022);
+    } catch (e) {}
+  }
+
   playCoin() {
     if (this.isMuted || !this.ctx) return;
     try {

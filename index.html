@@ -110,87 +110,33 @@
 
   </aside>
 
-  <!-- Themed Game Intro & Story Prologue Overlay (1969 Parchment & Vinyl Style) -->
+  <!-- Narrator Dialogue Overlay (Solid Black Background - Game World Hidden Until Done) -->
   <div class="intro-story-overlay" id="intro-story-overlay">
-    
-    <!-- Screen 1: Welcome & Disclaimer Card -->
-    <div class="theme-intro-card intro-screen-welcome" id="intro-screen-welcome">
-      <!-- 4 Corner Brass Accents -->
-      <div class="corner-dot top-left"></div>
-      <div class="corner-dot top-right"></div>
-      <div class="corner-dot bottom-left"></div>
-      <div class="corner-dot bottom-right"></div>
-
-      <div class="theme-intro-header">
-        <span class="theme-kicker-badge">★ SATURDAY, OCTOBER 1969 ★</span>
+    <div class="narrator-dialog-card" id="intro-narrator-card">
+      <div class="narrator-dialog-header">
+        <span class="speaker-tag">NARRATOR</span>
+        <span class="narrator-meta">OCTOBER 1969</span>
       </div>
 
-      <div class="theme-vinyl-icon-wrapper">
-        <div class="spinning-vinyl-icon">
-          <div class="vinyl-groove-inner"></div>
-          <div class="vinyl-center-label"></div>
-          <div class="vinyl-spindle-hole"></div>
+      <div class="narrator-card-divider"></div>
+
+      <div class="narrator-dialog-body" id="intro-story-content">
+        <p id="intro-story-p1" class="narrator-dialog-para"></p>
+        <p id="intro-story-p2" class="narrator-dialog-para"></p>
+      </div>
+
+      <div class="narrator-dialog-footer">
+        <div id="intro-typing-prompt" class="narrator-prompt-blinker">
+          [ SPACE / E / CLICK TO ADVANCE ▼ ] &bull; [ F TO SKIP ]
+        </div>
+        <div id="intro-btn-wrapper" class="theme-btn-wrapper" style="display: none; opacity: 0;">
+          <button id="intro-dive-btn" type="button" class="theme-dive-button">
+            [ DIVE IN (PRESS SPACE OR CLICK) ▶ ]
+          </button>
+          <span class="theme-skip-text">Press <strong>F</strong> to skip</span>
         </div>
       </div>
-
-      <h1 class="theme-main-title">SIDE B</h1>
-      <h2 class="theme-sub-title">ONE PERFECT AFTERNOON</h2>
-      <p class="theme-quote">&ldquo;Some afternoons stay with you forever.&rdquo;</p>
-      
-      <div class="theme-card-divider"></div>
-
-      <div class="theme-prompt-blinker">
-        [ SPACE / CLICK TO CONTINUE ▼ ]
-      </div>
     </div>
-
-    <!-- Screen 2: High School & Led Zeppelin Story -->
-    <div class="theme-intro-card intro-screen-story" id="intro-screen-story" style="display: none; opacity: 0;">
-      <!-- 4 Corner Brass Accents -->
-      <div class="corner-dot top-left"></div>
-      <div class="corner-dot top-right"></div>
-      <div class="corner-dot bottom-left"></div>
-      <div class="corner-dot bottom-right"></div>
-
-      <div class="theme-story-topbar">
-        <span class="theme-date-pill">OCTOBER 1969</span>
-        <span class="theme-story-category">LINER NOTES &bull; SIDE 1</span>
-      </div>
-
-      <h2 class="theme-story-heading">THE RECORD EVERYONE WAS TALKING ABOUT</h2>
-      <div class="theme-card-divider"></div>
-
-      <div class="theme-story-content">
-        <p>
-          All week at school, everybody was talking about the brand new 
-          <strong class="highlight-album">Led Zeppelin II</strong> album that just dropped.
-        </p>
-        <p>
-          Jimmy Page's crushing guitar riffs, Robert Plant's wild vocals, John Bonham's thunderous drums...
-          You couldn't get it out of your head.
-        </p>
-        <div class="theme-callout-box">
-          &ldquo;Now you want that vinyl record more than anything in the world.&rdquo;
-        </div>
-        <p>
-          Mr. Vinyl's shop across town has a single copy left in the front display, but he closes at <strong>6:00 PM sharp</strong>.
-        </p>
-        <p>
-          You only have <strong>$4.00</strong> in your pocket, and the LP costs <strong>$25.00</strong>.
-        </p>
-        <p class="theme-mission-note">
-          One perfect Saturday afternoon. A neighborhood of chores to do, dogs to rescue, and neighbors to help. Time to get that record.
-        </p>
-      </div>
-
-      <div class="theme-btn-wrapper">
-        <button id="intro-dive-btn" type="button" class="theme-dive-button">
-          [ DIVE IN (PRESS SPACE OR CLICK) ▶ ]
-        </button>
-        <span class="theme-skip-text">Press <strong>F</strong> to skip</span>
-      </div>
-    </div>
-
   </div>
 
   <!-- Razor-Sharp Floating Retro Dialogue Box -->
